@@ -57,7 +57,11 @@ const heightInput =
 
 const STORAGE_KEY = "products";
 
+const currentUser = JSON.parse(localStorage.getItem("currentuser"));
 
+if (!currentUser) {
+    window.location.href = "login.html";
+}
 
 
 let editingProductId = null;
@@ -306,7 +310,9 @@ productForm.addEventListener(
 
 
             fragile:
-                fragile.value
+                fragile.value,
+
+            userEmail: currentUser.email
 
         };
 
@@ -385,8 +391,8 @@ productForm.addEventListener(
                     function (item) {
 
                         return (
-                            item.id ===
-                            editingProductId
+                           item.id === editingProductId &&
+                item.userEmail === currentUser.email
                         );
 
                     }
@@ -421,12 +427,13 @@ productForm.addEventListener(
 
     
 
-        saveProducts(products);
+       saveProducts(products);
 
+       const myProducts = products.filter(function (product) {
+    return product.userEmail === currentUser.email;
+      });
 
-      
-
-        displayProducts(products);
+displayProducts(myProducts);
 
 
        
@@ -447,14 +454,12 @@ function editProduct(id) {
 
 
     const product =
-        products.find(
-            function (item) {
-
-                return item.id === id;
-
-            }
+    products.find(function (item) {
+        return (
+            item.id === id &&
+            item.userEmail === currentUser.email
         );
-
+    });
 
     if (!product) {
 
@@ -576,23 +581,23 @@ function deleteProduct(id) {
 
 
 
-    products =
-        products.filter(
-            function (product) {
-
-                return product.id !== id;
-
-            }
-        );
+ products = products.filter(function (product) {
+    return !(
+        product.id === id &&
+        product.userEmail === currentUser.email
+    );
+});
 
 
    
 
     saveProducts(products);
 
+    const myProducts = products.filter(function (product) {
+        return product.userEmail === currentUser.email;
+    });
 
-   
-    displayProducts(products);
+displayProducts(myProducts);
 
 
     alert(
@@ -677,10 +682,12 @@ searchInput.addEventListener(
 
         const products =
             getProducts();
-
+        const myProducts = products.filter(function (product) {
+            return product.userEmail === currentUser.email;
+        });
 
         const filteredProducts =
-            products.filter(
+            myProducts.filter(
                 function (product) {
 
                     return (
@@ -716,8 +723,10 @@ searchInput.addEventListener(
 
 
 
-const products =
-    getProducts();
+const products = getProducts();
 
+const myProducts = products.filter(function (product) {
+    return product.userEmail === currentUser.email;
+});
 
-displayProducts(products);
+displayProducts(myProducts);
