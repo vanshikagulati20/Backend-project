@@ -185,7 +185,29 @@ body {
 
     transition: 0.2s ease;
 }
+.warehouse-slot.empty {
+    background: #ffffff;
+}
 
+
+.warehouse-slot.occupied {
+    background: #fff7ed;
+
+    border-color: #f59e0b;
+}
+
+
+.warehouse-slot.full {
+    background: #172033;
+
+    border-color: #172033;
+}
+
+
+.warehouse-slot.full .slot-id,
+.warehouse-slot.full .slot-size {
+    color: #ffffff;
+}
 
 .warehouse-slot:hover {
 

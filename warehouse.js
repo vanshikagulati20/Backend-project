@@ -19,12 +19,14 @@ const closeModal =
     document.getElementById("closeModal");
 
 
+// ==========================================
+// GET SLOTS
+// ==========================================
 
 function getSlots() {
 
     const savedSlots =
         localStorage.getItem(SLOT_KEY);
-
 
     if (savedSlots) {
 
@@ -32,16 +34,13 @@ function getSlots() {
 
     }
 
-
     return [];
-
 }
 
 
-
-/*
-    Create visual box for a slot
-*/
+// ==========================================
+// CREATE SLOT BOX
+// ==========================================
 
 function createSlotBox(slot) {
 
@@ -51,6 +50,34 @@ function createSlotBox(slot) {
 
     slotBox.className =
         "warehouse-slot";
+
+
+    // Determine slot status
+
+    const capacity =
+        Number(slot.capacity || 0);
+
+    const used =
+        Number(slot.used || 0);
+
+
+    let status = "empty";
+
+
+    if (used >= capacity && capacity > 0) {
+
+        status = "full";
+
+    }
+
+    else if (used > 0) {
+
+        status = "occupied";
+
+    }
+
+
+    slotBox.classList.add(status);
 
 
     slotBox.innerHTML = `
@@ -66,6 +93,8 @@ function createSlotBox(slot) {
     `;
 
 
+    // Click slot
+
     slotBox.addEventListener(
         "click",
         function () {
@@ -77,14 +106,12 @@ function createSlotBox(slot) {
 
 
     return slotBox;
-
 }
 
 
-
-/*
-    Display all warehouse slots
-*/
+// ==========================================
+// DISPLAY ALL SLOTS
+// ==========================================
 
 function displaySlots() {
 
@@ -98,7 +125,6 @@ function displaySlots() {
     smallSlots.innerHTML = "";
 
 
-
     if (slots.length === 0) {
 
         largeSlots.innerHTML = `
@@ -108,84 +134,98 @@ function displaySlots() {
         `;
 
         return;
-
     }
 
 
+    slots.forEach(
+        function (slot) {
 
-    slots.forEach(function (slot) {
-
-
-        const slotBox =
-            createSlotBox(slot);
-
+            const slotBox =
+                createSlotBox(slot);
 
 
-        if (slot.size === "Large") {
+            if (slot.size === "Large") {
 
-            largeSlots.appendChild(
-                slotBox
-            );
+                largeSlots.appendChild(
+                    slotBox
+                );
 
-        }
+            }
 
+            else if (slot.size === "Medium") {
 
-        else if (slot.size === "Medium") {
+                mediumSlots.appendChild(
+                    slotBox
+                );
 
-            mediumSlots.appendChild(
-                slotBox
-            );
+            }
 
-        }
+            else if (slot.size === "Small") {
 
+                smallSlots.appendChild(
+                    slotBox
+                );
 
-        else if (slot.size === "Small") {
-
-            smallSlots.appendChild(
-                slotBox
-            );
+            }
 
         }
-
-    });
-
+    );
 }
 
 
-
-/*
-    Show slot information
-*/
+// ==========================================
+// SHOW SLOT DETAILS
+// ==========================================
 
 function showSlotDetails(slot) {
 
+    const capacity =
+        Number(slot.capacity || 0);
+
+    const used =
+        Number(slot.used || 0);
+
+
+    const available =
+        Math.max(
+            capacity - used,
+            0
+        );
+
+
+    // Slot ID
 
     document.getElementById(
         "modalSlotId"
-    ).innerText = slot.id;
+    ).innerText =
+        slot.id;
 
+
+    // Size
 
     document.getElementById(
         "modalSize"
-    ).innerText = slot.size;
+    ).innerText =
+        slot.size;
 
+
+    // Capacity
 
     document.getElementById(
         "modalCapacity"
     ).innerText =
-        slot.capacity + " units";
+        capacity + " units";
 
+
+    // Used
 
     document.getElementById(
         "modalUsed"
     ).innerText =
-        slot.used + " units";
+        used + " units";
 
 
-
-    const available =
-        slot.capacity - slot.used;
-
+    // Available
 
     document.getElementById(
         "modalAvailable"
@@ -193,17 +233,64 @@ function showSlotDetails(slot) {
         available + " units";
 
 
+    // ======================================
+    // PRODUCT INFORMATION
+    // ======================================
+
+    const modalProduct =
+        document.getElementById(
+            "modalProduct"
+        );
+
+
+    if (modalProduct) {
+
+        modalProduct.innerText =
+            slot.productName ||
+            "Empty";
+
+    }
+
+
+    // ======================================
+    // PRODUCT QUANTITY
+    // ======================================
+
+    const modalQuantity =
+        document.getElementById(
+            "modalQuantity"
+        );
+
+
+    if (modalQuantity) {
+
+        modalQuantity.innerText =
+            slot.quantity ||
+            "0";
+
+    }
+
+
+    // ======================================
+    // STATUS
+    // ======================================
 
     let status;
 
 
-    if (available === 0) {
+    if (capacity === 0) {
+
+        status = "No Capacity";
+
+    }
+
+    else if (used >= capacity) {
 
         status = "Full";
 
     }
 
-    else if (slot.used === 0) {
+    else if (used === 0) {
 
         status = "Empty";
 
@@ -218,12 +305,30 @@ function showSlotDetails(slot) {
 
     document.getElementById(
         "modalStatus"
-    ).innerText = status;
+    ).innerText =
+        status;
 
 
+    // ======================================
+    // PROGRESS BAR
+    // ======================================
 
-    const percentage =
-        (slot.used / slot.capacity) * 100;
+    let percentage = 0;
+
+
+    if (capacity > 0) {
+
+        percentage =
+            (used / capacity) * 100;
+
+    }
+
+
+    percentage =
+        Math.min(
+            Math.max(percentage, 0),
+            100
+        );
 
 
     document.getElementById(
@@ -232,37 +337,41 @@ function showSlotDetails(slot) {
         percentage + "%";
 
 
-    slotModal.classList.add("show");
+    // ======================================
+    // OPEN MODAL
+    // ======================================
 
+    slotModal.classList.add("show");
 }
 
 
-
-/*
-    Close popup
-*/
+// ==========================================
+// CLOSE MODAL
+// ==========================================
 
 closeModal.addEventListener(
     "click",
     function () {
 
-        slotModal.classList.remove("show");
+        slotModal.classList.remove(
+            "show"
+        );
 
     }
 );
 
 
-
-/*
-    Close popup by clicking
-    outside the card
-*/
+// ==========================================
+// CLOSE WHEN CLICKING OUTSIDE
+// ==========================================
 
 slotModal.addEventListener(
     "click",
     function (event) {
 
-        if (event.target === slotModal) {
+        if (
+            event.target === slotModal
+        ) {
 
             slotModal.classList.remove(
                 "show"
@@ -274,5 +383,28 @@ slotModal.addEventListener(
 );
 
 
+// ==========================================
+// REFRESH WHEN TAB BECOMES ACTIVE
+// ==========================================
+
+window.addEventListener(
+    "storage",
+    function (event) {
+
+        if (
+            event.key === SLOT_KEY
+        ) {
+
+            displaySlots();
+
+        }
+
+    }
+);
+
+
+// ==========================================
+// INITIAL LOAD
+// ==========================================
 
 displaySlots();
