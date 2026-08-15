@@ -2,66 +2,220 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Inventory Management</title>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Slots - Storvia</title>
 
     <link rel="stylesheet" href="inventory.css">
+
 </head>
+
 
 <body>
 
-    <div class="container">
 
-        <h1>Add Inventory</h1>
+<header class="dashboard-header">
 
-        <form id="inventoryForm">
-
-            <div class="form-group">
-                <label for="product">Product</label>
-
-                <select id="product" required>
-                    <option value="">Select Product</option>
-                </select>
-            </div>
-
-
-            <div class="form-group">
-                <label for="size">Size</label>
-
-                <select id="size" required>
-                    <option value="">Select Size</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Large">Large</option>
-                </select>
-            </div>
-
-
-            <div class="form-group">
-                <label for="quantity">Quantity</label>
-
-                <input
-                    type="number"
-                    id="quantity"
-                    min="1"
-                    placeholder="Enter quantity"
-                    required
-                >
-            </div>
-
-
-            <button type="submit">
-                Add Inventory
-            </button>
-
-        </form>
-
+    <div class="brand">
+        <h1>Storvia</h1>
     </div>
 
 
-    <script src="inventory.js"></script>
+    <nav class="dashboard-nav">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="product.html">
+            Products
+        </a>
+
+        <a
+            href="inventory.html"
+            class="active"
+        >
+            Add Slots
+        </a>
+
+        <a href="warehouse.html">
+            Warehouse
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<main class="dashboard-container">
+
+
+    <section class="dashboard-intro">
+
+        <h2>Add Warehouse Slots</h2>
+
+        <p>
+            Create storage slots for your electronics warehouse.
+        </p>
+
+    </section>
+
+
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <h2>Create Slots</h2>
+
+            <p>
+                Select a slot size and specify how many
+                slots you want to create.
+            </p>
+
+        </div>
+
+
+
+        <form id="slotForm">
+
+
+            <div class="form-group">
+
+                <label for="slotSize">
+                    Slot Size
+                </label>
+
+
+                <select
+                    id="slotSize"
+                    required
+                >
+
+                    <option value="">
+                        Select Slot Size
+                    </option>
+
+                    <option value="Large">
+                        Large - 100 units
+                    </option>
+
+                    <option value="Medium">
+                        Medium - 50 units
+                    </option>
+
+                    <option value="Small">
+                        Small - 25 units
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+                <label for="slotCount">
+                    Number of Slots
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotCount"
+                    min="1"
+                    placeholder="Enter number of slots"
+                    required
+                >
+
+            </div>
+
+
+
+            <button type="submit">
+                Add Slots
+            </button>
+
+
+        </form>
+
+    </section>
+
+
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <h2>Slot Information</h2>
+
+            <p>
+                Slot naming and capacity used by the warehouse.
+            </p>
+
+        </div>
+
+
+        <div class="slot-info-grid">
+
+
+            <div class="slot-info">
+
+                <strong>Large</strong>
+
+                <span>A-01, A-02, A-03...</span>
+
+                <small>
+                    Capacity: 100 units
+                </small>
+
+            </div>
+
+
+            <div class="slot-info">
+
+                <strong>Medium</strong>
+
+                <span>B-01, B-02, B-03...</span>
+
+                <small>
+                    Capacity: 50 units
+                </small>
+
+            </div>
+
+
+            <div class="slot-info">
+
+                <strong>Small</strong>
+
+                <span>C-01, C-02, C-03...</span>
+
+                <small>
+                    Capacity: 25 units
+                </small>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<script src="inventory.js"></script>
 
 </body>
 
