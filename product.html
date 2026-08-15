@@ -20,7 +20,87 @@
             background-color: #f5f5f5;
             color: #222;
         }
+        /*  pop up css */
 
+        .slot-modal {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(15, 23, 42, 0.55);
+
+            justify-content: center;
+
+            align-items: center;
+
+            z-index: 1000;
+        }
+
+
+        .slot-modal-content {
+            width: 90%;
+            max-width: 450px;
+
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 16px;
+
+            box-shadow:
+                0 20px 50px rgba(15, 23, 42, 0.2);
+        }
+
+
+        .slot-modal-content h2 {
+            margin-bottom: 15px;
+
+            color: #172033;
+        }
+
+
+        #slotMessage {
+            color: #697386;
+
+            line-height: 1.6;
+
+            margin-bottom: 15px;
+        }
+
+
+        #slotDetails {
+            background: #fff7ed;
+
+            border: 1px solid #f59e0b;
+
+            padding: 15px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+        }
+
+
+        .slot-modal-buttons {
+            display: flex;
+
+            gap: 10px;
+        }
+
+
+        .slot-modal-buttons button {
+            width: auto;
+
+            flex: 1;
+        }
+
+
+        .slot-modal .cancel-btn {
+            display: block;
+            margin-left: 0;
+        }
 
         /* =========================
            HEADER
@@ -386,6 +466,37 @@
 
 </head>
 
+<div id="slotModal" class="slot-modal">
+
+    <div class="slot-modal-content">
+
+        <h2>Warehouse Slot Assignment</h2>
+
+        <p id="slotMessage"></p>
+
+        <div id="slotDetails"></div>
+
+        <div class="slot-modal-buttons">
+
+            <button
+                id="acceptSlotBtn"
+                class="btn add-btn"
+            >
+                Accept
+            </button>
+
+            <button
+                id="declineSlotBtn"
+                class="btn cancel-btn"
+            >
+                Decline
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <body>
 
