@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Warehouse - Storvia</title>
+
+    <link rel="stylesheet" href="warehouse.css">
+
+</head>
+
+
+<body>
+
+
+<header class="dashboard-header">
+
+    <div class="brand">
+        <h1>Storvia</h1>
+    </div>
+
+
+    <nav class="dashboard-nav">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="product.html">
+            Products
+        </a>
+
+        <a href="inventory.html">
+            Add Slots
+        </a>
+
+        <a
+            href="warehouse.html"
+            class="active"
+        >
+            Warehouse
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<main class="dashboard-container">
+
+
+    <section class="dashboard-intro">
+
+        <h2>Warehouse Layout</h2>
+
+        <p>
+            View the current storage arrangement.
+            Click any slot to view its details.
+        </p>
+
+    </section>
+
+
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <h2>Large Slots</h2>
+
+            <p>
+                Large storage capacity
+            </p>
+
+        </div>
+
+
+        <div
+            id="largeSlots"
+            class="warehouse-grid"
+        ></div>
+
+    </section>
+
+
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <h2>Medium Slots</h2>
+
+            <p>
+                Medium storage capacity
+            </p>
+
+        </div>
+
+
+        <div
+            id="mediumSlots"
+            class="warehouse-grid"
+        ></div>
+
+    </section>
+
+
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <h2>Small Slots</h2>
+
+            <p>
+                Small storage capacity
+            </p>
+
+        </div>
+
+
+        <div
+            id="smallSlots"
+            class="warehouse-grid"
+        ></div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- SLOT DETAILS POPUP -->
+
+<div
+    id="slotModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+
+        <button
+            id="closeModal"
+            class="close-button"
+        >
+            ×
+        </button>
+
+
+        <h2 id="modalSlotId">
+            A-01
+        </h2>
+
+
+        <div class="slot-details">
+
+
+            <div class="detail-row">
+
+                <span>
+                    Size
+                </span>
+
+                <strong id="modalSize">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Capacity
+                </span>
+
+                <strong id="modalCapacity">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Used
+                </span>
+
+                <strong id="modalUsed">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Available
+                </span>
+
+                <strong id="modalAvailable">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Status
+                </span>
+
+                <strong id="modalStatus">
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-progress">
+
+            <div class="progress-container">
+
+                <div
+                    id="modalProgress"
+                    class="progress-bar"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="warehouse.js"></script>
+
+</body>
+
+</html>

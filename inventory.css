@@ -4,111 +4,349 @@
     padding: 0;
 }
 
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
-    color: #222;
-    padding: 40px 20px;
+    background: #f6f7f9;
+    color: #172033;
 }
 
-/* Main Container */
 
-.container {
-    max-width: 650px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 35px;
-    border-radius: 12px;
-    border-top: 5px solid #ff7a00;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+/* =========================
+   HEADER
+========================= */
+
+.dashboard-header {
+    background: #172033;
+    color: white;
+
+    padding: 18px 40px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-/* Heading */
 
-h1 {
-    text-align: center;
+.brand h1 {
+    color: white;
+    font-size: 26px;
+}
+
+
+.dashboard-nav {
+    display: flex;
+    gap: 28px;
+}
+
+
+.dashboard-nav a {
+    color: #d0d5dd;
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+
+.dashboard-nav a:hover {
+    color: #f59e0b;
+}
+
+
+.dashboard-nav a.active {
+    color: #f59e0b;
+}
+
+
+/* =========================
+   MAIN CONTAINER
+========================= */
+
+.dashboard-container {
+    max-width: 1100px;
+
+    margin: auto;
+
+    padding: 40px 25px;
+}
+
+
+.dashboard-intro {
     margin-bottom: 30px;
-    color: #111111;
-    font-size: 30px;
 }
 
-/* Form */
+
+.dashboard-intro h2 {
+    font-size: 28px;
+
+    color: #172033;
+
+    margin-bottom: 8px;
+}
+
+
+.dashboard-intro p {
+    color: #697386;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.inventory-card {
+    background: white;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 12px;
+
+    padding: 28px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 8px 25px rgba(15, 23, 42, 0.05);
+}
+
+
+.section-heading {
+    margin-bottom: 25px;
+}
+
+
+.section-heading h2 {
+    font-size: 20px;
+
+    color: #172033;
+
+    margin-bottom: 5px;
+}
+
+
+.section-heading p {
+    color: #697386;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   FORM
+========================= */
 
 .form-group {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
-label {
+
+.form-group label {
     display: block;
+
     margin-bottom: 8px;
-    font-weight: bold;
-    color: #222222;
+
+    color: #344054;
+
+    font-size: 14px;
+
+    font-weight: 600;
 }
 
-/* Inputs */
 
-select,
-input {
+.form-group input,
+.form-group select {
     width: 100%;
-    padding: 12px 14px;
-    border: 1px solid #cccccc;
-    border-radius: 6px;
-    font-size: 16px;
-    background-color: #ffffff;
-    color: #222222;
+
+    height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid #d0d5dd;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #172033;
+
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+
+.form-group input::placeholder {
+    color: #98a2b3;
+}
+
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: #98a2b3;
+}
+
+
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
+
+    border-color: #f59e0b;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(245, 158, 11, 0.12);
 }
 
-/* Input focus */
 
-select:focus,
-input:focus {
-    border-color: #ff7a00;
-    box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
-}
-
-/* Button */
+/* =========================
+   BUTTON
+========================= */
 
 button {
     width: 100%;
-    padding: 13px;
+
+    height: 46px;
+
+    margin-top: 6px;
+
     border: none;
-    border-radius: 6px;
-    background-color: #111111;
+
+    border-radius: 8px;
+
+    background: #172033;
+
     color: #ffffff;
-    font-size: 16px;
-    font-weight: bold;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
     cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
+
+    transition: 0.2s ease;
 }
 
-/* Button hover */
 
 button:hover {
-    background-color: #ff7a00;
+    background: #263248;
 }
 
-/* Button click */
 
 button:active {
-    transform: scale(0.98);
+    transform: translateY(1px);
 }
 
-/* Responsive */
 
-@media (max-width: 600px) {
+/* =========================
+   SLOT INFORMATION
+========================= */
 
-    body {
-        padding: 20px 10px;
+.slot-info-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+
+.slot-info {
+    background: #f6f7f9;
+
+    border: 1px solid #e4e7ec;
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    transition: 0.2s ease;
+}
+
+
+.slot-info:hover {
+    border-color: #f59e0b;
+
+    box-shadow:
+        0 5px 15px
+        rgba(15, 23, 42, 0.05);
+}
+
+
+.slot-info strong {
+    color: #172033;
+
+    font-size: 16px;
+}
+
+
+.slot-info span {
+    color: #344054;
+
+    font-size: 14px;
+}
+
+
+.slot-info small {
+    color: #697386;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 800px) {
+
+    .dashboard-header {
+        padding: 18px 20px;
     }
 
-    .container {
-        padding: 25px 20px;
+
+    .dashboard-container {
+        padding: 30px 18px;
     }
 
-    h1 {
-        font-size: 25px;
+
+    .slot-info-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 550px) {
+
+    .dashboard-header {
+        flex-direction: column;
+
+        gap: 15px;
+    }
+
+
+    .dashboard-nav {
+        gap: 15px;
+
+        flex-wrap: wrap;
+
+        justify-content: center;
+    }
+
+
+    .slot-info-grid {
+        grid-template-columns: 1fr;
     }
 
 }

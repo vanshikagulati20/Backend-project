@@ -1,129 +1,205 @@
-const inventoryForm = document.getElementById("inventoryForm");
-const productSelect = document.getElementById("product");
-const sizeSelect = document.getElementById("size");
-const quantityInput = document.getElementById("quantity");
+const slotForm =
+    document.getElementById("slotForm");
 
-const INVENTORY_KEY = "inventory";
-const PRODUCT_KEY = "products";
+const slotSize =
+    document.getElementById("slotSize");
+
+const slotCount =
+    document.getElementById("slotCount");
 
 
-// Get products created by the product management feature
-function getProducts() {
-    const savedProducts = localStorage.getItem(PRODUCT_KEY);
+const SLOT_KEY = "warehouseSlots";
 
-    if (savedProducts) {
-        return JSON.parse(savedProducts);
+
+
+const SLOT_CAPACITY = {
+
+    Large: 100,
+
+    Medium: 50,
+
+    Small: 25
+
+};
+
+
+
+const SLOT_PREFIX = {
+
+    Large: "A",
+
+    Medium: "B",
+
+    Small: "C"
+
+};
+
+
+
+function getSlots() {
+
+    const savedSlots =
+        localStorage.getItem(SLOT_KEY);
+
+
+    if (savedSlots) {
+
+        return JSON.parse(savedSlots);
+
     }
 
+
     return [];
+
 }
 
 
-// Get existing inventory
-function getInventory() {
-    const savedInventory = localStorage.getItem(INVENTORY_KEY);
 
-    if (savedInventory) {
-        return JSON.parse(savedInventory);
-    }
+function saveSlots(slots) {
 
-    return [];
-}
-
-
-// Save inventory
-function saveInventory(inventory) {
     localStorage.setItem(
-        INVENTORY_KEY,
-        JSON.stringify(inventory)
+        SLOT_KEY,
+        JSON.stringify(slots)
     );
+
 }
 
 
-// Load products into the Product dropdown
-function loadProducts() {
-    const products = getProducts();
 
-    productSelect.innerHTML = `
-        <option value="">Select Product</option>
-    `;
-
-    products.forEach(function (product) {
-        const option = document.createElement("option");
-
-        option.value = product.id;
-        option.textContent = product.name;
-
-        productSelect.appendChild(option);
-    });
-}
-
-
-// Add inventory
-inventoryForm.addEventListener(
+slotForm.addEventListener(
     "submit",
     function (event) {
 
         event.preventDefault();
 
-        const products = getProducts();
 
-        const selectedProduct = products.find(
-            function (product) {
-                return product.id === productSelect.value;
+        const selectedSize =
+            slotSize.value;
+
+
+        const numberOfSlots =
+            Number(slotCount.value);
+
+
+
+        if (selectedSize === "") {
+
+            alert("Please select a slot size.");
+
+            return;
+
+        }
+
+
+
+        if (numberOfSlots <= 0) {
+
+            alert(
+                "Number of slots must be greater than 0."
+            );
+
+            return;
+
+        }
+
+
+
+        const slots = getSlots();
+
+
+        const prefix =
+            SLOT_PREFIX[selectedSize];
+
+
+        const capacity =
+            SLOT_CAPACITY[selectedSize];
+
+
+
+        /*
+            Find how many slots of this
+            size already exist.
+        */
+
+        let existingCount = 0;
+
+
+        slots.forEach(function (slot) {
+
+            if (slot.size === selectedSize) {
+
+                existingCount++;
+
             }
+
+        });
+
+
+
+        /*
+            Create new slots.
+
+            Example:
+
+            Existing:
+            A-01
+            A-02
+
+            Add 2 more:
+
+            A-03
+            A-04
+        */
+
+        for (
+            let i = 1;
+            i <= numberOfSlots;
+            i++
+        ) {
+
+
+            const slotNumber =
+                existingCount + i;
+
+
+            const formattedNumber =
+                String(slotNumber).padStart(2, "0");
+
+
+            const newSlot = {
+
+                id:
+                    prefix + "-" + formattedNumber,
+
+                size:
+                    selectedSize,
+
+                capacity:
+                    capacity,
+
+                used: 0
+
+            };
+
+
+            slots.push(newSlot);
+
+        }
+
+
+
+        saveSlots(slots);
+
+
+        alert(
+            numberOfSlots +
+            " " +
+            selectedSize +
+            " slot(s) added successfully."
         );
 
-        if (!selectedProduct) {
-            alert("Please select a product.");
-            return;
-        }
 
+        slotForm.reset();
 
-        const quantity = Number(quantityInput.value);
-        const size = sizeSelect.value;
-
-
-        if (size === "") {
-            alert("Please select a size.");
-            return;
-        }
-
-
-        if (quantity <= 0) {
-            alert("Quantity must be greater than 0.");
-            return;
-        }
-
-
-        const inventory = getInventory();
-
-
-        const inventoryItem = {
-
-            id: Date.now().toString(),
-
-            productId: selectedProduct.id,
-
-            productName: selectedProduct.name,
-
-            size: size,
-
-            quantity: quantity
-        };
-
-
-        inventory.push(inventoryItem);
-
-        saveInventory(inventory);
-
-
-        alert("Inventory added successfully.");
-
-        inventoryForm.reset();
     }
 );
-
-
-// Load products when page opens
-loadProducts();
