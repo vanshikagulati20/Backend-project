@@ -1,11 +1,12 @@
 const PRODUCT_KEY = "products";
 const INVENTORY_KEY = "inventory";
+const SLOT_KEY = "warehouseSlots";
 const CURRENT_USER_KEY = "currentuser";
 
 
-// -----------------------------
-// Get current logged-in user
-// -----------------------------
+// ==========================================
+// GET CURRENT USER
+// ==========================================
 
 function getCurrentUser() {
 
@@ -23,9 +24,9 @@ function getCurrentUser() {
 }
 
 
-// -----------------------------
-// Get products
-// -----------------------------
+// ==========================================
+// GET PRODUCTS
+// ==========================================
 
 function getProducts() {
 
@@ -41,9 +42,9 @@ function getProducts() {
 }
 
 
-// -----------------------------
-// Get inventory
-// -----------------------------
+// ==========================================
+// GET INVENTORY
+// ==========================================
 
 function getInventory() {
 
@@ -59,9 +60,27 @@ function getInventory() {
 }
 
 
-// -----------------------------
-// Load dashboard
-// -----------------------------
+// ==========================================
+// GET WAREHOUSE SLOTS
+// ==========================================
+
+function getSlots() {
+
+    const savedSlots =
+        localStorage.getItem(SLOT_KEY);
+
+    if (savedSlots) {
+
+        return JSON.parse(savedSlots);
+    }
+
+    return [];
+}
+
+
+// ==========================================
+// LOAD DASHBOARD
+// ==========================================
 
 function loadDashboard() {
 
@@ -72,30 +91,43 @@ function loadDashboard() {
     }
 
 
-    // Display user name
+    // --------------------------------------
+    // Welcome message
+    // --------------------------------------
 
     document.getElementById("welcomeUser").innerText =
         "Welcome, " + currentUser.name;
 
 
+    // --------------------------------------
     // Get all data
+    // --------------------------------------
 
     const allProducts = getProducts();
 
     const allInventory = getInventory();
 
+    const allSlots = getSlots();
 
-    // Only show current user's products
+
+    // --------------------------------------
+    // Current user's products
+    // --------------------------------------
 
     const products = allProducts.filter(
         function (product) {
 
-            return product.userEmail === currentUser.email;
+            return (
+                product.userEmail === currentUser.email
+            );
+
         }
     );
 
 
-    // Only show current user's inventory
+    // --------------------------------------
+    // Current user's inventory
+    // --------------------------------------
 
     const inventory = allInventory.filter(
         function (item) {
@@ -103,66 +135,163 @@ function loadDashboard() {
             const product = products.find(
                 function (product) {
 
-                    return product.id === item.productId;
+                    return (
+                        product.id === item.productId
+                    );
+
                 }
             );
 
             return product !== undefined;
+
         }
     );
 
 
-    // -----------------------------
-    // Product calculations
-    // -----------------------------
+    // ======================================
+    // PRODUCT CALCULATIONS
+    // ======================================
 
-    const totalProducts = products.length;
-
-
-    const totalQuantity = products.reduce(
-        function (total, product) {
-
-            return total + Number(product.quantity || 0);
-
-        },
-        0
-    );
+    const totalProducts =
+        products.length;
 
 
-    const totalWeight = products.reduce(
-        function (total, product) {
+    const totalQuantity =
+        products.reduce(
+            function (total, product) {
 
-            return total + Number(product.weight || 0);
+                return (
+                    total +
+                    Number(product.quantity || 0)
+                );
 
-        },
-        0
-    );
-
-
-    // -----------------------------
-    // Inventory calculations
-    // -----------------------------
-
-    const inventoryEntries = inventory.length;
+            },
+            0
+        );
 
 
-    const occupiedSlots = inventory.length;
+    /*
+        IMPORTANT:
+
+        Weight is weight PER UNIT.
+
+        Therefore:
+
+        quantity × weight
+    */
+
+    const totalWeight =
+        products.reduce(
+            function (total, product) {
+
+                return (
+                    total +
+                    (
+                        Number(product.quantity || 0) *
+                        Number(product.weight || 0)
+                    )
+                );
+
+            },
+            0
+        );
 
 
-    // Temporary warehouse capacity
+    // ======================================
+    // WAREHOUSE SLOT CALCULATIONS
+    // ======================================
 
-    const TOTAL_SLOTS = 0;
+    const totalSlots =
+        allSlots.length;
+
+
+    const occupiedSlots =
+        allSlots.filter(
+            function (slot) {
+
+                return Number(slot.used || 0) > 0;
+
+            }
+        ).length;
 
 
     const availableSlots =
-        Math.max(TOTAL_SLOTS - occupiedSlots, 0);
+        allSlots.filter(
+            function (slot) {
+
+                return Number(slot.used || 0) <
+                       Number(slot.capacity || 0);
+
+            }
+        ).length;
 
 
-    // Space percentage
+    const emptySlots =
+        allSlots.filter(
+            function (slot) {
 
-    const usedPercentage =
+                return Number(slot.used || 0) === 0;
+
+            }
+        ).length;
+
+
+    // ======================================
+    // TOTAL WAREHOUSE CAPACITY
+    // ======================================
+
+    const totalCapacity =
+        allSlots.reduce(
+            function (total, slot) {
+
+                return (
+                    total +
+                    Number(slot.capacity || 0)
+                );
+
+            },
+            0
+        );
+
+
+    // ======================================
+    // TOTAL USED CAPACITY
+    // ======================================
+
+    const usedCapacity =
+        allSlots.reduce(
+            function (total, slot) {
+
+                return (
+                    total +
+                    Number(slot.used || 0)
+                );
+
+            },
+            0
+        );
+
+
+    // ======================================
+    // SPACE UTILIZATION
+    // ======================================
+
+    let usedPercentage = 0;
+
+    if (totalCapacity > 0) {
+
+        usedPercentage =
+            (
+                usedCapacity /
+                totalCapacity
+            ) * 100;
+
+    }
+
+
+    usedPercentage =
         Math.min(
-            (occupiedSlots / TOTAL_SLOTS) * 100,
+            Math.max(usedPercentage, 0),
             100
         );
 
@@ -171,67 +300,81 @@ function loadDashboard() {
         100 - usedPercentage;
 
 
-    // -----------------------------
-    // Display statistics
-    // -----------------------------
+    // ======================================
+    // DISPLAY STATISTICS
+    // ======================================
 
-    document.getElementById("totalProducts")
-        .innerText = totalProducts;
-
-
-    document.getElementById("totalQuantity")
-        .innerText = totalQuantity;
+    document.getElementById(
+        "totalProducts"
+    ).innerText =
+        totalProducts;
 
 
-    document.getElementById("totalWeight")
-        .innerText =
+    document.getElementById(
+        "totalQuantity"
+    ).innerText =
+        totalQuantity;
+
+
+    document.getElementById(
+        "totalWeight"
+    ).innerText =
         totalWeight.toFixed(2) + " kg";
 
 
-    document.getElementById("inventoryEntries")
-        .innerText = inventoryEntries;
+    document.getElementById(
+        "inventoryEntries"
+    ).innerText =
+        inventory.length;
 
 
-    document.getElementById("occupiedSlots")
-        .innerText = occupiedSlots;
+    document.getElementById(
+        "occupiedSlots"
+    ).innerText =
+        occupiedSlots;
 
 
-    document.getElementById("availableSlots")
-        .innerText = availableSlots;
+    document.getElementById(
+        "availableSlots"
+    ).innerText =
+        availableSlots;
 
 
-    // -----------------------------
-    // Space analysis
-    // -----------------------------
+    // ======================================
+    // SPACE ANALYSIS
+    // ======================================
 
-    document.getElementById("usedSpace")
-        .innerText =
+    document.getElementById(
+        "usedSpace"
+    ).innerText =
         usedPercentage.toFixed(1) + "%";
 
 
-    document.getElementById("freeSpace")
-        .innerText =
+    document.getElementById(
+        "freeSpace"
+    ).innerText =
         freePercentage.toFixed(1) + "%";
 
 
-    document.getElementById("spaceProgress")
-        .style.width =
+    document.getElementById(
+        "spaceProgress"
+    ).style.width =
         usedPercentage + "%";
 
 
-    // -----------------------------
-    // Display inventory
-    // -----------------------------
+    // ======================================
+    // DISPLAY INVENTORY
+    // ======================================
 
-    displayInventory(inventory);
+    displayInventory(inventory, allSlots);
 }
 
 
-// -----------------------------
-// Display inventory
-// -----------------------------
+// ==========================================
+// DISPLAY INVENTORY
+// ==========================================
 
-function displayInventory(inventory) {
+function displayInventory(inventory, slots) {
 
     const inventoryList =
         document.getElementById("inventoryList");
@@ -255,11 +398,46 @@ function displayInventory(inventory) {
     inventory.forEach(
         function (item) {
 
+
+            // --------------------------------
+            // Find slot containing product
+            // --------------------------------
+
+            const slot =
+                slots.find(
+                    function (slot) {
+
+                        return (
+                            slot.productId ===
+                            item.productId
+                        );
+
+                    }
+                );
+
+
             const inventoryItem =
                 document.createElement("div");
 
+
             inventoryItem.className =
                 "inventory-row";
+
+
+            // --------------------------------
+            // Slot information
+            // --------------------------------
+
+            let slotText =
+                "Not assigned";
+
+
+            if (slot) {
+
+                slotText =
+                    slot.id;
+
+            }
 
 
             inventoryItem.innerHTML = `
@@ -278,20 +456,28 @@ function displayInventory(inventory) {
                     Quantity: ${item.quantity}
                 </div>
 
+                <div>
+                    Slot:
+                    <strong>
+                        ${slotText}
+                    </strong>
+                </div>
+
             `;
 
 
             inventoryList.appendChild(
                 inventoryItem
             );
+
         }
     );
 }
 
 
-// -----------------------------
-// Logout
-// -----------------------------
+// ==========================================
+// LOGOUT
+// ==========================================
 
 document.getElementById("logoutBtn")
     .addEventListener(
@@ -304,12 +490,13 @@ document.getElementById("logoutBtn")
 
             window.location.href =
                 "login.html";
+
         }
     );
 
 
-// -----------------------------
-// Start dashboard
-// -----------------------------
+// ==========================================
+// START
+// ==========================================
 
 loadDashboard();
