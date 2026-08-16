@@ -7,42 +7,52 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: #f6f7f9;
-    color: #172033;
+    background: #f7f7f7;
+    color: #171717;
 }
 
 
 
-/* =========================
+/* ==========================================
    HEADER
-========================= */
+========================================== */
+.brand h1 {
+    font-size: 30px;
+}
 
+.dashboard-nav a {
+    font-size: 16px;
+}
 .dashboard-header {
-    background: #172033;
+    background: #111111;
     color: white;
 
-    padding: 18px 40px;
+    padding: 18px 45px;
 
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    border-bottom: 3px solid #f59e0b;
 }
 
 
 .brand h1 {
     color: white;
-    font-size: 26px;
+    font-size: 27px;
+    letter-spacing: 0.5px;
 }
 
 
 .dashboard-nav {
     display: flex;
-    gap: 28px;
+    gap: 30px;
 }
 
 
 .dashboard-nav a {
-    color: #d0d5dd;
+    color: #cfcfcf;
+
     text-decoration: none;
 
     font-size: 14px;
@@ -63,16 +73,16 @@ body {
 
 
 
-/* =========================
+/* ==========================================
    MAIN
-========================= */
+========================================== */
 
 .dashboard-container {
-    max-width: 1100px;
+    max-width: 1150px;
 
     margin: auto;
 
-    padding: 40px 25px;
+    padding: 45px 25px 60px;
 }
 
 
@@ -81,67 +91,319 @@ body {
 }
 
 
-.dashboard-intro h2 {
-    font-size: 28px;
+.page-label,
+.section-label {
+    display: block;
 
-    color: #172033;
+    color: #f59e0b;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.2px;
+
+    margin-bottom: 7px;
+}
+
+
+.dashboard-intro h2 {
+    font-size: 32px;
+
+    color: #111111;
 
     margin-bottom: 8px;
 }
 
 
-.dashboard-intro p {
-    color: #697386;
+.dashboard-intro p:last-child {
+    color: #666666;
+
+    font-size: 15px;
+
+    line-height: 1.6;
+
+    max-width: 650px;
 }
 
 
 
-/* =========================
-   CARD
-========================= */
+/* ==========================================
+   ALLOCATION ACTION
+========================================== */
 
-.inventory-card {
-    background: white;
+.warehouse-actions {
 
-    border: 1px solid #e4e7ec;
+    background: #111111;
+
+    color: white;
+
+    border-radius: 14px;
+
+    padding: 25px 28px;
+
+    margin-bottom: 20px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+
+.allocation-info {
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+.allocation-icon {
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 10px;
+
+    background: #f59e0b;
+
+    color: #111111;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+    font-weight: bold;
+}
+
+
+.allocation-info h2 {
+    font-size: 20px;
+
+    margin-bottom: 6px;
+}
+
+
+.allocation-info p {
+    color: #bdbdbd;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.allocate-btn {
+
+    border: none;
+
+    background: #f59e0b;
+
+    color: #111111;
+
+    padding: 13px 18px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    white-space: nowrap;
+
+    transition: 0.2s ease;
+}
+
+
+.allocate-btn:hover {
+    background: #ffb52e;
+
+    transform: translateY(-1px);
+}
+
+
+.allocate-btn .arrow {
+    font-size: 18px;
+}
+
+
+
+/* ==========================================
+   ALLOCATION RESULT
+========================================== */
+
+.allocation-result {
+    margin-bottom: 30px;
+}
+
+
+.allocation-success,
+.allocation-warning {
 
     border-radius: 12px;
 
-    padding: 28px;
+    padding: 20px 22px;
+
+    margin-top: 15px;
+}
+
+
+.allocation-success {
+
+    background: #f0fdf4;
+
+    border: 1px solid #bbf7d0;
+
+    color: #166534;
+}
+
+
+.allocation-warning {
+
+    background: #fff8eb;
+
+    border: 1px solid #f8d48a;
+
+    color: #7a4b00;
+}
+
+
+.allocation-success strong {
+    font-size: 22px;
+
+    margin-left: 5px;
+}
+
+
+.allocation-warning > strong {
+    display: block;
+
+    color: #111111;
+
+    font-size: 16px;
+
+    margin-bottom: 15px;
+}
+
+
+.allocation-warning ul {
+
+    list-style: none;
+
+    margin: 0;
+
+    padding: 0;
+}
+
+
+.allocation-warning li {
+
+    background: white;
+
+    border: 1px solid #f0dfba;
+
+    border-left: 4px solid #f59e0b;
+
+    border-radius: 8px;
+
+    padding: 13px 15px;
+
+    margin-top: 10px;
+
+    color: #333333;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.allocation-warning li::first-line {
+    font-weight: 700;
+}
+
+
+.allocation-warning::after {
+
+    content:
+        "Create more suitable slots and run allocation again.";
+
+    display: block;
+
+    margin-top: 15px;
+
+    font-size: 12px;
+
+    color: #806000;
+}
+
+
+
+/* ==========================================
+   INVENTORY CARD
+========================================== */
+
+.inventory-card {
+
+    background: white;
+
+    border: 1px solid #e5e5e5;
+
+    border-radius: 14px;
+
+    padding: 26px;
 
     margin-bottom: 25px;
 
     box-shadow:
-        0 8px 25px
-        rgba(15, 23, 42, 0.05);
+        0 5px 20px rgba(0, 0, 0, 0.04);
 }
 
 
 .section-heading {
-    margin-bottom: 25px;
+    margin-bottom: 22px;
 }
 
 
 .section-heading h2 {
-    font-size: 20px;
+    color: #111111;
 
-    color: #172033;
+    font-size: 20px;
 
     margin-bottom: 5px;
 }
 
 
 .section-heading p {
-    color: #697386;
+    color: #777777;
 
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
 
-/* =========================
-   WAREHOUSE SLOT GRID
-========================= */
+/* ==========================================
+   WAREHOUSE GRID
+========================================== */
 
 .warehouse-grid {
 
@@ -150,28 +412,29 @@ body {
     grid-template-columns:
         repeat(
             auto-fill,
-            minmax(100px, 1fr)
+            minmax(125px, 1fr)
         );
 
-    gap: 16px;
-
+    gap: 14px;
 }
 
 
 
-/* =========================
-   SLOT
-========================= */
+/* ==========================================
+   WAREHOUSE SLOT
+========================================== */
 
 .warehouse-slot {
 
-    height: 95px;
+    min-height: 130px;
 
-    background: #f6f7f9;
+    background: #fafafa;
 
-    border: 2px solid #d0d5dd;
+    border: 2px solid #dedede;
 
-    border-radius: 10px;
+    border-radius: 11px;
+
+    padding: 14px 10px;
 
     display: flex;
 
@@ -181,33 +444,13 @@ body {
 
     align-items: center;
 
+    text-align: center;
+
     cursor: pointer;
 
     transition: 0.2s ease;
 }
-.warehouse-slot.empty {
-    background: #ffffff;
-}
 
-
-.warehouse-slot.occupied {
-    background: #fff7ed;
-
-    border-color: #f59e0b;
-}
-
-
-.warehouse-slot.full {
-    background: #172033;
-
-    border-color: #172033;
-}
-
-
-.warehouse-slot.full .slot-id,
-.warehouse-slot.full .slot-size {
-    color: #ffffff;
-}
 
 .warehouse-slot:hover {
 
@@ -215,53 +458,150 @@ body {
 
     background: #fffaf0;
 
-    transform: translateY(-2px);
+    transform: translateY(-3px);
 
     box-shadow:
-        0 6px 15px
-        rgba(15, 23, 42, 0.08);
+        0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
 
 .slot-id {
 
-    font-size: 20px;
+    font-size: 19px;
 
-    font-weight: 700;
+    font-weight: 800;
 
-    color: #172033;
+    color: #111111;
 }
 
 
 .slot-size {
 
+    margin-top: 5px;
+
+    color: #777777;
+
+    font-size: 11px;
+}
+
+
+.slot-status {
+
     margin-top: 7px;
 
-    color: #697386;
+    color: #f59e0b;
 
-    font-size: 12px;
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.slot-dimensions {
+
+    margin-top: 7px;
+
+    color: #555555;
+
+    font-size: 10px;
+}
+
+
+.slot-product {
+
+    margin-top: 9px;
+
+    max-width: 110px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #111111;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.slot-product.empty {
+
+    color: #999999;
+
+    font-weight: normal;
+}
+
+
+.slot-quantity {
+
+    margin-top: 3px;
+
+    color: #666666;
+
+    font-size: 10px;
+}
+
+
+.slot-capacity {
+
+    margin-top: 8px;
+
+    color: #555555;
+
+    font-size: 9px;
+}
+
+
+.slot-progress {
+
+    width: 80px;
+
+    height: 4px;
+
+    background: #e8e8e8;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    margin-top: 6px;
+}
+
+
+.slot-progress-bar {
+
+    height: 100%;
+
+    background: #f59e0b;
+
+    border-radius: 10px;
 }
 
 
 
-/* =========================
-   EMPTY
-========================= */
+/* ==========================================
+   EMPTY MESSAGE
+========================================== */
 
 .empty-message {
 
-    color: #697386;
+    color: #888888;
 
     text-align: center;
 
-    padding: 20px;
+    padding: 25px;
+
+    font-size: 13px;
 }
 
 
 
-/* =========================
+/* ==========================================
    MODAL
-========================= */
+========================================== */
 
 .modal {
 
@@ -278,12 +618,13 @@ body {
     padding: 20px;
 
     background:
-        rgba(23, 32, 51, 0.55);
+        rgba(0, 0, 0, 0.65);
+
+    z-index: 1000;
 }
 
 
 .modal.show {
-
     display: flex;
 }
 
@@ -292,79 +633,84 @@ body {
 
     width: 100%;
 
-    max-width: 430px;
+    max-width: 460px;
 
     background: white;
 
-    border-radius: 12px;
+    border-radius: 14px;
 
     padding: 30px;
 
     position: relative;
 
     box-shadow:
-        0 20px 50px
-        rgba(15, 23, 42, 0.2);
+        0 25px 60px rgba(0, 0, 0, 0.25);
+
+    animation: modalOpen 0.2s ease;
 }
 
 
-.modal-content h2 {
+@keyframes modalOpen {
 
-    color: #172033;
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+}
+
+
+.modal-header {
+    margin-bottom: 22px;
+}
+
+
+.modal-header h2 {
+
+    color: #111111;
 
     font-size: 24px;
-
-    margin-bottom: 25px;
 }
 
-
-
-/* Close button */
 
 .close-button {
 
     position: absolute;
 
-    top: 12px;
+    top: 14px;
 
-    right: 15px;
-
-    width: auto;
-
-    height: auto;
-
-    margin: 0;
-
-    padding: 3px 8px;
+    right: 16px;
 
     border: none;
 
     background: transparent;
 
-    color: #697386;
+    color: #777777;
 
-    font-size: 25px;
+    font-size: 26px;
 
     cursor: pointer;
 }
 
 
 .close-button:hover {
-
-    background: transparent;
-
-    color: #172033;
+    color: #111111;
 }
 
 
 
-/* =========================
-   DETAILS
-========================= */
+/* ==========================================
+   SLOT DETAILS
+========================================== */
 
-.slot-details {
+.slot-detail {
 
-    border-top: 1px solid #edf0f3;
+    border-top: 1px solid #eeeeee;
 }
 
 
@@ -374,36 +720,64 @@ body {
 
     justify-content: space-between;
 
-    padding: 14px 0;
+    align-items: center;
 
-    border-bottom: 1px solid #edf0f3;
+    gap: 20px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #eeeeee;
 }
 
 
 .detail-row span {
 
-    color: #697386;
+    color: #777777;
 
-    font-size: 14px;
+    font-size: 13px;
 }
 
 
 .detail-row strong {
 
-    color: #172033;
+    color: #111111;
 
-    font-size: 14px;
+    font-size: 13px;
+
+    text-align: right;
+
+    max-width: 230px;
+
+    word-break: break-word;
+}
+
+
+.modal-status {
+    color: #f59e0b !important;
 }
 
 
 
-/* =========================
-   PROGRESS
-========================= */
+/* ==========================================
+   MODAL PROGRESS
+========================================== */
 
 .modal-progress {
+    margin-top: 24px;
+}
 
-    margin-top: 22px;
+
+.progress-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+
+    color: #777777;
+
+    font-size: 12px;
 }
 
 
@@ -411,9 +785,9 @@ body {
 
     width: 100%;
 
-    height: 12px;
+    height: 10px;
 
-    background: #edf0f3;
+    background: #eeeeee;
 
     border-radius: 20px;
 
@@ -436,22 +810,34 @@ body {
 
 
 
-/* =========================
+/* ==========================================
    RESPONSIVE
-========================= */
+========================================== */
 
 @media (max-width: 800px) {
 
     .dashboard-header {
-
-        padding: 18px 20px;
-
+        padding: 18px 22px;
     }
 
 
     .dashboard-container {
-
         padding: 30px 18px;
+    }
+
+
+    .warehouse-actions {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+
+    .allocate-btn {
+
+        justify-content: center;
 
     }
 
@@ -480,11 +866,31 @@ body {
     }
 
 
+    .dashboard-intro h2 {
+        font-size: 26px;
+    }
+
+
     .warehouse-grid {
 
         grid-template-columns:
-            repeat(3, 1fr);
+            repeat(2, 1fr);
 
+    }
+
+
+    .inventory-card {
+        padding: 18px;
+    }
+
+
+    .allocation-info {
+        align-items: flex-start;
+    }
+
+
+    .allocation-icon {
+        flex-shrink: 0;
     }
 
 }

@@ -9,6 +9,33 @@ const CURRENT_USER_KEY =
 
 
 // ==========================================
+// PREDEFINED PRODUCT DIMENSIONS
+// ==========================================
+
+const PRODUCT_DIMENSIONS = {
+
+    Small: {
+        length: 30,
+        breadth: 20,
+        height: 20
+    },
+
+    Medium: {
+        length: 60,
+        breadth: 40,
+        height: 40
+    },
+
+    Large: {
+        length: 100,
+        breadth: 80,
+        height: 80
+    }
+
+};
+
+
+// ==========================================
 // DOM ELEMENTS
 // ==========================================
 
@@ -163,11 +190,6 @@ function getSlots() {
             JSON.parse(saved);
 
 
-        /*
-         * Normalize slots created
-         * by the new inventory.js.
-         */
-
         return slots.map(
             function (slot) {
 
@@ -248,31 +270,141 @@ function saveSlots(slots) {
 
 
 // ==========================================
+// GET CURRENT USER SLOTS
+// ==========================================
+
+function getCurrentUserSlots() {
+
+    const currentUser =
+        getCurrentUser();
+
+
+    if (!currentUser) {
+
+        return [];
+
+    }
+
+
+    const slots =
+        getSlots();
+
+
+    return slots.filter(
+        function (slot) {
+
+            return (
+                slot.userEmail ===
+                currentUser.email
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// GET PRODUCT DIMENSIONS
+// ==========================================
+
+function getProductDimensions(product) {
+
+    if (
+        product.size ===
+        "Custom"
+    ) {
+
+        return {
+
+            length:
+                Number(
+                    product.length || 0
+                ),
+
+            breadth:
+                Number(
+                    product.breadth || 0
+                ),
+
+            height:
+                Number(
+                    product.height || 0
+                )
+
+        };
+
+    }
+
+
+    if (
+        PRODUCT_DIMENSIONS[
+            product.size
+        ]
+    ) {
+
+        return {
+
+            length:
+                PRODUCT_DIMENSIONS[
+                    product.size
+                ].length,
+
+            breadth:
+                PRODUCT_DIMENSIONS[
+                    product.size
+                ].breadth,
+
+            height:
+                PRODUCT_DIMENSIONS[
+                    product.size
+                ].height
+
+        };
+
+    }
+
+
+    return {
+
+        length:
+            Number(
+                product.length || 0
+            ),
+
+        breadth:
+            Number(
+                product.breadth || 0
+            ),
+
+        height:
+            Number(
+                product.height || 0
+            )
+
+    };
+
+}
+
+
+// ==========================================
 // PRODUCT UNIT VOLUME
 // ==========================================
 
 function getProductUnitVolume(product) {
 
-    const length =
-        Number(
-            product.length || 0
-        );
-
-    const breadth =
-        Number(
-            product.breadth || 0
-        );
-
-    const height =
-        Number(
-            product.height || 0
+    const dimensions =
+        getProductDimensions(
+            product
         );
 
 
     if (
-        length <= 0 ||
-        breadth <= 0 ||
-        height <= 0
+
+        dimensions.length <= 0 ||
+        dimensions.breadth <= 0 ||
+        dimensions.height <= 0
+
     ) {
 
         return 0;
@@ -280,28 +412,19 @@ function getProductUnitVolume(product) {
     }
 
 
-    /*
-     * Dimensions represent ONE
-     * storage unit.
-     *
-     * Example:
-     *
-     * 1 Box = 20 × 15 × 10 cm
-     *
-     * Volume = 3000 cm³
-     */
-
     return (
-        length *
-        breadth *
-        height
+
+        dimensions.length *
+        dimensions.breadth *
+        dimensions.height
+
     );
 
 }
 
 
 // ==========================================
-// CHECK WHETHER PRODUCT UNIT FITS SLOT
+// CHECK WHETHER PRODUCT FITS SLOT
 // ==========================================
 
 function doesProductFitSlot(
@@ -309,19 +432,17 @@ function doesProductFitSlot(
     slot
 ) {
 
+    const dimensions =
+        getProductDimensions(
+            product
+        );
+
+
     const productDimensions = [
 
-        Number(
-            product.length || 0
-        ),
-
-        Number(
-            product.breadth || 0
-        ),
-
-        Number(
-            product.height || 0
-        )
+        dimensions.length,
+        dimensions.breadth,
+        dimensions.height
 
     ];
 
@@ -343,32 +464,51 @@ function doesProductFitSlot(
     ];
 
 
+    if (
+
+        productDimensions.some(
+            function (value) {
+
+                return value <= 0;
+
+            }
+        )
+
+        ||
+
+        slotDimensions.some(
+            function (value) {
+
+                return value <= 0;
+
+            }
+        )
+
+    ) {
+
+        return false;
+
+    }
+
+
     /*
-     * Sort both dimensions.
-     *
-     * This allows rotation.
-     *
-     * Example:
-     *
-     * Product:
-     * 40 × 20 × 10
-     *
-     * Slot:
-     * 20 × 40 × 30
-     *
-     * This still fits.
+     * Sort dimensions to allow rotation.
      */
 
     productDimensions.sort(
         function (a, b) {
+
             return a - b;
+
         }
     );
 
 
     slotDimensions.sort(
         function (a, b) {
+
             return a - b;
+
         }
     );
 
@@ -445,15 +585,19 @@ function sortProductsForFFD(products) {
         function (a, b) {
 
             const volumeA =
-                getProductUnitVolume(a);
+                getProductUnitVolume(
+                    a
+                );
 
 
             const volumeB =
-                getProductUnitVolume(b);
+                getProductUnitVolume(
+                    b
+                );
 
 
             /*
-             * Largest storage unit first.
+             * Larger product first.
              */
 
             if (
@@ -514,13 +658,37 @@ function allocatePendingProducts() {
         getProducts();
 
 
-    let slots =
+    /*
+     * IMPORTANT:
+     *
+     * Get ALL slots first.
+     * We will save them again later.
+     */
+
+    let allSlots =
         getSlots();
 
 
-    // ======================================
-    // CURRENT USER PRODUCTS
-    // ======================================
+    /*
+     * ONLY CURRENT USER'S SLOTS
+     */
+
+    const userSlots =
+        allSlots.filter(
+            function (slot) {
+
+                return (
+                    slot.userEmail ===
+                    currentUser.email
+                );
+
+            }
+        );
+
+
+    /*
+     * ONLY CURRENT USER'S PRODUCTS
+     */
 
     const userProducts =
         products.filter(
@@ -535,9 +703,9 @@ function allocatePendingProducts() {
         );
 
 
-    // ======================================
-    // FIND PENDING PRODUCTS
-    // ======================================
+    /*
+     * FIND PENDING PRODUCTS
+     */
 
     const pendingProducts =
         userProducts.filter(
@@ -576,7 +744,7 @@ function allocatePendingProducts() {
 
             <div class="allocation-success">
 
-                All products are already allocated.
+                All your products are already allocated.
 
             </div>
 
@@ -587,20 +755,25 @@ function allocatePendingProducts() {
     }
 
 
-    // ======================================
-    // FFD SORTING
-    // ======================================
+    /*
+     * FFD:
+     *
+     * Largest products are processed first.
+     */
 
     sortProductsForFFD(
         pendingProducts
     );
 
 
-    let allocatedCount = 0;
+    let allocatedCount =
+        0;
 
-    let failedCount = 0;
+    let failedCount =
+        0;
 
-    const failedProducts = [];
+    const failedProducts =
+        [];
 
 
     // ======================================
@@ -635,10 +808,6 @@ function allocatePendingProducts() {
             }
 
 
-            // ==================================
-            // VOLUME OF ONE STORAGE UNIT
-            // ==================================
-
             const unitVolume =
                 getProductUnitVolume(
                     product
@@ -654,6 +823,7 @@ function allocatePendingProducts() {
 
                 product.allocationMessage =
                     "Invalid product dimensions.";
+
 
                 failedCount++;
 
@@ -684,12 +854,12 @@ function allocatePendingProducts() {
 
 
             /*
-             * Find slots that can physically
-             * contain ONE unit of this product.
+             * Find suitable slots ONLY
+             * from the current user's slots.
              */
 
             const suitableSlots =
-                slots.filter(
+                userSlots.filter(
                     function (slot) {
 
                         const availableVolume =
@@ -716,24 +886,23 @@ function allocatePendingProducts() {
 
 
                         /*
-                         * If slot already contains
-                         * another product, don't use it.
+                         * Different products
+                         * cannot share a slot.
                          */
 
                         if (
+
                             slot.productId &&
+
                             slot.productId !==
                             product.id
+
                         ) {
 
                             return false;
 
                         }
 
-
-                        /*
-                         * Physical dimension check.
-                         */
 
                         if (
                             !doesProductFitSlot(
@@ -754,18 +923,14 @@ function allocatePendingProducts() {
 
 
             /*
-             * First Fit Decreasing:
-             *
-             * Use the smallest suitable
-             * slot first.
-             *
-             * This reduces wasted space.
+             * Smallest suitable slot first.
              */
 
             suitableSlots.sort(
                 function (a, b) {
 
                     return (
+
                         Number(
                             a.volume || 0
                         )
@@ -775,6 +940,7 @@ function allocatePendingProducts() {
                         Number(
                             b.volume || 0
                         )
+
                     );
 
                 }
@@ -810,15 +976,12 @@ function allocatePendingProducts() {
                         );
 
 
-                    /*
-                     * How many complete
-                     * storage units can fit?
-                     */
-
                     const unitsThatFit =
                         Math.floor(
+
                             availableVolume /
                             unitVolume
+
                         );
 
 
@@ -835,7 +998,6 @@ function allocatePendingProducts() {
                         Math.min(
 
                             remainingQuantity,
-
                             unitsThatFit
 
                         );
@@ -850,9 +1012,9 @@ function allocatePendingProducts() {
                     }
 
 
-                    // ==================================
-                    // EMPTY SLOT
-                    // ==================================
+                    /*
+                     * EMPTY SLOT
+                     */
 
                     if (
                         !slot.productId
@@ -870,17 +1032,11 @@ function allocatePendingProducts() {
                     }
 
 
-                    // ==================================
-                    // SAME PRODUCT
-                    // ==================================
+                    /*
+                     * SAME PRODUCT
+                     */
 
                     else {
-
-                        /*
-                         * This should only happen
-                         * when the slot already contains
-                         * the same product.
-                         */
 
                         if (
                             slot.productId !==
@@ -906,9 +1062,9 @@ function allocatePendingProducts() {
                     }
 
 
-                    // ==================================
-                    // UPDATE VOLUME
-                    // ==================================
+                    /*
+                     * Update used volume.
+                     */
 
                     const addedVolume =
 
@@ -927,9 +1083,9 @@ function allocatePendingProducts() {
                         addedVolume;
 
 
-                    // ==================================
-                    // UPDATE PRODUCT
-                    // ==================================
+                    /*
+                     * Update product.
+                     */
 
                     remainingQuantity -=
                         quantityToAllocate;
@@ -951,7 +1107,7 @@ function allocatePendingProducts() {
 
 
             // ==================================
-            // ALLOCATION RESULT
+            // RESULT
             // ==================================
 
             if (
@@ -973,10 +1129,8 @@ function allocatePendingProducts() {
                 product.allocationStatus =
                     "Pending";
 
-
                 product.allocationMessage =
                     "Not enough suitable warehouse space.";
-
 
                 failedCount++;
 
@@ -1010,8 +1164,13 @@ function allocatePendingProducts() {
     // SAVE
     // ======================================
 
+    /*
+     * Save ALL slots so that other users'
+     * slots remain untouched.
+     */
+
     saveSlots(
-        slots
+        allSlots
     );
 
 
@@ -1032,13 +1191,11 @@ function allocatePendingProducts() {
 
         <div class="allocation-success">
 
-            Successfully fully allocated:
-
             <strong>
                 ${allocatedCount}
             </strong>
 
-            product(s).
+            product(s) fully allocated.
 
         </div>
 
@@ -1070,17 +1227,22 @@ function allocatePendingProducts() {
 
                     <li>
 
-                        ${item.name}:
+                        <strong>
+                            ${item.name}
+                        </strong>
+
+                        <br>
 
                         ${item.allocated}
                         allocated /
-
                         ${item.requested}
                         requested
 
                         <br>
 
-                        ${item.reason}
+                        <span>
+                            ${item.reason}
+                        </span>
 
                     </li>
 
@@ -1107,10 +1269,6 @@ function allocatePendingProducts() {
     allocationResult.innerHTML =
         resultHTML;
 
-
-    // ======================================
-    // REFRESH WAREHOUSE
-    // ======================================
 
     displaySlots();
 
@@ -1352,8 +1510,34 @@ function createSlotBox(slot) {
 
 function displaySlots() {
 
+    const currentUser =
+        getCurrentUser();
+
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * Only get the current user's slots.
+     */
+
     const slots =
-        getSlots();
+        getSlots().filter(
+            function (slot) {
+
+                return (
+                    slot.userEmail ===
+                    currentUser.email
+                );
+
+            }
+        );
 
 
     largeSlots.innerHTML =
@@ -1374,7 +1558,7 @@ function displaySlots() {
 
             <p class="empty-message">
 
-                No slots created yet.
+                You have not created any warehouse slots yet.
 
             </p>
 
@@ -1514,6 +1698,24 @@ function showSlotDetails(slot) {
 
 
     // ======================================
+    // QUANTITY
+    // ======================================
+
+    const modalQuantity =
+        document.getElementById(
+            "modalQuantity"
+        );
+
+
+    if (modalQuantity) {
+
+        modalQuantity.innerText =
+            slot.productQuantity || 0;
+
+    }
+
+
+    // ======================================
     // STATUS
     // ======================================
 
@@ -1605,35 +1807,43 @@ function showSlotDetails(slot) {
 // CLOSE MODAL
 // ==========================================
 
-closeModal.addEventListener(
-    "click",
-    function () {
+if (closeModal) {
 
-        slotModal.classList.remove(
-            "show"
-        );
-
-    }
-);
-
-
-slotModal.addEventListener(
-    "click",
-    function (event) {
-
-        if (
-            event.target ===
-            slotModal
-        ) {
+    closeModal.addEventListener(
+        "click",
+        function () {
 
             slotModal.classList.remove(
                 "show"
             );
 
         }
+    );
 
-    }
-);
+}
+
+
+if (slotModal) {
+
+    slotModal.addEventListener(
+        "click",
+        function (event) {
+
+            if (
+                event.target ===
+                slotModal
+            ) {
+
+                slotModal.classList.remove(
+                    "show"
+                );
+
+            }
+
+        }
+    );
+
+}
 
 
 // ==========================================
