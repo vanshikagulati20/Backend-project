@@ -57,17 +57,26 @@
 <main class="dashboard-container">
 
 
+    <!-- ======================================
+         INTRO
+    ======================================= -->
+
     <section class="dashboard-intro">
 
         <h2>Add Warehouse Slots</h2>
 
         <p>
-            Create storage slots for your electronics warehouse.
+            Create storage slots based on the actual
+            dimensions of your electronics warehouse.
         </p>
 
     </section>
 
 
+
+    <!-- ======================================
+         CREATE SLOTS
+    ======================================= -->
 
     <section class="inventory-card">
 
@@ -76,8 +85,9 @@
             <h2>Create Slots</h2>
 
             <p>
-                Select a slot size and specify how many
-                slots you want to create.
+                Enter the dimensions of one slot and
+                specify how many slots of the same size
+                you want to create.
             </p>
 
         </div>
@@ -87,33 +97,37 @@
         <form id="slotForm">
 
 
+            <!-- SLOT TYPE -->
+
             <div class="form-group">
 
-                <label for="slotSize">
-                    Slot Size
+                <label for="slotType">
+                    Slot Type *
                 </label>
 
 
                 <select
-                    id="slotSize"
+                    id="slotType"
                     required
                 >
 
                     <option value="">
-                        Select Slot Size
-                    </option>
-
-                    <option value="Large">
-                        Large - 100 units
-                    </option>
-
-                    <option value="Medium">
-                        Medium - 50 units
+                        Select Slot Type
                     </option>
 
                     <option value="Small">
-                        Small - 25 units
+                        Small
                     </option>
+
+                    <option value="Medium">
+                        Medium
+                    </option>
+
+                    <option value="Large">
+                        Large
+                    </option>
+
+                   
 
                 </select>
 
@@ -121,10 +135,78 @@
 
 
 
+            <!-- LENGTH -->
+
+            <div class="form-group">
+
+                <label for="slotLength">
+                    Length (cm) *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotLength"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="Example: 100"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- BREADTH -->
+
+            <div class="form-group">
+
+                <label for="slotBreadth">
+                    Breadth (cm) *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotBreadth"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="Example: 80"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- HEIGHT -->
+
+            <div class="form-group">
+
+                <label for="slotHeight">
+                    Height (cm) *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotHeight"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="Example: 60"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- NUMBER OF SLOTS -->
+
             <div class="form-group">
 
                 <label for="slotCount">
-                    Number of Slots
+                    Number of Slots *
                 </label>
 
 
@@ -151,6 +233,10 @@
 
 
 
+    <!-- ======================================
+         SLOT INFORMATION
+    ======================================= -->
+
     <section class="inventory-card">
 
         <div class="section-heading">
@@ -158,7 +244,9 @@
             <h2>Slot Information</h2>
 
             <p>
-                Slot naming and capacity used by the warehouse.
+                These dimensions will be used by the
+                warehouse allocation system to determine
+                whether products can fit inside a slot.
             </p>
 
         </div>
@@ -169,38 +257,46 @@
 
             <div class="slot-info">
 
-                <strong>Large</strong>
+                <strong>Small</strong>
 
-                <span>A-01, A-02, A-03...</span>
+                <span>
+                    User-defined dimensions
+                </span>
 
                 <small>
-                    Capacity: 100 units
+                    Example: 50 × 40 × 40 cm
                 </small>
 
             </div>
+
 
 
             <div class="slot-info">
 
                 <strong>Medium</strong>
 
-                <span>B-01, B-02, B-03...</span>
+                <span>
+                    User-defined dimensions
+                </span>
 
                 <small>
-                    Capacity: 50 units
+                    Example: 80 × 60 × 60 cm
                 </small>
 
             </div>
 
 
+
             <div class="slot-info">
 
-                <strong>Small</strong>
+                <strong>Large</strong>
 
-                <span>C-01, C-02, C-03...</span>
+                <span>
+                    User-defined dimensions
+                </span>
 
                 <small>
-                    Capacity: 25 units
+                    Example: 120 × 100 × 80 cm
                 </small>
 
             </div>

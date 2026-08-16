@@ -1,28 +1,33 @@
 const slotForm =
     document.getElementById("slotForm");
 
-const slotSize =
-    document.getElementById("slotSize");
+const slotType =
+    document.getElementById("slotType");
+
+const slotLength =
+    document.getElementById("slotLength");
+
+const slotBreadth =
+    document.getElementById("slotBreadth");
+
+const slotHeight =
+    document.getElementById("slotHeight");
 
 const slotCount =
     document.getElementById("slotCount");
 
 
-const SLOT_KEY = "warehouseSlots";
+// ==========================================
+// STORAGE
+// ==========================================
+
+const SLOT_KEY =
+    "warehouseSlots";
 
 
-
-const SLOT_CAPACITY = {
-
-    Large: 100,
-
-    Medium: 50,
-
-    Small: 25
-
-};
-
-
+// ==========================================
+// SLOT PREFIX
+// ==========================================
 
 const SLOT_PREFIX = {
 
@@ -30,69 +35,151 @@ const SLOT_PREFIX = {
 
     Medium: "B",
 
-    Small: "C"
+    Small: "C",
+
+    Custom: "D"
 
 };
 
 
+// ==========================================
+// GET SLOTS
+// ==========================================
 
 function getSlots() {
 
     const savedSlots =
-        localStorage.getItem(SLOT_KEY);
+        localStorage.getItem(
+            SLOT_KEY
+        );
 
 
-    if (savedSlots) {
+    if (!savedSlots) {
 
-        return JSON.parse(savedSlots);
+        return [];
 
     }
 
 
-    return [];
+    try {
+
+        return JSON.parse(
+            savedSlots
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid warehouse slot data",
+            error
+        );
+
+        return [];
+
+    }
 
 }
 
 
+// ==========================================
+// SAVE SLOTS
+// ==========================================
 
 function saveSlots(slots) {
 
     localStorage.setItem(
+
         SLOT_KEY,
+
         JSON.stringify(slots)
+
     );
 
 }
 
 
+// ==========================================
+// SUBMIT SLOT FORM
+// ==========================================
 
 slotForm.addEventListener(
+
     "submit",
+
     function (event) {
 
         event.preventDefault();
 
 
-        const selectedSize =
-            slotSize.value;
+        // ==================================
+        // GET FORM VALUES
+        // ==================================
+
+        const selectedType =
+            slotType.value;
+
+
+        const length =
+            Number(
+                slotLength.value
+            );
+
+
+        const breadth =
+            Number(
+                slotBreadth.value
+            );
+
+
+        const height =
+            Number(
+                slotHeight.value
+            );
 
 
         const numberOfSlots =
-            Number(slotCount.value);
+            Number(
+                slotCount.value
+            );
 
 
+        // ==================================
+        // VALIDATION
+        // ==================================
 
-        if (selectedSize === "") {
+        if (
+            selectedType === ""
+        ) {
 
-            alert("Please select a slot size.");
+            alert(
+                "Please select a slot type."
+            );
 
             return;
 
         }
 
 
+        if (
+            length <= 0 ||
+            breadth <= 0 ||
+            height <= 0
+        ) {
 
-        if (numberOfSlots <= 0) {
+            alert(
+                "Length, breadth and height must be greater than 0."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            numberOfSlots <= 0
+        ) {
 
             alert(
                 "Number of slots must be greater than 0."
@@ -103,53 +190,58 @@ slotForm.addEventListener(
         }
 
 
+        // ==================================
+        // CALCULATE SLOT VOLUME
+        // ==================================
 
-        const slots = getSlots();
+        const volume =
+            length *
+            breadth *
+            height;
 
+
+        // ==================================
+        // GET EXISTING SLOTS
+        // ==================================
+
+        const slots =
+            getSlots();
+
+
+        // ==================================
+        // SLOT ID PREFIX
+        // ==================================
 
         const prefix =
-            SLOT_PREFIX[selectedSize];
+            SLOT_PREFIX[selectedType];
 
 
-        const capacity =
-            SLOT_CAPACITY[selectedSize];
-
-
-
-        /*
-            Find how many slots of this
-            size already exist.
-        */
+        // ==================================
+        // FIND EXISTING COUNT
+        // ==================================
 
         let existingCount = 0;
 
 
-        slots.forEach(function (slot) {
+        slots.forEach(
+            function (slot) {
 
-            if (slot.size === selectedSize) {
+                if (
+                    slot.size ===
+                    selectedType
+                ) {
 
-                existingCount++;
+                    existingCount++;
+
+                }
 
             }
-
-        });
-
+        );
 
 
-        /*
-            Create new slots.
-
-            Example:
-
-            Existing:
-            A-01
-            A-02
-
-            Add 2 more:
-
-            A-03
-            A-04
-        */
+        // ==================================
+        // CREATE SLOTS
+        // ==================================
 
         for (
             let i = 1;
@@ -163,43 +255,122 @@ slotForm.addEventListener(
 
 
             const formattedNumber =
-                String(slotNumber).padStart(2, "0");
+                String(
+                    slotNumber
+                ).padStart(
+                    2,
+                    "0"
+                );
 
 
             const newSlot = {
 
+                // --------------------------
+                // BASIC INFORMATION
+                // --------------------------
+
                 id:
-                    prefix + "-" + formattedNumber,
+                    prefix +
+                    "-" +
+                    formattedNumber,
 
                 size:
-                    selectedSize,
+                    selectedType,
 
-                capacity:
-                    capacity,
 
-                used: 0
+                // --------------------------
+                // PHYSICAL DIMENSIONS
+                // --------------------------
+
+                length:
+                    length,
+
+                breadth:
+                    breadth,
+
+                height:
+                    height,
+
+
+                // --------------------------
+                // TOTAL VOLUME
+                // --------------------------
+
+                volume:
+                    volume,
+
+
+                // --------------------------
+                // OCCUPANCY
+                // --------------------------
+
+                usedVolume:
+                    0,
+
+                // --------------------------
+                // PRODUCT INFORMATION
+                // --------------------------
+
+                productId:
+                    null,
+
+                productName:
+                    null,
+
+                productQuantity:
+                    0
 
             };
 
 
-            slots.push(newSlot);
+            slots.push(
+                newSlot
+            );
 
         }
 
 
+        // ==================================
+        // SAVE
+        // ==================================
 
-        saveSlots(slots);
-
-
-        alert(
-            numberOfSlots +
-            " " +
-            selectedSize +
-            " slot(s) added successfully."
+        saveSlots(
+            slots
         );
 
+
+        // ==================================
+        // SUCCESS MESSAGE
+        // ==================================
+
+        alert(
+
+            numberOfSlots +
+            " " +
+            selectedType +
+            " slot(s) added successfully.\n\n" +
+
+            "Slot dimensions: " +
+            length +
+            " × " +
+            breadth +
+            " × " +
+            height +
+            " cm\n\n" +
+
+            "Volume per slot: " +
+            volume +
+            " cm³"
+
+        );
+
+
+        // ==================================
+        // RESET FORM
+        // ==================================
 
         slotForm.reset();
 
     }
+
 );
