@@ -223,14 +223,20 @@ function allocatePendingProducts() {
     // --------------------------------------
 
     const pendingProducts =
-        userProducts.filter(function (product) {
+    userProducts.filter(function (product) {
 
-            return (
-                product.allocationStatus !==
-                "Allocated"
-            );
+        const quantity =
+            Number(product.quantity || 0);
 
-        });
+        const allocatedQuantity =
+            Number(product.allocatedQuantity || 0);
+
+        return (
+            product.allocationStatus !== "Allocated" ||
+            quantity > allocatedQuantity
+        );
+
+    });
 
 
     if (pendingProducts.length === 0) {
@@ -289,8 +295,9 @@ function allocatePendingProducts() {
 
     pendingProducts.forEach(function (product) {
 
-        let remainingQuantity =
-            Number(product.quantity || 0);
+       let remainingQuantity =
+    Number(product.quantity || 0) -
+    Number(product.allocatedQuantity || 0);
 
 
         if (remainingQuantity <= 0) {
