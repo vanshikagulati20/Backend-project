@@ -176,7 +176,17 @@
 
 
         .custom-dimensions h3 {
+            margin-bottom: 8px;
+        }
+
+
+        .custom-dimensions p {
+
+            color: #666;
+
             margin-bottom: 15px;
+
+            font-size: 14px;
         }
 
 
@@ -188,6 +198,33 @@
                 1fr 1fr 1fr;
 
             gap: 15px;
+        }
+
+
+        /* =========================
+           PRODUCT SIZE INFORMATION
+        ========================== */
+
+        .size-info {
+
+            grid-column: 1 / 3;
+
+            background-color: #f8f9fa;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+            font-size: 14px;
+
+            color: #555;
+        }
+
+
+        .size-info strong {
+            color: #222;
         }
 
 
@@ -330,7 +367,7 @@
 
             border-collapse: collapse;
 
-            min-width: 1000px;
+            min-width: 1100px;
         }
 
 
@@ -359,13 +396,17 @@
 
 
         .status-pending {
+
             color: #d97706;
+
             font-weight: bold;
         }
 
 
         .status-allocated {
+
             color: #15803d;
+
             font-weight: bold;
         }
 
@@ -403,6 +444,10 @@
             }
 
             .custom-dimensions {
+                grid-column: 1;
+            }
+
+            .size-info {
                 grid-column: 1;
             }
 
@@ -467,6 +512,8 @@
             <div class="form-grid">
 
 
+                <!-- PRODUCT NAME -->
+
                 <div class="form-group">
 
                     <label for="productName">
@@ -483,6 +530,8 @@
                 </div>
 
 
+                <!-- CATEGORY -->
+
                 <div class="form-group">
 
                     <label for="category">
@@ -498,22 +547,56 @@
                             Select Category
                         </option>
 
-                        <option>Laptop</option>
-                        <option>Mobile</option>
-                        <option>Monitor</option>
-                        <option>Keyboard</option>
-                        <option>Mouse</option>
-                        <option>Headphones</option>
-                        <option>Printer</option>
-                        <option>Router</option>
-                        <option>Cables</option>
-                        <option>Computer Accessories</option>
-                        <option>Other</option>
+                        <option value="Laptop">
+                            Laptop
+                        </option>
+
+                        <option value="Mobile">
+                            Mobile
+                        </option>
+
+                        <option value="Monitor">
+                            Monitor
+                        </option>
+
+                        <option value="Keyboard">
+                            Keyboard
+                        </option>
+
+                        <option value="Mouse">
+                            Mouse
+                        </option>
+
+                        <option value="Headphones">
+                            Headphones
+                        </option>
+
+                        <option value="Printer">
+                            Printer
+                        </option>
+
+                        <option value="Router">
+                            Router
+                        </option>
+
+                        <option value="Cables">
+                            Cables
+                        </option>
+
+                        <option value="Computer Accessories">
+                            Computer Accessories
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
 
                     </select>
 
                 </div>
 
+
+                <!-- QUANTITY -->
 
                 <div class="form-group">
 
@@ -525,11 +608,15 @@
                         type="number"
                         id="quantity"
                         min="1"
+                        step="1"
+                        placeholder="Example: 30"
                         required
                     >
 
                 </div>
 
+
+                <!-- UNIT -->
 
                 <div class="form-group">
 
@@ -537,7 +624,10 @@
                         Unit *
                     </label>
 
-                    <select id="unit" required>
+                    <select
+                        id="unit"
+                        required
+                    >
 
                         <option value="Pieces">
                             Pieces
@@ -564,13 +654,14 @@
                 </div>
 
 
-                <!-- ======================================
-                     ITEMS PER UNIT
-                ======================================= -->
+                <!-- ITEMS PER UNIT -->
 
                 <div class="form-group">
 
-                    <label for="itemsPerUnit" id="itemsPerUnitLabel">
+                    <label
+                        for="itemsPerUnit"
+                        id="itemsPerUnitLabel"
+                    >
                         Items per Piece *
                     </label>
 
@@ -578,6 +669,7 @@
                         type="number"
                         id="itemsPerUnit"
                         min="1"
+                        step="1"
                         value="1"
                         required
                     >
@@ -585,13 +677,18 @@
                 </div>
 
 
-                <div class="form-group full-width">
+                <!-- PRODUCT SIZE -->
+
+                <div class="form-group">
 
                     <label for="size">
                         Product Size *
                     </label>
 
-                    <select id="size" required>
+                    <select
+                        id="size"
+                        required
+                    >
 
                         <option value="">
                             Select Product Size
@@ -618,6 +715,31 @@
                 </div>
 
 
+                <!-- SIZE EXPLANATION -->
+
+                <div class="size-info">
+
+                    <strong>
+                        Storage size:
+                    </strong>
+
+                    Small, Medium and Large already have
+                    predefined physical dimensions.
+
+                    Choose Custom only when the actual product
+                    dimensions are different.
+
+                    <br><br>
+
+                    These dimensions will be used by the
+                    warehouse allocation system to calculate
+                    the required storage volume.
+
+                </div>
+
+
+                <!-- CUSTOM DIMENSIONS -->
+
                 <div
                     id="customDimensions"
                     class="custom-dimensions"
@@ -626,6 +748,11 @@
                     <h3>
                         Enter Product Dimensions
                     </h3>
+
+                    <p>
+                        Enter the actual dimensions of one
+                        physical product/unit.
+                    </p>
 
 
                     <div class="dimension-grid">
@@ -642,6 +769,7 @@
                                 id="length"
                                 min="0.1"
                                 step="0.01"
+                                placeholder="Example: 45"
                             >
 
                         </div>
@@ -658,6 +786,7 @@
                                 id="breadth"
                                 min="0.1"
                                 step="0.01"
+                                placeholder="Example: 30"
                             >
 
                         </div>
@@ -674,6 +803,7 @@
                                 id="height"
                                 min="0.1"
                                 step="0.01"
+                                placeholder="Example: 10"
                             >
 
                         </div>
@@ -683,6 +813,8 @@
 
                 </div>
 
+
+                <!-- WEIGHT -->
 
                 <div class="form-group">
 
@@ -695,11 +827,14 @@
                         id="weight"
                         min="0.01"
                         step="0.01"
+                        placeholder="Example: 4"
                         required
                     >
 
                 </div>
 
+
+                <!-- FRAGILE -->
 
                 <div class="form-group">
 
@@ -707,7 +842,10 @@
                         Fragile *
                     </label>
 
-                    <select id="fragile" required>
+                    <select
+                        id="fragile"
+                        required
+                    >
 
                         <option value="No">
                             No
@@ -721,6 +859,8 @@
 
                 </div>
 
+
+                <!-- BUTTONS -->
 
                 <div class="full-width button-group">
 
@@ -785,15 +925,25 @@
                     <tr>
 
                         <th>Product Name</th>
+
                         <th>Category</th>
+
                         <th>Quantity</th>
+
                         <th>Unit</th>
+
                         <th>Items per Unit</th>
+
                         <th>Size</th>
+
                         <th>Weight</th>
+
                         <th>Fragile</th>
+
                         <th>Dimensions</th>
+
                         <th>Status</th>
+
                         <th>Actions</th>
 
                     </tr>

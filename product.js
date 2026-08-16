@@ -57,17 +57,39 @@ const heightInput =
 
 
 // ==========================================
-// STORAGE
+// STORAGE KEYS
 // ==========================================
 
-const PRODUCT_KEY =
-    "products";
+const PRODUCT_KEY = "products";
+const SLOT_KEY = "warehouseSlots";
+const CURRENT_USER_KEY = "currentuser";
 
-const SLOT_KEY =
-    "warehouseSlots";
 
-const CURRENT_USER_KEY =
-    "currentuser";
+// ==========================================
+// PREDEFINED PRODUCT DIMENSIONS
+// ==========================================
+
+const PRODUCT_DIMENSIONS = {
+
+    Small: {
+        length: 30,
+        breadth: 20,
+        height: 20
+    },
+
+    Medium: {
+        length: 60,
+        breadth: 40,
+        height: 40
+    },
+
+    Large: {
+        length: 100,
+        breadth: 80,
+        height: 80
+    }
+
+};
 
 
 // ==========================================
@@ -90,19 +112,105 @@ if (!currentUser) {
 }
 
 
-let editingProductId =
-    null;
+let editingProductId = null;
 
 
 // ==========================================
-// EDITING STATE
+// GET PRODUCTS
 // ==========================================
 
-let existingProductStatus =
-    "Pending";
+function getProducts() {
 
-let existingAllocatedQuantity =
-    0;
+    const saved =
+        localStorage.getItem(
+            PRODUCT_KEY
+        );
+
+    if (!saved) {
+        return [];
+    }
+
+    try {
+
+        return JSON.parse(saved);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid products data",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+// ==========================================
+// SAVE PRODUCTS
+// ==========================================
+
+function saveProducts(products) {
+
+    localStorage.setItem(
+        PRODUCT_KEY,
+        JSON.stringify(products)
+    );
+
+}
+
+
+// ==========================================
+// GET SLOTS
+// ==========================================
+
+function getSlots() {
+
+    const saved =
+        localStorage.getItem(
+            SLOT_KEY
+        );
+
+    if (!saved) {
+        return [];
+    }
+
+    try {
+
+        return JSON.parse(saved);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid slot data",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+// ==========================================
+// SAVE SLOTS
+// ==========================================
+
+function saveSlots(slots) {
+
+    localStorage.setItem(
+        SLOT_KEY,
+        JSON.stringify(slots)
+    );
+
+}
 
 
 // ==========================================
@@ -138,12 +246,18 @@ function updateItemsPerUnitField() {
 
     else {
 
+        const singularUnit =
+            selectedUnit.endsWith("s")
+                ? selectedUnit.slice(0, -1)
+                : selectedUnit;
+
         itemsPerUnitLabel.textContent =
             "Items per " +
-            selectedUnit.slice(0, -1) +
+            singularUnit +
             " *";
 
         itemsPerUnit.readOnly = false;
+
 
         if (
             !itemsPerUnit.value ||
@@ -198,100 +312,63 @@ size.addEventListener(
 
 
 // ==========================================
-// GET PRODUCTS
+// GET PRODUCT DIMENSIONS
 // ==========================================
 
-function getProducts() {
+function getProductDimensions(selectedSize) {
 
-    const saved =
-        localStorage.getItem(
-            PRODUCT_KEY
-        );
+    if (selectedSize === "Custom") {
 
+        return {
 
-    if (!saved) {
-        return [];
+            length:
+                Number(lengthInput.value),
+
+            breadth:
+                Number(breadthInput.value),
+
+            height:
+                Number(heightInput.value)
+
+        };
+
     }
 
 
-    try {
+    if (
+        PRODUCT_DIMENSIONS[
+            selectedSize
+        ]
+    ) {
 
-        return JSON.parse(saved);
+        return {
+            ...PRODUCT_DIMENSIONS[
+                selectedSize
+            ]
+        };
 
     }
 
-    catch (error) {
 
-        console.error(
-            "Invalid products data",
-            error
-        );
-
-        return [];
-    }
+    return null;
 
 }
 
 
 // ==========================================
-// SAVE PRODUCTS
+// CALCULATE VOLUME
 // ==========================================
 
-function saveProducts(products) {
+function calculateVolume(
+    length,
+    breadth,
+    height
+) {
 
-    localStorage.setItem(
-        PRODUCT_KEY,
-        JSON.stringify(products)
-    );
-
-}
-
-
-// ==========================================
-// GET SLOTS
-// ==========================================
-
-function getSlots() {
-
-    const saved =
-        localStorage.getItem(
-            SLOT_KEY
-        );
-
-
-    if (!saved) {
-        return [];
-    }
-
-
-    try {
-
-        return JSON.parse(saved);
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid slot data",
-            error
-        );
-
-        return [];
-    }
-
-}
-
-
-// ==========================================
-// SAVE SLOTS
-// ==========================================
-
-function saveSlots(slots) {
-
-    localStorage.setItem(
-        SLOT_KEY,
-        JSON.stringify(slots)
+    return (
+        length *
+        breadth *
+        height
     );
 
 }
@@ -362,6 +439,7 @@ function displayProducts(products) {
         `;
 
         return;
+
     }
 
 
@@ -372,8 +450,9 @@ function displayProducts(products) {
 
 
             if (
-                product.size ===
-                "Custom"
+                product.length &&
+                product.breadth &&
+                product.height
             ) {
 
                 dimensions =
@@ -493,7 +572,7 @@ productForm.addEventListener(
 
 
         // ==================================
-        // FIND EXISTING PRODUCT
+        // FIND OLD PRODUCT
         // ==================================
 
         let oldProduct = null;
@@ -520,6 +599,72 @@ productForm.addEventListener(
 
         }
 
+
+        // ==================================
+        // GET DIMENSIONS
+        // ==================================
+
+        const dimensions =
+            getProductDimensions(
+                size.value
+            );
+
+
+        if (!dimensions) {
+
+            alert(
+                "Please select a product size."
+            );
+
+            return;
+
+        }
+
+
+        const length =
+            Number(dimensions.length);
+
+        const breadth =
+            Number(dimensions.breadth);
+
+        const height =
+            Number(dimensions.height);
+
+
+        // ==================================
+        // VALIDATE DIMENSIONS
+        // ==================================
+
+        if (
+            length <= 0 ||
+            breadth <= 0 ||
+            height <= 0
+        ) {
+
+            alert(
+                "Please enter valid product dimensions."
+            );
+
+            return;
+
+        }
+
+
+        // ==================================
+        // CALCULATE UNIT VOLUME
+        // ==================================
+
+        const volume =
+            calculateVolume(
+                length,
+                breadth,
+                height
+            );
+
+
+        // ==================================
+        // CREATE PRODUCT
+        // ==================================
 
         const product = {
 
@@ -552,25 +697,22 @@ productForm.addEventListener(
                 size.value,
 
             length:
-                size.value === "Custom"
-                    ? Number(
-                        lengthInput.value
-                    )
-                    : null,
+                length,
 
             breadth:
-                size.value === "Custom"
-                    ? Number(
-                        breadthInput.value
-                    )
-                    : null,
+                breadth,
 
             height:
-                size.value === "Custom"
-                    ? Number(
-                        heightInput.value
-                    )
-                    : null,
+                height,
+
+            // Volume of ONE storage unit
+            volume:
+                volume,
+
+            // Total volume required
+            totalVolume:
+                volume *
+                Number(quantity.value),
 
             weight:
                 Number(
@@ -589,6 +731,13 @@ productForm.addEventListener(
                 oldProduct
                     ? Number(
                         oldProduct.allocatedQuantity || 0
+                    )
+                    : 0,
+
+            allocatedVolume:
+                oldProduct
+                    ? Number(
+                        oldProduct.allocatedVolume || 0
                     )
                     : 0,
 
@@ -616,6 +765,7 @@ productForm.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -628,6 +778,7 @@ productForm.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -640,6 +791,7 @@ productForm.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -652,6 +804,7 @@ productForm.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -664,6 +817,7 @@ productForm.addEventListener(
             );
 
             return;
+
         }
 
 
@@ -676,31 +830,12 @@ productForm.addEventListener(
             );
 
             return;
-        }
-
-
-        if (
-            product.size === "Custom"
-        ) {
-
-            if (
-                product.length <= 0 ||
-                product.breadth <= 0 ||
-                product.height <= 0
-            ) {
-
-                alert(
-                    "Please enter valid dimensions."
-                );
-
-                return;
-            }
 
         }
 
 
         // ==================================
-        // EDIT
+        // EDIT PRODUCT
         // ==================================
 
         if (
@@ -764,10 +899,15 @@ productForm.addEventListener(
             alert(
                 product.name +
                 " added successfully.\n\n" +
-                "Status: Pending\n\n" +
-                "Go to Warehouse and click " +
-                "\"Allocate Pending Products\" " +
-                "to run FFD."
+                "Storage Volume per " +
+                product.unit +
+                ": " +
+                product.volume.toLocaleString() +
+                " cm³\n\n" +
+                "Total Storage Volume: " +
+                product.totalVolume.toLocaleString() +
+                " cm³\n\n" +
+                "Status: Pending"
             );
 
         }
@@ -852,7 +992,6 @@ function editProduct(id) {
     unit.value =
         product.unit;
 
-
     itemsPerUnit.value =
         Number(
             product.itemsPerUnit || 1
@@ -872,21 +1011,12 @@ function editProduct(id) {
         product.fragile;
 
 
-    existingProductStatus =
-        product.allocationStatus ||
-        "Pending";
-
-
-    existingAllocatedQuantity =
-        Number(
-            product.allocatedQuantity ||
-            0
-        );
-
+    // ==================================
+    // LOAD DIMENSIONS
+    // ==================================
 
     if (
-        product.size ===
-        "Custom"
+        product.size === "Custom"
     ) {
 
         customDimensions.style.display =
@@ -897,13 +1027,13 @@ function editProduct(id) {
         heightInput.required = true;
 
         lengthInput.value =
-            product.length;
+            product.length || "";
 
         breadthInput.value =
-            product.breadth;
+            product.breadth || "";
 
         heightInput.value =
-            product.height;
+            product.height || "";
 
     }
 
@@ -915,6 +1045,10 @@ function editProduct(id) {
         lengthInput.required = false;
         breadthInput.required = false;
         heightInput.required = false;
+
+        lengthInput.value = "";
+        breadthInput.value = "";
+        heightInput.value = "";
 
     }
 
@@ -1013,6 +1147,8 @@ function deleteProduct(id) {
 
                         used: 0,
 
+                        usedVolume: 0,
+
                         productId: null,
 
                         productName: null,
@@ -1067,14 +1203,6 @@ function resetForm() {
         null;
 
 
-    existingProductStatus =
-        "Pending";
-
-
-    existingAllocatedQuantity =
-        0;
-
-
     formTitle.textContent =
         "Add Product";
 
@@ -1096,7 +1224,13 @@ function resetForm() {
     heightInput.required = false;
 
 
+    lengthInput.value = "";
+    breadthInput.value = "";
+    heightInput.value = "";
+
+
     itemsPerUnit.value = 1;
+
 
     updateItemsPerUnitField();
 
