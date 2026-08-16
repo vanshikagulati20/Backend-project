@@ -24,6 +24,9 @@ const slotCount =
 const SLOT_KEY =
     "warehouseSlots";
 
+const CURRENT_USER_KEY =
+    "currentuser";
+
 
 // ==========================================
 // SLOT PREFIX
@@ -40,6 +43,53 @@ const SLOT_PREFIX = {
     Custom: "D"
 
 };
+
+
+// ==========================================
+// GET CURRENT USER
+// ==========================================
+
+function getCurrentUser() {
+
+    const savedUser =
+        localStorage.getItem(
+            CURRENT_USER_KEY
+        );
+
+
+    if (!savedUser) {
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+
+    try {
+
+        return JSON.parse(
+            savedUser
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid current user data",
+            error
+        );
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
+}
 
 
 // ==========================================
@@ -111,6 +161,21 @@ slotForm.addEventListener(
     function (event) {
 
         event.preventDefault();
+
+
+        // ==================================
+        // CURRENT USER
+        // ==================================
+
+        const currentUser =
+            getCurrentUser();
+
+
+        if (!currentUser) {
+
+            return;
+
+        }
 
 
         // ==================================
@@ -191,7 +256,7 @@ slotForm.addEventListener(
 
 
         // ==================================
-        // CALCULATE SLOT VOLUME
+        // CALCULATE VOLUME
         // ==================================
 
         const volume =
@@ -209,7 +274,7 @@ slotForm.addEventListener(
 
 
         // ==================================
-        // SLOT ID PREFIX
+        // SLOT PREFIX
         // ==================================
 
         const prefix =
@@ -218,6 +283,9 @@ slotForm.addEventListener(
 
         // ==================================
         // FIND EXISTING COUNT
+        //
+        // IMPORTANT:
+        // Count only this user's slots.
         // ==================================
 
         let existingCount = 0;
@@ -227,8 +295,15 @@ slotForm.addEventListener(
             function (slot) {
 
                 if (
+
                     slot.size ===
                     selectedType
+
+                    &&
+
+                    slot.userEmail ===
+                    currentUser.email
+
                 ) {
 
                     existingCount++;
@@ -279,6 +354,14 @@ slotForm.addEventListener(
 
 
                 // --------------------------
+                // OWNER
+                // --------------------------
+
+                userEmail:
+                    currentUser.email,
+
+
+                // --------------------------
                 // PHYSICAL DIMENSIONS
                 // --------------------------
 
@@ -306,6 +389,7 @@ slotForm.addEventListener(
 
                 usedVolume:
                     0,
+
 
                 // --------------------------
                 // PRODUCT INFORMATION
