@@ -2,10 +2,16 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Product Management - Smart Warehouse</title>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Product Management - Storvia</title>
+
 
     <style>
 
@@ -15,117 +21,48 @@
             padding: 0;
         }
 
+
         body {
             font-family: Arial, sans-serif;
             background-color: #f5f5f5;
             color: #222;
         }
-        /*  pop up css */
 
-        .slot-modal {
-            display: none;
-
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(15, 23, 42, 0.55);
-
-            justify-content: center;
-
-            align-items: center;
-
-            z-index: 1000;
-        }
-
-
-        .slot-modal-content {
-            width: 90%;
-            max-width: 450px;
-
-            background: white;
-
-            padding: 30px;
-
-            border-radius: 16px;
-
-            box-shadow:
-                0 20px 50px rgba(15, 23, 42, 0.2);
-        }
-
-
-        .slot-modal-content h2 {
-            margin-bottom: 15px;
-
-            color: #172033;
-        }
-
-
-        #slotMessage {
-            color: #697386;
-
-            line-height: 1.6;
-
-            margin-bottom: 15px;
-        }
-
-
-        #slotDetails {
-            background: #fff7ed;
-
-            border: 1px solid #f59e0b;
-
-            padding: 15px;
-
-            border-radius: 10px;
-
-            margin-bottom: 20px;
-        }
-
-
-        .slot-modal-buttons {
-            display: flex;
-
-            gap: 10px;
-        }
-
-
-        .slot-modal-buttons button {
-            width: auto;
-
-            flex: 1;
-        }
-
-
-        .slot-modal .cancel-btn {
-            display: block;
-            margin-left: 0;
-        }
 
         /* =========================
            HEADER
         ========================== */
 
         .header {
+
             background-color: #111;
+
             color: white;
 
             padding: 18px 40px;
 
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
         }
+
 
         .header h1 {
             font-size: 24px;
         }
 
+
         .home-link {
+
             color: #ff8c00;
+
             text-decoration: none;
+
             font-weight: bold;
         }
+
 
         .home-link:hover {
             color: #ffa733;
@@ -133,21 +70,25 @@
 
 
         /* =========================
-           MAIN CONTAINER
+           MAIN
         ========================== */
 
         .container {
+
             width: 90%;
+
             max-width: 1200px;
+
             margin: 30px auto;
         }
 
 
         /* =========================
-           FORM BOX
+           FORM
         ========================== */
 
         .form-box {
+
             background-color: white;
 
             padding: 25px;
@@ -156,34 +97,47 @@
 
             margin-bottom: 30px;
 
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            box-shadow:
+                0 3px 10px
+                rgba(0, 0, 0, 0.08);
         }
+
 
         .form-box h2 {
             margin-bottom: 20px;
-            color: #111;
         }
 
+
         .form-grid {
+
             display: grid;
 
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns:
+                1fr 1fr;
 
             gap: 18px;
         }
 
+
         .form-group {
+
             display: flex;
+
             flex-direction: column;
         }
 
+
         .form-group label {
+
             font-weight: bold;
+
             margin-bottom: 7px;
         }
 
+
         .form-group input,
         .form-group select {
+
             width: 100%;
 
             padding: 11px;
@@ -193,14 +147,8 @@
             border-radius: 6px;
 
             font-size: 15px;
-
-            outline: none;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            border-color: #ff8c00;
-        }
 
         .full-width {
             grid-column: 1 / 3;
@@ -211,18 +159,8 @@
            CUSTOM DIMENSIONS
         ========================== */
 
-        /*
-            This is hidden when the page loads.
-
-            JavaScript will change this to:
-
-            display: block;
-
-            when the user selects
-            "Custom Dimensions".
-        */
-
         .custom-dimensions {
+
             display: none;
 
             grid-column: 1 / 3;
@@ -236,16 +174,18 @@
             padding: 20px;
         }
 
+
         .custom-dimensions h3 {
             margin-bottom: 15px;
-
-            color: #111;
         }
 
+
         .dimension-grid {
+
             display: grid;
 
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns:
+                1fr 1fr 1fr;
 
             gap: 15px;
         }
@@ -259,7 +199,9 @@
             margin-top: 5px;
         }
 
+
         .btn {
+
             padding: 11px 20px;
 
             border: none;
@@ -273,17 +215,22 @@
             font-weight: bold;
         }
 
+
         .add-btn {
+
             background-color: #ff8c00;
 
             color: white;
         }
 
+
         .add-btn:hover {
             background-color: #e67e00;
         }
 
+
         .cancel-btn {
+
             background-color: #222;
 
             color: white;
@@ -293,11 +240,9 @@
             display: none;
         }
 
-        .cancel-btn:hover {
-            background-color: #000;
-        }
 
         .edit-btn {
+
             background-color: #ff8c00;
 
             color: white;
@@ -313,7 +258,9 @@
             margin-right: 5px;
         }
 
+
         .delete-btn {
+
             background-color: #222;
 
             color: white;
@@ -327,30 +274,27 @@
             cursor: pointer;
         }
 
-        .edit-btn:hover {
-            background-color: #e67e00;
-        }
-
-        .delete-btn:hover {
-            background-color: #000;
-        }
-
 
         /* =========================
-           PRODUCTS TABLE
+           PRODUCTS
         ========================== */
 
         .products-box {
+
             background-color: white;
 
             padding: 25px;
 
             border-radius: 10px;
 
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            box-shadow:
+                0 3px 10px
+                rgba(0, 0, 0, 0.08);
         }
 
+
         .products-top {
+
             display: flex;
 
             justify-content: space-between;
@@ -362,11 +306,9 @@
             gap: 20px;
         }
 
-        .products-top h2 {
-            color: #111;
-        }
 
         .search-input {
+
             width: 280px;
 
             padding: 10px;
@@ -374,19 +316,16 @@
             border: 1px solid #ccc;
 
             border-radius: 6px;
-
-            outline: none;
         }
 
-        .search-input:focus {
-            border-color: #ff8c00;
-        }
 
         .table-container {
             overflow-x: auto;
         }
 
+
         table {
+
             width: 100%;
 
             border-collapse: collapse;
@@ -394,8 +333,10 @@
             min-width: 1000px;
         }
 
+
         th,
         td {
+
             padding: 13px;
 
             text-align: left;
@@ -403,17 +344,34 @@
             border-bottom: 1px solid #ddd;
         }
 
+
         th {
+
             background-color: #111;
 
             color: white;
         }
 
+
         tr:hover {
             background-color: #fafafa;
         }
 
+
+        .status-pending {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+
+        .status-allocated {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+
         .empty-message {
+
             text-align: center;
 
             padding: 25px;
@@ -460,534 +418,385 @@
             .search-input {
                 width: 100%;
             }
+
         }
 
     </style>
 
 </head>
 
-<div id="slotModal" class="slot-modal">
-
-    <div class="slot-modal-content">
-
-        <h2>Warehouse Slot Assignment</h2>
-
-        <p id="slotMessage"></p>
-
-        <div id="slotDetails"></div>
-
-        <div class="slot-modal-buttons">
-
-            <button
-                id="acceptSlotBtn"
-                class="btn add-btn"
-            >
-                Accept
-            </button>
-
-            <button
-                id="declineSlotBtn"
-                class="btn cancel-btn"
-            >
-                Decline
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
 
 <body>
 
 
-    <!-- =========================
-         HEADER
-    ========================== -->
+<header class="header">
 
-    <header class="header">
+    <h1>
+        Storvia
+    </h1>
 
-        <h1>
-            Smart Warehouse
-        </h1>
 
-        <a
-            href="dashBoard.html"
-            class="home-link"
-        >
-            Home
-        </a>
+    <a
+        href="dashboard.html"
+        class="home-link"
+    >
+        Home
+    </a>
 
-    </header>
+</header>
 
 
 
-    <main class="container">
+<main class="container">
 
 
-        <!-- =========================
-             ADD PRODUCT FORM
-        ========================== -->
+    <!-- ======================================
+         ADD PRODUCT
+    ======================================= -->
 
-        <section class="form-box">
+    <section class="form-box">
 
-            <h2 id="formTitle">
-                Add Product
-            </h2>
+        <h2 id="formTitle">
+            Add Product
+        </h2>
 
 
-            <form id="productForm">
+        <form id="productForm">
 
-                <div class="form-grid">
 
+            <div class="form-grid">
 
-                    <!-- PRODUCT NAME -->
 
-                    <div class="form-group">
+                <div class="form-group">
 
-                        <label for="productName">
-                            Product Name *
-                        </label>
+                    <label for="productName">
+                        Product Name *
+                    </label>
 
-                        <input
-                            type="text"
-                            id="productName"
-                            placeholder="Example: Dell Laptop"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- CATEGORY -->
-
-                    <div class="form-group">
-
-                        <label for="category">
-                            Category *
-                        </label>
-
-                        <select
-                            id="category"
-                            required
-                        >
-
-                            <option value="">
-                                Select Category
-                            </option>
-
-                            <option value="Laptop">
-                                Laptop
-                            </option>
-
-                            <option value="Mobile">
-                                Mobile
-                            </option>
-
-                            <option value="Monitor">
-                                Monitor
-                            </option>
-
-                            <option value="Keyboard">
-                                Keyboard
-                            </option>
-
-                            <option value="Mouse">
-                                Mouse
-                            </option>
-
-                            <option value="Headphones">
-                                Headphones
-                            </option>
-
-                            <option value="Printer">
-                                Printer
-                            </option>
-
-                            <option value="Router">
-                                Router
-                            </option>
-
-                            <option value="Cables">
-                                Cables
-                            </option>
-
-                            <option value="Computer Accessories">
-                                Computer Accessories
-                            </option>
-
-                            <option value="Other">
-                                Other
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-
-                    <!-- QUANTITY -->
-
-                    <div class="form-group">
-
-                        <label for="quantity">
-                            Quantity *
-                        </label>
-
-                        <input
-                            type="number"
-                            id="quantity"
-                            min="1"
-                            placeholder="Example: 50"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- UNIT -->
-
-                    <div class="form-group">
-
-                        <label for="unit">
-                            Unit *
-                        </label>
-
-                        <select
-                            id="unit"
-                            required
-                        >
-
-                            <option value="Pieces">
-                                Pieces
-                            </option>
-
-                            <option value="Boxes">
-                                Boxes
-                            </option>
-
-                            <option value="Sets">
-                                Sets
-                            </option>
-
-                            <option value="Packs">
-                                Packs
-                            </option>
-
-                            <option value="Cartons">
-                                Cartons
-                            </option>
-
-                            <option value="Pallets">
-                                Pallets
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-
-                    <!-- PRODUCT SIZE -->
-
-                    <div class="form-group full-width">
-
-                        <label for="size">
-                            Product Size *
-                        </label>
-
-                        <select
-                            id="size"
-                            required
-                        >
-
-                            <option value="">
-                                Select Product Size
-                            </option>
-
-                            <option value="Small">
-                                Small
-                            </option>
-
-                            <option value="Medium">
-                                Medium
-                            </option>
-
-                            <option value="Large">
-                                Large
-                            </option>
-
-                            <option value="Custom">
-                                Custom Dimensions
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-
-                    <!-- =========================
-                         CUSTOM DIMENSIONS
-
-                         IMPORTANT:
-                         This is hidden initially.
-
-                         It appears only when
-                         Custom Dimensions
-                         is selected.
-                    ========================== -->
-
-                    <div
-                        id="customDimensions"
-                        class="custom-dimensions"
+                    <input
+                        type="text"
+                        id="productName"
+                        placeholder="Example: Dell Laptop"
+                        required
                     >
 
-                        <h3>
-                            Enter Product Dimensions
-                        </h3>
+                </div>
 
 
-                        <div class="dimension-grid">
+                <div class="form-group">
+
+                    <label for="category">
+                        Category *
+                    </label>
+
+                    <select
+                        id="category"
+                        required
+                    >
+
+                        <option value="">
+                            Select Category
+                        </option>
+
+                        <option>Laptop</option>
+                        <option>Mobile</option>
+                        <option>Monitor</option>
+                        <option>Keyboard</option>
+                        <option>Mouse</option>
+                        <option>Headphones</option>
+                        <option>Printer</option>
+                        <option>Router</option>
+                        <option>Cables</option>
+                        <option>Computer Accessories</option>
+                        <option>Other</option>
+
+                    </select>
+
+                </div>
 
 
-                            <!-- LENGTH -->
+                <div class="form-group">
 
-                            <div class="form-group">
+                    <label for="quantity">
+                        Quantity *
+                    </label>
 
-                                <label for="length">
-                                    Length (cm) *
-                                </label>
+                    <input
+                        type="number"
+                        id="quantity"
+                        min="1"
+                        required
+                    >
 
-                                <input
-                                    type="number"
-                                    id="length"
-                                    min="0.1"
-                                    step="0.01"
-                                    placeholder="Example: 40"
-                                >
-
-                            </div>
+                </div>
 
 
+                <div class="form-group">
 
-                            <!-- BREADTH -->
+                    <label for="unit">
+                        Unit *
+                    </label>
 
-                            <div class="form-group">
+                    <select id="unit" required>
 
-                                <label for="breadth">
-                                    Breadth (cm) *
-                                </label>
+                        <option value="Pieces">
+                            Pieces
+                        </option>
 
-                                <input
-                                    type="number"
-                                    id="breadth"
-                                    min="0.1"
-                                    step="0.01"
-                                    placeholder="Example: 30"
-                                >
+                        <option value="Boxes">
+                            Boxes
+                        </option>
 
-                            </div>
+                        <option value="Sets">
+                            Sets
+                        </option>
+
+                        <option value="Packs">
+                            Packs
+                        </option>
+
+                        <option value="Cartons">
+                            Cartons
+                        </option>
+
+                        <option value="Pallets">
+                            Pallets
+                        </option>
+
+                    </select>
+
+                </div>
 
 
+                <div class="form-group full-width">
 
-                            <!-- HEIGHT -->
+                    <label for="size">
+                        Product Size *
+                    </label>
 
-                            <div class="form-group">
+                    <select id="size" required>
 
-                                <label for="height">
-                                    Height (cm) *
-                                </label>
+                        <option value="">
+                            Select Product Size
+                        </option>
 
-                                <input
-                                    type="number"
-                                    id="height"
-                                    min="0.1"
-                                    step="0.01"
-                                    placeholder="Example: 10"
-                                >
+                        <option value="Small">
+                            Small
+                        </option>
 
-                            </div>
+                        <option value="Medium">
+                            Medium
+                        </option>
+
+                        <option value="Large">
+                            Large
+                        </option>
+
+                        <option value="Custom">
+                            Custom Dimensions
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div
+                    id="customDimensions"
+                    class="custom-dimensions"
+                >
+
+                    <h3>
+                        Enter Product Dimensions
+                    </h3>
+
+
+                    <div class="dimension-grid">
+
+
+                        <div class="form-group">
+
+                            <label for="length">
+                                Length (cm) *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="length"
+                                min="0.1"
+                                step="0.01"
+                            >
 
                         </div>
 
-                    </div>
+
+                        <div class="form-group">
+
+                            <label for="breadth">
+                                Breadth (cm) *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="breadth"
+                                min="0.1"
+                                step="0.01"
+                            >
+
+                        </div>
 
 
+                        <div class="form-group">
 
-                    <!-- WEIGHT -->
+                            <label for="height">
+                                Height (cm) *
+                            </label>
 
-                    <div class="form-group">
+                            <input
+                                type="number"
+                                id="height"
+                                min="0.1"
+                                step="0.01"
+                            >
 
-                        <label for="weight">
-                            Weight per Unit (kg) *
-                        </label>
+                        </div>
 
-                        <input
-                            type="number"
-                            id="weight"
-                            min="0.01"
-                            step="0.01"
-                            placeholder="Example: 1.5"
-                            required
-                        >
-
-                    </div>
-
-
-
-                    <!-- FRAGILE -->
-
-                    <div class="form-group">
-
-                        <label for="fragile">
-                            Fragile *
-                        </label>
-
-                        <select
-                            id="fragile"
-                            required
-                        >
-
-                            <option value="No">
-                                No
-                            </option>
-
-                            <option value="Yes">
-                                Yes
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-
-                    <!-- BUTTONS -->
-
-                    <div class="full-width button-group">
-
-                        <button
-                            type="submit"
-                            class="btn add-btn"
-                            id="submitBtn"
-                        >
-                            Add Product
-                        </button>
-
-
-                        <button
-                            type="button"
-                            class="btn cancel-btn"
-                            id="cancelBtn"
-                        >
-                            Cancel
-                        </button>
 
                     </div>
 
                 </div>
 
-            </form>
 
-        </section>
+                <div class="form-group">
+
+                    <label for="weight">
+                        Weight per Unit (kg) *
+                    </label>
+
+                    <input
+                        type="number"
+                        id="weight"
+                        min="0.01"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
 
 
+                <div class="form-group">
 
-        <!-- =========================
-             PRODUCT TABLE
-        ========================== -->
+                    <label for="fragile">
+                        Fragile *
+                    </label>
 
-        <section class="products-box">
+                    <select id="fragile" required>
 
-            <div class="products-top">
+                        <option value="No">
+                            No
+                        </option>
 
-                <h2>
-                    Products
-                </h2>
+                        <option value="Yes">
+                            Yes
+                        </option>
+
+                    </select>
+
+                </div>
 
 
-                <input
-                    type="text"
-                    id="searchInput"
-                    class="search-input"
-                    placeholder="Search product..."
-                >
+                <div class="full-width button-group">
+
+                    <button
+                        type="submit"
+                        class="btn add-btn"
+                        id="submitBtn"
+                    >
+                        Add Product
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn cancel-btn"
+                        id="cancelBtn"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
 
             </div>
 
+        </form>
 
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Product Name
-                            </th>
-
-                            <th>
-                                Category
-                            </th>
-
-                            <th>
-                                Quantity
-                            </th>
-
-                            <th>
-                                Unit
-                            </th>
-
-                            <th>
-                                Size
-                            </th>
-
-                            <th>
-                                Weight
-                            </th>
-
-                            <th>
-                                Fragile
-                            </th>
-
-                            <th>
-                                Dimensions
-                            </th>
-
-                            <th>
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="productTableBody">
-
-                        <!-- JavaScript will add products here -->
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-    </main>
+    </section>
 
 
 
-    <!-- JavaScript -->
+    <!-- ======================================
+         PRODUCTS TABLE
+    ======================================= -->
 
-    <script src="product.js"></script>
+    <section class="products-box">
+
+
+        <div class="products-top">
+
+            <h2>
+                Products
+            </h2>
+
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Search product..."
+            >
+
+        </div>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Product Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Size</th>
+                        <th>Weight</th>
+                        <th>Fragile</th>
+                        <th>Dimensions</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="productTableBody"></tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<script src="product.js"></script>
 
 </body>
 

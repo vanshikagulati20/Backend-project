@@ -51,16 +51,17 @@ const heightInput =
 
 
 // ==========================================
-// STORAGE KEYS
+// STORAGE
 // ==========================================
 
-const PRODUCT_KEY = "products";
+const PRODUCT_KEY =
+    "products";
 
-const SLOT_KEY = "warehouseSlots";
+const SLOT_KEY =
+    "warehouseSlots";
 
-const PLACEMENT_KEY = "placements";
-
-const CURRENT_USER_KEY = "currentuser";
+const CURRENT_USER_KEY =
+    "currentuser";
 
 
 // ==========================================
@@ -69,46 +70,37 @@ const CURRENT_USER_KEY = "currentuser";
 
 const currentUser =
     JSON.parse(
-        localStorage.getItem(CURRENT_USER_KEY)
+        localStorage.getItem(
+            CURRENT_USER_KEY
+        )
     );
 
 
 if (!currentUser) {
 
-    window.location.href = "login.html";
+    window.location.href =
+        "login.html";
+
 }
 
 
-let editingProductId = null;
+let editingProductId =
+    null;
 
 
 // ==========================================
-// MODAL ELEMENTS
+// EDITING STATE
 // ==========================================
 
-const slotModal =
-    document.getElementById("slotModal");
+let existingProductStatus =
+    "Pending";
 
-const slotMessage =
-    document.getElementById("slotMessage");
-
-const slotDetails =
-    document.getElementById("slotDetails");
-
-const acceptSlotBtn =
-    document.getElementById("acceptSlotBtn");
-
-const declineSlotBtn =
-    document.getElementById("declineSlotBtn");
-
-
-let pendingProduct = null;
-
-let pendingSlot = null;
+let existingAllocatedQuantity =
+    0;
 
 
 // ==========================================
-// PRODUCT SIZE
+// SIZE CHANGE
 // ==========================================
 
 size.addEventListener(
@@ -138,6 +130,7 @@ size.addEventListener(
             lengthInput.value = "";
             breadthInput.value = "";
             heightInput.value = "";
+
         }
 
     }
@@ -150,15 +143,33 @@ size.addEventListener(
 
 function getProducts() {
 
-    const savedProducts =
-        localStorage.getItem(PRODUCT_KEY);
+    const saved =
+        localStorage.getItem(
+            PRODUCT_KEY
+        );
 
-    if (savedProducts) {
 
-        return JSON.parse(savedProducts);
+    if (!saved) {
+        return [];
     }
 
-    return [];
+
+    try {
+
+        return JSON.parse(saved);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid products data",
+            error
+        );
+
+        return [];
+    }
+
 }
 
 
@@ -172,447 +183,58 @@ function saveProducts(products) {
         PRODUCT_KEY,
         JSON.stringify(products)
     );
+
 }
 
 
 // ==========================================
-// GET WAREHOUSE SLOTS
+// GET SLOTS
 // ==========================================
 
 function getSlots() {
 
-    const savedSlots =
-        localStorage.getItem(SLOT_KEY);
+    const saved =
+        localStorage.getItem(
+            SLOT_KEY
+        );
 
-    if (savedSlots) {
 
-        return JSON.parse(savedSlots);
+    if (!saved) {
+        return [];
     }
 
-    return [];
+
+    try {
+
+        return JSON.parse(saved);
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid slot data",
+            error
+        );
+
+        return [];
+    }
+
 }
 
 
 // ==========================================
-// SAVE PLACEMENTS
+// SAVE SLOTS
 // ==========================================
 
-function getPlacements() {
-
-    const savedPlacements =
-        localStorage.getItem(PLACEMENT_KEY);
-
-    if (savedPlacements) {
-
-        return JSON.parse(savedPlacements);
-    }
-
-    return [];
-}
-
-
-function savePlacements(placements) {
+function saveSlots(slots) {
 
     localStorage.setItem(
-        PLACEMENT_KEY,
-        JSON.stringify(placements)
-    );
-}
-
-
-// ==========================================
-// PRODUCT VOLUME
-// ==========================================
-
-function getProductVolume(product) {
-
-    let length;
-    let breadth;
-    let height;
-
-
-    if (product.size === "Small") {
-
-        length = 30;
-        breadth = 30;
-        height = 30;
-    }
-
-    else if (product.size === "Medium") {
-
-        length = 60;
-        breadth = 60;
-        height = 60;
-    }
-
-    else if (product.size === "Large") {
-
-        length = 100;
-        breadth = 100;
-        height = 100;
-    }
-
-    else if (product.size === "Custom") {
-
-        length = Number(product.length);
-        breadth = Number(product.breadth);
-        height = Number(product.height);
-    }
-
-
-    return length * breadth * height;
-}
-
-
-// ==========================================
-// SLOT VOLUME
-// ==========================================
-
-function getSlotVolume(slot) {
-
-    let length;
-    let breadth;
-    let height;
-
-
-    if (slot.size === "Small") {
-
-        length = 30;
-        breadth = 30;
-        height = 30;
-    }
-
-    else if (slot.size === "Medium") {
-
-        length = 60;
-        breadth = 60;
-        height = 60;
-    }
-
-    else if (slot.size === "Large") {
-
-        length = 100;
-        breadth = 100;
-        height = 100;
-    }
-
-
-    return length * breadth * height;
-}
-
-
-// ==========================================
-// GET USED VOLUME OF SLOT
-// ==========================================
-
-function getUsedVolume(slotId) {
-
-    const placements =
-        getPlacements();
-
-
-    let usedVolume = 0;
-
-
-    placements.forEach(
-        function (placement) {
-
-            if (
-                placement.slotId === slotId &&
-                placement.userEmail === currentUser.email
-            ) {
-
-                usedVolume +=
-                    Number(placement.volume || 0);
-            }
-
-        }
+        SLOT_KEY,
+        JSON.stringify(slots)
     );
 
-
-    return usedVolume;
 }
-
-
-// ==========================================
-// FIRST FIT DECREASING
-// ==========================================
-
-function findSlotFFD(product) {
-
-    const slots =
-        getSlots()
-            .filter(
-                function (slot) {
-
-                    return (
-                        slot.userEmail ===
-                        currentUser.email
-                    );
-                }
-            );
-
-
-    if (slots.length === 0) {
-
-        return {
-            success: false,
-
-            reason:
-                "No warehouse slots are available. Please add slots first."
-        };
-    }
-
-
-    const productVolume =
-        getProductVolume(product);
-
-
-    /*
-        FFD:
-
-        Slots are sorted from
-        largest capacity to smallest.
-
-        The product is then placed
-        into the FIRST slot that
-        has enough remaining space.
-    */
-
-    const sortedSlots =
-        [...slots].sort(
-            function (a, b) {
-
-                return (
-                    getSlotVolume(b) -
-                    getSlotVolume(a)
-                );
-
-            }
-        );
-
-
-    for (
-        let i = 0;
-        i < sortedSlots.length;
-        i++
-    ) {
-
-        const slot =
-            sortedSlots[i];
-
-
-        const slotVolume =
-            getSlotVolume(slot);
-
-
-        const usedVolume =
-            getUsedVolume(slot.id);
-
-
-        const remainingVolume =
-            slotVolume - usedVolume;
-
-
-        if (
-            productVolume <=
-            remainingVolume
-        ) {
-
-            return {
-
-                success: true,
-
-                slot: slot,
-
-                productVolume:
-                    productVolume,
-
-                remainingVolume:
-                    remainingVolume
-            };
-        }
-
-    }
-
-
-    return {
-
-        success: false,
-
-        reason:
-            "No available slot has enough space for this product."
-    };
-}
-
-
-// ==========================================
-// SHOW SLOT POPUP
-// ==========================================
-
-function showSlotPopup(
-    product,
-    result
-) {
-
-    pendingProduct = product;
-
-    pendingSlot = result.slot;
-
-
-    slotMessage.innerText =
-        "FFD has found a suitable warehouse slot for this product.";
-
-
-    slotDetails.innerHTML = `
-
-        <strong>Product:</strong>
-        ${product.name}
-        <br><br>
-
-        <strong>Quantity:</strong>
-        ${product.quantity}
-        ${product.unit}
-        <br><br>
-
-        <strong>Product Size:</strong>
-        ${product.size}
-        <br><br>
-
-        <strong>Recommended Slot:</strong>
-        ${result.slot.name}
-        <br><br>
-
-        <strong>Slot Size:</strong>
-        ${result.slot.size}
-        <br><br>
-
-        <strong>Remaining Space:</strong>
-        ${result.remainingVolume.toFixed(0)}
-        cm³
-
-    `;
-
-
-    slotModal.style.display =
-        "flex";
-}
-
-
-// ==========================================
-// CLOSE POPUP
-// ==========================================
-
-function closeSlotPopup() {
-
-    slotModal.style.display =
-        "none";
-
-    pendingProduct = null;
-
-    pendingSlot = null;
-}
-
-
-// ==========================================
-// ACCEPT SLOT
-// ==========================================
-
-acceptSlotBtn.addEventListener(
-    "click",
-    function () {
-
-        if (
-            !pendingProduct ||
-            !pendingSlot
-        ) {
-
-            return;
-        }
-
-
-        const placements =
-            getPlacements();
-
-
-        const placement = {
-
-            id:
-                Date.now().toString(),
-
-            productId:
-                pendingProduct.id,
-
-            productName:
-                pendingProduct.name,
-
-            quantity:
-                pendingProduct.quantity,
-
-            unit:
-                pendingProduct.unit,
-
-            size:
-                pendingProduct.size,
-
-            slotId:
-                pendingSlot.id,
-
-            slotName:
-                pendingSlot.name,
-
-            volume:
-                getProductVolume(
-                    pendingProduct
-                ),
-
-            userEmail:
-                currentUser.email
-        };
-
-
-        placements.push(
-            placement
-        );
-
-
-        savePlacements(
-            placements
-        );
-
-
-        closeSlotPopup();
-
-
-        alert(
-            pendingProduct.name +
-            " assigned to slot " +
-            pendingSlot.name
-        );
-
-
-        resetForm();
-
-    }
-);
-
-
-// ==========================================
-// DECLINE SLOT
-// ==========================================
-
-declineSlotBtn.addEventListener(
-    "click",
-    function () {
-
-        closeSlotPopup();
-
-        alert(
-            "Product was not placed in the warehouse."
-        );
-
-    }
-);
 
 
 // ==========================================
@@ -631,13 +253,14 @@ function displayProducts(products) {
             <tr>
 
                 <td
-                    colspan="9"
+                    colspan="10"
                     class="empty-message"
                 >
                     No products found.
                 </td>
 
             </tr>
+
         `;
 
         return;
@@ -659,11 +282,26 @@ function displayProducts(products) {
                     `${product.length} ×
                      ${product.breadth} ×
                      ${product.height} cm`;
+
             }
 
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
+
+
+            const statusClass =
+                product.allocationStatus ===
+                "Allocated"
+                    ? "status-allocated"
+                    : "status-pending";
+
+
+            const statusText =
+                product.allocationStatus ||
+                "Pending";
 
 
             row.innerHTML = `
@@ -701,6 +339,12 @@ function displayProducts(products) {
                 </td>
 
                 <td>
+                    <span class="${statusClass}">
+                        ${statusText}
+                    </span>
+                </td>
+
+                <td>
 
                     <button
                         class="edit-btn"
@@ -727,6 +371,7 @@ function displayProducts(products) {
 
         }
     );
+
 }
 
 
@@ -758,7 +403,9 @@ productForm.addEventListener(
                 category.value,
 
             quantity:
-                Number(quantity.value),
+                Number(
+                    quantity.value
+                ),
 
             unit:
                 unit.value,
@@ -768,27 +415,51 @@ productForm.addEventListener(
 
             length:
                 size.value === "Custom"
-                    ? Number(lengthInput.value)
+                    ? Number(
+                        lengthInput.value
+                    )
                     : null,
 
             breadth:
                 size.value === "Custom"
-                    ? Number(breadthInput.value)
+                    ? Number(
+                        breadthInput.value
+                    )
                     : null,
 
             height:
                 size.value === "Custom"
-                    ? Number(heightInput.value)
+                    ? Number(
+                        heightInput.value
+                    )
                     : null,
 
             weight:
-                Number(weight.value),
+                Number(
+                    weight.value
+                ),
 
             fragile:
                 fragile.value,
 
+            allocationStatus:
+                editingProductId
+                    ? existingProductStatus
+                    : "Pending",
+
+            allocatedQuantity:
+                editingProductId
+                    ? existingAllocatedQuantity
+                    : 0,
+
+            allocationMessage:
+                editingProductId
+                    ? ""
+                    : "Waiting for warehouse allocation.",
+
             userEmail:
                 currentUser.email
+
         };
 
 
@@ -877,7 +548,7 @@ productForm.addEventListener(
 
 
         // ==================================
-        // EDIT PRODUCT
+        // EDIT
         // ==================================
 
         if (
@@ -908,20 +579,15 @@ productForm.addEventListener(
                     productIndex
                 ] = product;
 
+                saveProducts(
+                    products
+                );
+
+                alert(
+                    "Product updated successfully."
+                );
+
             }
-
-
-            saveProducts(
-                products
-            );
-
-
-            alert(
-                "Product updated successfully."
-            );
-
-
-            resetForm();
 
         }
 
@@ -931,10 +597,6 @@ productForm.addEventListener(
         // ==================================
 
         else {
-
-            /*
-                SAVE PRODUCT FIRST
-            */
 
             products.push(
                 product
@@ -946,48 +608,19 @@ productForm.addEventListener(
             );
 
 
-            /*
-                RUN FFD
-            */
-
-            const result =
-                findSlotFFD(
-                    product
-                );
-
-
-            /*
-                NO SLOT
-            */
-
-            if (!result.success) {
-
-                alert(
-                    result.reason
-                );
-
-                resetForm();
-
-                displayCurrentUserProducts();
-
-                return;
-            }
-
-
-            /*
-                SLOT FOUND
-
-                Ask user before
-                actually placing it.
-            */
-
-            showSlotPopup(
-                product,
-                result
+            alert(
+                product.name +
+                " added successfully.\n\n" +
+                "Status: Pending\n\n" +
+                "Go to Warehouse and click " +
+                "\"Allocate Pending Products\" " +
+                "to run FFD."
             );
 
         }
 
+
+        resetForm();
 
         displayCurrentUserProducts();
 
@@ -1021,6 +654,7 @@ function displayCurrentUserProducts() {
     displayProducts(
         myProducts
     );
+
 }
 
 
@@ -1049,7 +683,6 @@ function editProduct(id) {
 
 
     if (!product) {
-
         return;
     }
 
@@ -1074,6 +707,18 @@ function editProduct(id) {
 
     fragile.value =
         product.fragile;
+
+
+    existingProductStatus =
+        product.allocationStatus ||
+        "Pending";
+
+
+    existingAllocatedQuantity =
+        Number(
+            product.allocatedQuantity ||
+            0
+        );
 
 
     if (
@@ -1103,6 +748,11 @@ function editProduct(id) {
 
         customDimensions.style.display =
             "none";
+
+        lengthInput.required = false;
+        breadthInput.required = false;
+        heightInput.required = false;
+
     }
 
 
@@ -1146,7 +796,6 @@ function deleteProduct(id) {
 
 
     if (!confirmation) {
-
         return;
     }
 
@@ -1174,31 +823,52 @@ function deleteProduct(id) {
     );
 
 
-    /*
-        Remove its warehouse
-        placement too.
-    */
+    // ======================================
+    // CLEAR PRODUCT FROM SLOTS
+    // ======================================
 
-    let placements =
-        getPlacements();
+    let slots =
+        getSlots();
 
 
-    placements =
-        placements.filter(
-            function (placement) {
+    slots =
+        slots.map(
+            function (slot) {
 
-                return !(
-                    placement.productId === id &&
-                    placement.userEmail ===
-                    currentUser.email
-                );
+                if (
+                    slot.productId === id &&
+                    (
+                        !slot.userEmail ||
+                        slot.userEmail ===
+                        currentUser.email
+                    )
+                ) {
+
+                    return {
+
+                        ...slot,
+
+                        used: 0,
+
+                        productId: null,
+
+                        productName: null,
+
+                        productQuantity: 0
+
+                    };
+
+                }
+
+
+                return slot;
 
             }
         );
 
 
-    savePlacements(
-        placements
+    saveSlots(
+        slots
     );
 
 
@@ -1215,6 +885,7 @@ function deleteProduct(id) {
     ) {
 
         resetForm();
+
     }
 
 }
@@ -1231,6 +902,14 @@ function resetForm() {
 
     editingProductId =
         null;
+
+
+    existingProductStatus =
+        "Pending";
+
+
+    existingAllocatedQuantity =
+        0;
 
 
     formTitle.textContent =

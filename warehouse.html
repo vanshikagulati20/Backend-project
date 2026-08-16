@@ -12,7 +12,10 @@
 
     <title>Warehouse - Storvia</title>
 
-    <link rel="stylesheet" href="warehouse.css">
+    <link
+        rel="stylesheet"
+        href="warehouse.css"
+    >
 
 </head>
 
@@ -23,7 +26,11 @@
 <header class="dashboard-header">
 
     <div class="brand">
-        <h1>Storvia</h1>
+
+        <h1>
+            Storvia
+        </h1>
+
     </div>
 
 
@@ -57,9 +64,15 @@
 <main class="dashboard-container">
 
 
+    <!-- ======================================
+         INTRO
+    ======================================= -->
+
     <section class="dashboard-intro">
 
-        <h2>Warehouse Layout</h2>
+        <h2>
+            Warehouse Layout
+        </h2>
 
         <p>
             View the current storage arrangement.
@@ -70,11 +83,56 @@
 
 
 
+    <!-- ======================================
+         ALLOCATION
+    ======================================= -->
+
+    <section class="warehouse-actions">
+
+        <div>
+
+            <h2>
+                Warehouse Allocation
+            </h2>
+
+            <p id="allocationMessage">
+                Allocate all pending products into
+                available warehouse slots using
+                First Fit Decreasing.
+            </p>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="allocateBtn"
+            class="allocate-btn"
+        >
+            Allocate Pending Products
+        </button>
+
+    </section>
+
+
+    <div
+        id="allocationResult"
+        class="allocation-result"
+    ></div>
+
+
+
+    <!-- ======================================
+         LARGE
+    ======================================= -->
+
     <section class="inventory-card">
 
         <div class="section-heading">
 
-            <h2>Large Slots</h2>
+            <h2>
+                Large Slots
+            </h2>
 
             <p>
                 Large storage capacity
@@ -92,11 +150,17 @@
 
 
 
+    <!-- ======================================
+         MEDIUM
+    ======================================= -->
+
     <section class="inventory-card">
 
         <div class="section-heading">
 
-            <h2>Medium Slots</h2>
+            <h2>
+                Medium Slots
+            </h2>
 
             <p>
                 Medium storage capacity
@@ -114,11 +178,17 @@
 
 
 
+    <!-- ======================================
+         SMALL
+    ======================================= -->
+
     <section class="inventory-card">
 
         <div class="section-heading">
 
-            <h2>Small Slots</h2>
+            <h2>
+                Small Slots
+            </h2>
 
             <p>
                 Small storage capacity
@@ -139,12 +209,15 @@
 
 
 
-<!-- SLOT DETAILS POPUP -->
+<!-- ======================================
+     SLOT DETAILS MODAL
+======================================= -->
 
 <div
     id="slotModal"
     class="modal"
 >
+
 
     <div class="modal-content">
 
@@ -157,75 +230,115 @@
         </button>
 
 
-        <h2 id="modalSlotId">
-            A-01
+        <h2>
+            Slot Details
         </h2>
 
 
-       <div class="slot-detail">
-
-        <p>
-            <strong>Slot ID:</strong>
-            <span id="modalSlotId"></span>
-        </p>
-
-        <p>
-            <strong>Size:</strong>
-            <span id="modalSize"></span>
-        </p>
-
-        <p>
-            <strong>Product:</strong>
-            <span id="modalProduct">Empty</span>
-        </p>
-
-        <p>
-            <strong>Quantity:</strong>
-            <span id="modalQuantity">0</span>
-        </p>
-
-        <p>
-            <strong>Capacity:</strong>
-            <span id="modalCapacity"></span>
-        </p>
-
-        <p>
-            <strong>Used:</strong>
-            <span id="modalUsed"></span>
-        </p>
-
-        <p>
-            <strong>Available:</strong>
-            <span id="modalAvailable"></span>
-        </p>
-
-        <p>
-            <strong>Status:</strong>
-            <span id="modalStatus"></span>
-        </p>
-
-</div>
-
-<div class="progress-container">
-
-    <div
-        class="progress-bar"
-        id="modalProgress">
-    </div>
-
-</div>
+        <div class="slot-detail">
 
 
-        <div class="modal-progress">
+            <p>
 
-            <div class="progress-container">
+                <strong>
+                    Slot ID:
+                </strong>
 
-                <div
-                    id="modalProgress"
-                    class="progress-bar"
-                ></div>
+                <span id="modalSlotId"></span>
 
-            </div>
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Size:
+                </strong>
+
+                <span id="modalSize"></span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Product:
+                </strong>
+
+                <span id="modalProduct">
+                    Empty
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Quantity:
+                </strong>
+
+                <span id="modalQuantity">
+                    0
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Capacity:
+                </strong>
+
+                <span id="modalCapacity"></span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Used:
+                </strong>
+
+                <span id="modalUsed"></span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Available:
+                </strong>
+
+                <span id="modalAvailable"></span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Status:
+                </strong>
+
+                <span id="modalStatus"></span>
+
+            </p>
+
+
+        </div>
+
+
+        <div class="progress-container">
+
+            <div
+                class="progress-bar"
+                id="modalProgress"
+            ></div>
 
         </div>
 

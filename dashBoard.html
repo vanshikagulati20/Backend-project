@@ -1,175 +1,280 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Dashboard - Storvia</title>
 
     <link rel="stylesheet" href="style.css">
+
 </head>
+
 
 <body>
 
-    <header class="dashboard-header">
+
+<header class="dashboard-header">
 
     <div class="brand">
         <h1>Storvia</h1>
     </div>
 
+
     <nav class="dashboard-nav">
 
-        <a href="dashboard.html">Dashboard</a>
+        <a href="dashboard.html" class="active">
+            Dashboard
+        </a>
 
-        <a href="products.html">Products</a>
+        <a href="product.html">
+            Products
+        </a>
 
-        <a href="inventory.html">Inventory</a>
+        <a href="inventory.html">
+            Inventory
+        </a>
+
+        <a href="warehouse.html">
+            Warehouse
+        </a>
 
     </nav>
+
 
     <div class="user-section">
 
         <span id="welcomeUser"></span>
 
-        <button id="logoutBtn">Logout</button>
+        <button id="logoutBtn">
+            Logout
+        </button>
 
     </div>
 
 </header>
 
 
-    <main class="dashboard-container">
 
-        <section class="dashboard-intro">
+<main class="dashboard-container">
 
-            <h2>Warehouse Dashboard</h2>
 
-            <p>
-                Monitor your products, inventory and warehouse space.
+    <!-- ======================================
+         INTRO
+    ======================================= -->
+
+    <section class="dashboard-intro">
+
+        <h2>
+            Warehouse Dashboard
+        </h2>
+
+        <p>
+            Monitor your products, inventory and warehouse space.
+        </p>
+
+    </section>
+
+
+
+    <!-- ======================================
+         STATISTICS
+    ======================================= -->
+
+    <section class="stats-grid">
+
+
+        <div class="stat-card">
+
+            <h3>
+                Total Products
+            </h3>
+
+            <p id="totalProducts">
+                0
             </p>
 
-        </section>
+        </div>
 
 
-        <!-- Statistics -->
+        <div class="stat-card">
 
-        <section class="stats-grid">
+            <h3>
+                Total Quantity
+            </h3>
 
-            <div class="stat-card">
+            <p id="totalQuantity">
+                0
+            </p>
 
-                <h3>Occupied Slots</h3>
-
-                <p id="occupiedSlots">0</p>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>Available Slots</h3>
-
-                <p id="availableSlots">0</p>
-
-            </div>
+        </div>
 
 
-          
+        <div class="stat-card">
 
-            <div class="stat-card">
+            <h3>
+                Total Weight
+            </h3>
 
-                <h3>Inventory Entries</h3>
+            <p id="totalWeight">
+                0 kg
+            </p>
 
-                <p id="inventoryEntries">0</p>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <h3>Occupied Slots</h3>
-
-                <p id="occupiedSlots">0</p>
-
-            </div>
+        </div>
 
 
-            <div class="stat-card">
+        <div class="stat-card">
 
-                <h3>Available Slots</h3>
+            <h3>
+                Occupied Slots
+            </h3>
 
-                <p id="availableSlots">0</p>
+            <p id="occupiedSlots">
+                0
+            </p>
 
-            </div>
-
-        </section>
-
-
-        <!-- Space Analysis -->
-
-        <section class="analysis-card">
-
-            <div class="section-heading">
-
-                <h2>Warehouse Space Analysis</h2>
-
-                <p>Current warehouse utilization</p>
-
-            </div>
+        </div>
 
 
-            <div class="space-info">
+        <div class="stat-card">
 
-                <div>
-                    <span>Used Space</span>
-                    <strong id="usedSpace">0%</strong>
-                </div>
+            <h3>
+                Available Slots
+            </h3>
 
-                <div>
-                    <span>Available Space</span>
-                    <strong id="freeSpace">100%</strong>
-                </div>
+            <p id="availableSlots">
+                0
+            </p>
 
-            </div>
+        </div>
 
 
-            <div class="progress-container">
+        <div class="stat-card">
 
-                <div
-                    class="progress-bar"
-                    id="spaceProgress">
-                </div>
+            <h3>
+                Inventory Entries
+            </h3>
 
-            </div>
+            <p id="inventoryEntries">
+                0
+            </p>
 
-        </section>
-
-
-        <!-- Inventory Summary -->
-
-        <section class="inventory-card">
-
-            <div class="section-heading">
-
-                <h2>Inventory Summary</h2>
-
-                <p>Products currently stored in inventory</p>
-
-            </div>
+        </div>
 
 
-            <div id="inventoryList">
+    </section>
 
-                <p class="empty-message">
-                    No inventory available.
-                </p>
+
+
+    <!-- ======================================
+         SPACE ANALYSIS
+    ======================================= -->
+
+    <section class="analysis-card">
+
+
+        <div class="section-heading">
+
+            <h2>
+                Warehouse Space Analysis
+            </h2>
+
+            <p>
+                Current warehouse utilization
+            </p>
+
+        </div>
+
+
+        <div class="space-info">
+
+
+            <div>
+
+                <span>
+                    Used Space
+                </span>
+
+                <strong id="usedSpace">
+                    0%
+                </strong>
 
             </div>
 
-        </section>
 
-    </main>
+            <div>
+
+                <span>
+                    Available Space
+                </span>
+
+                <strong id="freeSpace">
+                    100%
+                </strong>
+
+            </div>
 
 
-    <script src="dashboard.js"></script>
+        </div>
+
+
+        <div class="progress-container">
+
+            <div
+                class="progress-bar"
+                id="spaceProgress"
+            ></div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ======================================
+         INVENTORY SUMMARY
+    ======================================= -->
+
+    <section class="inventory-card">
+
+
+        <div class="section-heading">
+
+            <h2>
+                Inventory Summary
+            </h2>
+
+            <p>
+                Products currently stored in the warehouse.
+            </p>
+
+        </div>
+
+
+        <div id="inventoryList">
+
+            <p class="empty-message">
+                No inventory available.
+            </p>
+
+        </div>
+
+
+    </section>
+
+
+</main>
+
+
+
+<script src="dashboard.js"></script>
 
 </body>
 
