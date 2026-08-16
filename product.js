@@ -16,6 +16,12 @@ const quantity =
 const unit =
     document.getElementById("unit");
 
+const itemsPerUnit =
+    document.getElementById("itemsPerUnit");
+
+const itemsPerUnitLabel =
+    document.getElementById("itemsPerUnitLabel");
+
 const size =
     document.getElementById("size");
 
@@ -97,6 +103,60 @@ let existingProductStatus =
 
 let existingAllocatedQuantity =
     0;
+
+
+// ==========================================
+// UNIT CHANGE
+// ==========================================
+
+unit.addEventListener(
+    "change",
+    function () {
+
+        updateItemsPerUnitField();
+
+    }
+);
+
+
+function updateItemsPerUnitField() {
+
+    const selectedUnit =
+        unit.value;
+
+
+    if (selectedUnit === "Pieces") {
+
+        itemsPerUnitLabel.textContent =
+            "Items per Piece *";
+
+        itemsPerUnit.value = 1;
+
+        itemsPerUnit.readOnly = true;
+
+    }
+
+    else {
+
+        itemsPerUnitLabel.textContent =
+            "Items per " +
+            selectedUnit.slice(0, -1) +
+            " *";
+
+        itemsPerUnit.readOnly = false;
+
+        if (
+            !itemsPerUnit.value ||
+            Number(itemsPerUnit.value) < 1
+        ) {
+
+            itemsPerUnit.value = 1;
+
+        }
+
+    }
+
+}
 
 
 // ==========================================
@@ -238,6 +298,44 @@ function saveSlots(slots) {
 
 
 // ==========================================
+// ALLOCATION STATUS
+// ==========================================
+
+function getAllocationStatus(product) {
+
+    const quantity =
+        Number(
+            product.quantity || 0
+        );
+
+    const allocatedQuantity =
+        Number(
+            product.allocatedQuantity || 0
+        );
+
+
+    if (allocatedQuantity === 0) {
+
+        return "Not Allocated";
+
+    }
+
+
+    if (
+        allocatedQuantity < quantity
+    ) {
+
+        return "Pending";
+
+    }
+
+
+    return "Allocated";
+
+}
+
+
+// ==========================================
 // DISPLAY PRODUCTS
 // ==========================================
 
@@ -253,7 +351,7 @@ function displayProducts(products) {
             <tr>
 
                 <td
-                    colspan="10"
+                    colspan="11"
                     class="empty-message"
                 >
                     No products found.
@@ -292,16 +390,16 @@ function displayProducts(products) {
                 );
 
 
+            const statusText =
+                getAllocationStatus(
+                    product
+                );
+
+
             const statusClass =
-                product.allocationStatus ===
-                "Allocated"
+                statusText === "Allocated"
                     ? "status-allocated"
                     : "status-pending";
-
-
-            const statusText =
-                product.allocationStatus ||
-                "Pending";
 
 
             row.innerHTML = `
@@ -320,6 +418,10 @@ function displayProducts(products) {
 
                 <td>
                     ${product.unit}
+                </td>
+
+                <td>
+                    ${product.itemsPerUnit}
                 </td>
 
                 <td>
@@ -390,6 +492,35 @@ productForm.addEventListener(
             getProducts();
 
 
+        // ==================================
+        // FIND EXISTING PRODUCT
+        // ==================================
+
+        let oldProduct = null;
+
+
+        if (
+            editingProductId !== null
+        ) {
+
+            oldProduct =
+                products.find(
+                    function (item) {
+
+                        return (
+                            item.id ===
+                            editingProductId &&
+
+                            item.userEmail ===
+                            currentUser.email
+                        );
+
+                    }
+                );
+
+        }
+
+
         const product = {
 
             id:
@@ -409,6 +540,13 @@ productForm.addEventListener(
 
             unit:
                 unit.value,
+
+            itemsPerUnit:
+                unit.value === "Pieces"
+                    ? 1
+                    : Number(
+                        itemsPerUnit.value
+                    ),
 
             size:
                 size.value,
@@ -443,18 +581,20 @@ productForm.addEventListener(
                 fragile.value,
 
             allocationStatus:
-                editingProductId
-                    ? existingProductStatus
+                oldProduct
+                    ? oldProduct.allocationStatus
                     : "Pending",
 
             allocatedQuantity:
-                editingProductId
-                    ? existingAllocatedQuantity
+                oldProduct
+                    ? Number(
+                        oldProduct.allocatedQuantity || 0
+                    )
                     : 0,
 
             allocationMessage:
-                editingProductId
-                    ? ""
+                oldProduct
+                    ? oldProduct.allocationMessage || ""
                     : "Waiting for warehouse allocation.",
 
             userEmail:
@@ -497,6 +637,18 @@ productForm.addEventListener(
 
             alert(
                 "Quantity must be greater than 0."
+            );
+
+            return;
+        }
+
+
+        if (
+            product.itemsPerUnit <= 0
+        ) {
+
+            alert(
+                "Items per unit must be greater than 0."
             );
 
             return;
@@ -582,6 +734,7 @@ productForm.addEventListener(
                 saveProducts(
                     products
                 );
+
 
                 alert(
                     "Product updated successfully."
@@ -698,6 +851,16 @@ function editProduct(id) {
 
     unit.value =
         product.unit;
+
+
+    itemsPerUnit.value =
+        Number(
+            product.itemsPerUnit || 1
+        );
+
+
+    updateItemsPerUnitField();
+
 
     size.value =
         product.size;
@@ -932,6 +1095,11 @@ function resetForm() {
     breadthInput.required = false;
     heightInput.required = false;
 
+
+    itemsPerUnit.value = 1;
+
+    updateItemsPerUnitField();
+
 }
 
 
@@ -1025,5 +1193,7 @@ searchInput.addEventListener(
 // ==========================================
 // INITIAL LOAD
 // ==========================================
+
+updateItemsPerUnitField();
 
 displayCurrentUserProducts();
