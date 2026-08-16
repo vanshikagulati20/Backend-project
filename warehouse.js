@@ -1,6 +1,16 @@
-const SLOT_KEY = "warehouseSlots";
-const PRODUCT_KEY = "products";
-const CURRENT_USER_KEY = "currentuser";
+const SLOT_KEY =
+    "warehouseSlots";
+
+const PRODUCT_KEY =
+    "products";
+
+const CURRENT_USER_KEY =
+    "currentuser";
+
+
+// ==========================================
+// DOM ELEMENTS
+// ==========================================
 
 const largeSlots =
     document.getElementById("largeSlots");
@@ -34,16 +44,43 @@ const allocationResult =
 function getCurrentUser() {
 
     const savedUser =
-        localStorage.getItem(CURRENT_USER_KEY);
+        localStorage.getItem(
+            CURRENT_USER_KEY
+        );
+
 
     if (!savedUser) {
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
 
         return null;
+
     }
 
-    return JSON.parse(savedUser);
+
+    try {
+
+        return JSON.parse(
+            savedUser
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Invalid current user data",
+            error
+        );
+
+        window.location.href =
+            "login.html";
+
+        return null;
+
+    }
+
 }
 
 
@@ -54,14 +91,24 @@ function getCurrentUser() {
 function getProducts() {
 
     const saved =
-        localStorage.getItem(PRODUCT_KEY);
+        localStorage.getItem(
+            PRODUCT_KEY
+        );
+
 
     if (!saved) {
+
         return [];
+
     }
 
+
     try {
-        return JSON.parse(saved);
+
+        return JSON.parse(
+            saved
+        );
+
     }
 
     catch (error) {
@@ -72,16 +119,22 @@ function getProducts() {
         );
 
         return [];
+
     }
+
 }
 
 
 function saveProducts(products) {
 
     localStorage.setItem(
+
         PRODUCT_KEY,
+
         JSON.stringify(products)
+
     );
+
 }
 
 
@@ -92,49 +145,78 @@ function saveProducts(products) {
 function getSlots() {
 
     const saved =
-        localStorage.getItem(SLOT_KEY);
+        localStorage.getItem(
+            SLOT_KEY
+        );
+
 
     if (!saved) {
+
         return [];
+
     }
+
 
     try {
 
         const slots =
             JSON.parse(saved);
 
+
         /*
-         * Normalize old slots.
-         *
-         * This is important because
-         * older slots may not have
-         * used / product information.
+         * Normalize slots created
+         * by the new inventory.js.
          */
 
-        return slots.map(function (slot) {
+        return slots.map(
+            function (slot) {
 
-            return {
+                return {
 
-                ...slot,
+                    ...slot,
 
-                capacity:
-                    Number(slot.capacity || 0),
+                    length:
+                        Number(
+                            slot.length || 0
+                        ),
 
-                used:
-                    Number(slot.used || 0),
+                    breadth:
+                        Number(
+                            slot.breadth || 0
+                        ),
 
-                productId:
-                    slot.productId || null,
+                    height:
+                        Number(
+                            slot.height || 0
+                        ),
 
-                productName:
-                    slot.productName || null,
+                    volume:
+                        Number(
+                            slot.volume || 0
+                        ),
 
-                productQuantity:
-                    Number(slot.productQuantity || 0)
+                    usedVolume:
+                        Number(
+                            slot.usedVolume || 0
+                        ),
 
-            };
+                    productId:
+                        slot.productId ||
+                        null,
 
-        });
+                    productName:
+                        slot.productName ||
+                        null,
+
+                    productQuantity:
+                        Number(
+                            slot.productQuantity || 0
+                        )
+
+                };
+
+            }
+        );
 
     }
 
@@ -146,43 +228,273 @@ function getSlots() {
         );
 
         return [];
+
     }
+
 }
 
 
 function saveSlots(slots) {
 
     localStorage.setItem(
+
         SLOT_KEY,
+
         JSON.stringify(slots)
+
     );
+
 }
 
 
 // ==========================================
-// PRODUCT SIZE PRIORITY
+// PRODUCT UNIT VOLUME
 // ==========================================
 
-function getSizeRank(size) {
+function getProductUnitVolume(product) {
 
-    if (size === "Large") {
-        return 3;
+    const length =
+        Number(
+            product.length || 0
+        );
+
+    const breadth =
+        Number(
+            product.breadth || 0
+        );
+
+    const height =
+        Number(
+            product.height || 0
+        );
+
+
+    if (
+        length <= 0 ||
+        breadth <= 0 ||
+        height <= 0
+    ) {
+
+        return 0;
+
     }
 
-    if (size === "Medium") {
-        return 2;
-    }
 
-    if (size === "Small") {
-        return 1;
-    }
+    /*
+     * Dimensions represent ONE
+     * storage unit.
+     *
+     * Example:
+     *
+     * 1 Box = 20 × 15 × 10 cm
+     *
+     * Volume = 3000 cm³
+     */
 
-    return 0;
+    return (
+        length *
+        breadth *
+        height
+    );
+
 }
 
 
 // ==========================================
-// FFD ALLOCATION
+// CHECK WHETHER PRODUCT UNIT FITS SLOT
+// ==========================================
+
+function doesProductFitSlot(
+    product,
+    slot
+) {
+
+    const productDimensions = [
+
+        Number(
+            product.length || 0
+        ),
+
+        Number(
+            product.breadth || 0
+        ),
+
+        Number(
+            product.height || 0
+        )
+
+    ];
+
+
+    const slotDimensions = [
+
+        Number(
+            slot.length || 0
+        ),
+
+        Number(
+            slot.breadth || 0
+        ),
+
+        Number(
+            slot.height || 0
+        )
+
+    ];
+
+
+    /*
+     * Sort both dimensions.
+     *
+     * This allows rotation.
+     *
+     * Example:
+     *
+     * Product:
+     * 40 × 20 × 10
+     *
+     * Slot:
+     * 20 × 40 × 30
+     *
+     * This still fits.
+     */
+
+    productDimensions.sort(
+        function (a, b) {
+            return a - b;
+        }
+    );
+
+
+    slotDimensions.sort(
+        function (a, b) {
+            return a - b;
+        }
+    );
+
+
+    return (
+
+        productDimensions[0] <=
+        slotDimensions[0]
+
+        &&
+
+        productDimensions[1] <=
+        slotDimensions[1]
+
+        &&
+
+        productDimensions[2] <=
+        slotDimensions[2]
+
+    );
+
+}
+
+
+// ==========================================
+// GET ALLOCATION STATUS
+// ==========================================
+
+function getAllocationStatus(product) {
+
+    const quantity =
+        Number(
+            product.quantity || 0
+        );
+
+
+    const allocatedQuantity =
+        Number(
+            product.allocatedQuantity || 0
+        );
+
+
+    if (
+        allocatedQuantity === 0
+    ) {
+
+        return "Not Allocated";
+
+    }
+
+
+    if (
+        allocatedQuantity <
+        quantity
+    ) {
+
+        return "Pending";
+
+    }
+
+
+    return "Allocated";
+
+}
+
+
+// ==========================================
+// FFD SORTING
+// ==========================================
+
+function sortProductsForFFD(products) {
+
+    return products.sort(
+        function (a, b) {
+
+            const volumeA =
+                getProductUnitVolume(a);
+
+
+            const volumeB =
+                getProductUnitVolume(b);
+
+
+            /*
+             * Largest storage unit first.
+             */
+
+            if (
+                volumeA !== volumeB
+            ) {
+
+                return (
+                    volumeB -
+                    volumeA
+                );
+
+            }
+
+
+            /*
+             * If volume is same,
+             * heavier product first.
+             */
+
+            return (
+
+                Number(
+                    b.weight || 0
+                )
+
+                -
+
+                Number(
+                    a.weight || 0
+                )
+
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// ALLOCATE PENDING PRODUCTS
 // ==========================================
 
 function allocatePendingProducts() {
@@ -190,8 +502,11 @@ function allocatePendingProducts() {
     const currentUser =
         getCurrentUser();
 
+
     if (!currentUser) {
+
         return;
+
     }
 
 
@@ -203,297 +518,510 @@ function allocatePendingProducts() {
         getSlots();
 
 
-    // --------------------------------------
-    // Find current user's products
-    // --------------------------------------
+    // ======================================
+    // CURRENT USER PRODUCTS
+    // ======================================
 
     const userProducts =
-        products.filter(function (product) {
+        products.filter(
+            function (product) {
 
-            return (
-                product.userEmail ===
-                currentUser.email
-            );
+                return (
+                    product.userEmail ===
+                    currentUser.email
+                );
 
-        });
-
-
-    // --------------------------------------
-    // Pending products
-    // --------------------------------------
-
-    const pendingProducts =
-    userProducts.filter(function (product) {
-
-        const quantity =
-            Number(product.quantity || 0);
-
-        const allocatedQuantity =
-            Number(product.allocatedQuantity || 0);
-
-        return (
-            product.allocationStatus !== "Allocated" ||
-            quantity > allocatedQuantity
+            }
         );
 
-    });
+
+    // ======================================
+    // FIND PENDING PRODUCTS
+    // ======================================
+
+    const pendingProducts =
+        userProducts.filter(
+            function (product) {
+
+                const quantity =
+                    Number(
+                        product.quantity || 0
+                    );
 
 
-    if (pendingProducts.length === 0) {
+                const allocatedQuantity =
+                    Number(
+                        product.allocatedQuantity || 0
+                    );
+
+
+                return (
+                    allocatedQuantity <
+                    quantity
+                );
+
+            }
+        );
+
+
+    if (
+        pendingProducts.length === 0
+    ) {
 
         allocationMessage.innerText =
             "There are no pending products to allocate.";
 
+
         allocationResult.innerHTML = `
+
             <div class="allocation-success">
+
                 All products are already allocated.
+
             </div>
+
         `;
 
         return;
+
     }
 
 
-    // --------------------------------------
-    // Sort products for FFD
-    //
-    // Largest products first
-    // --------------------------------------
+    // ======================================
+    // FFD SORTING
+    // ======================================
 
-    pendingProducts.sort(function (a, b) {
-
-        const sizeDifference =
-            getSizeRank(b.size) -
-            getSizeRank(a.size);
-
-        if (sizeDifference !== 0) {
-            return sizeDifference;
-        }
-
-        /*
-         * If same size, heavier product
-         * gets priority.
-         */
-
-        return (
-            Number(b.weight || 0) -
-            Number(a.weight || 0)
-        );
-
-    });
+    sortProductsForFFD(
+        pendingProducts
+    );
 
 
     let allocatedCount = 0;
+
     let failedCount = 0;
 
     const failedProducts = [];
 
 
     // ======================================
-    // FFD
+    // ALLOCATE EACH PRODUCT
     // ======================================
 
-    pendingProducts.forEach(function (product) {
+    pendingProducts.forEach(
+        function (product) {
 
-       let remainingQuantity =
-    Number(product.quantity || 0) -
-    Number(product.allocatedQuantity || 0);
+            let remainingQuantity =
 
+                Number(
+                    product.quantity || 0
+                )
 
-        if (remainingQuantity <= 0) {
+                -
 
-            product.allocationStatus =
-                "Allocated";
-
-            return;
-        }
-
-
-        /*
-         * Find suitable slots.
-         *
-         * FFD means:
-         * first suitable slot found
-         * after sorting.
-         */
-
-        const suitableSlots =
-            slots.filter(function (slot) {
-
-                const available =
-                    Number(slot.capacity || 0) -
-                    Number(slot.used || 0);
-
-
-                return (
-                    available > 0 &&
-                    getSizeRank(slot.size) >=
-                    getSizeRank(product.size)
+                Number(
+                    product.allocatedQuantity || 0
                 );
 
-            });
+
+            if (
+                remainingQuantity <= 0
+            ) {
+
+                product.allocationStatus =
+                    "Allocated";
+
+                return;
+
+            }
 
 
-        /*
-         * Sort slots:
-         *
-         * smallest suitable slot first.
-         *
-         * This prevents wasting a Large slot
-         * when a Medium slot is enough.
-         */
+            // ==================================
+            // VOLUME OF ONE STORAGE UNIT
+            // ==================================
 
-        suitableSlots.sort(function (a, b) {
+            const unitVolume =
+                getProductUnitVolume(
+                    product
+                );
 
-            return (
-                getSizeRank(a.size) -
-                getSizeRank(b.size)
+
+            if (
+                unitVolume <= 0
+            ) {
+
+                product.allocationStatus =
+                    "Pending";
+
+                product.allocationMessage =
+                    "Invalid product dimensions.";
+
+                failedCount++;
+
+
+                failedProducts.push({
+
+                    name:
+                        product.name,
+
+                    requested:
+                        product.quantity,
+
+                    allocated:
+                        product.allocatedQuantity || 0,
+
+                    remaining:
+                        remainingQuantity,
+
+                    reason:
+                        "Invalid product dimensions."
+
+                });
+
+
+                return;
+
+            }
+
+
+            /*
+             * Find slots that can physically
+             * contain ONE unit of this product.
+             */
+
+            const suitableSlots =
+                slots.filter(
+                    function (slot) {
+
+                        const availableVolume =
+
+                            Number(
+                                slot.volume || 0
+                            )
+
+                            -
+
+                            Number(
+                                slot.usedVolume || 0
+                            );
+
+
+                        if (
+                            availableVolume <
+                            unitVolume
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        /*
+                         * If slot already contains
+                         * another product, don't use it.
+                         */
+
+                        if (
+                            slot.productId &&
+                            slot.productId !==
+                            product.id
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        /*
+                         * Physical dimension check.
+                         */
+
+                        if (
+                            !doesProductFitSlot(
+                                product,
+                                slot
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+
+                        return true;
+
+                    }
+                );
+
+
+            /*
+             * First Fit Decreasing:
+             *
+             * Use the smallest suitable
+             * slot first.
+             *
+             * This reduces wasted space.
+             */
+
+            suitableSlots.sort(
+                function (a, b) {
+
+                    return (
+                        Number(
+                            a.volume || 0
+                        )
+
+                        -
+
+                        Number(
+                            b.volume || 0
+                        )
+                    );
+
+                }
             );
 
-        });
+
+            // ==================================
+            // PLACE PRODUCT IN SLOTS
+            // ==================================
+
+            suitableSlots.forEach(
+                function (slot) {
+
+                    if (
+                        remainingQuantity <= 0
+                    ) {
+
+                        return;
+
+                    }
 
 
-        suitableSlots.forEach(function (slot) {
+                    const availableVolume =
 
-            if (remainingQuantity <= 0) {
-                return;
-            }
+                        Number(
+                            slot.volume || 0
+                        )
 
+                        -
 
-            const available =
-                Number(slot.capacity || 0) -
-                Number(slot.used || 0);
-
-
-            if (available <= 0) {
-                return;
-            }
+                        Number(
+                            slot.usedVolume || 0
+                        );
 
 
-            const quantityToAllocate =
-                Math.min(
-                    remainingQuantity,
-                    available
-                );
+                    /*
+                     * How many complete
+                     * storage units can fit?
+                     */
+
+                    const unitsThatFit =
+                        Math.floor(
+                            availableVolume /
+                            unitVolume
+                        );
 
 
-            // --------------------------------
-            // Empty slot
-            // --------------------------------
+                    if (
+                        unitsThatFit <= 0
+                    ) {
 
-            if (!slot.productId) {
+                        return;
 
-                slot.productId =
-                    product.id;
+                    }
 
-                slot.productName =
-                    product.name;
 
-                slot.productQuantity =
-                    quantityToAllocate;
+                    const quantityToAllocate =
+                        Math.min(
+
+                            remainingQuantity,
+
+                            unitsThatFit
+
+                        );
+
+
+                    if (
+                        quantityToAllocate <= 0
+                    ) {
+
+                        return;
+
+                    }
+
+
+                    // ==================================
+                    // EMPTY SLOT
+                    // ==================================
+
+                    if (
+                        !slot.productId
+                    ) {
+
+                        slot.productId =
+                            product.id;
+
+                        slot.productName =
+                            product.name;
+
+                        slot.productQuantity =
+                            quantityToAllocate;
+
+                    }
+
+
+                    // ==================================
+                    // SAME PRODUCT
+                    // ==================================
+
+                    else {
+
+                        /*
+                         * This should only happen
+                         * when the slot already contains
+                         * the same product.
+                         */
+
+                        if (
+                            slot.productId !==
+                            product.id
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        slot.productQuantity =
+
+                            Number(
+                                slot.productQuantity ||
+                                0
+                            )
+
+                            +
+
+                            quantityToAllocate;
+
+                    }
+
+
+                    // ==================================
+                    // UPDATE VOLUME
+                    // ==================================
+
+                    const addedVolume =
+
+                        quantityToAllocate *
+                        unitVolume;
+
+
+                    slot.usedVolume =
+
+                        Number(
+                            slot.usedVolume || 0
+                        )
+
+                        +
+
+                        addedVolume;
+
+
+                    // ==================================
+                    // UPDATE PRODUCT
+                    // ==================================
+
+                    remainingQuantity -=
+                        quantityToAllocate;
+
+
+                    product.allocatedQuantity =
+
+                        Number(
+                            product.allocatedQuantity ||
+                            0
+                        )
+
+                        +
+
+                        quantityToAllocate;
+
+                }
+            );
+
+
+            // ==================================
+            // ALLOCATION RESULT
+            // ==================================
+
+            if (
+                remainingQuantity === 0
+            ) {
+
+                product.allocationStatus =
+                    "Allocated";
+
+                product.allocationMessage =
+                    "Product fully allocated.";
+
+                allocatedCount++;
 
             }
 
             else {
 
-                /*
-                 * Don't mix products in
-                 * the same slot.
-                 */
+                product.allocationStatus =
+                    "Pending";
 
-                if (
-                    slot.productId !==
-                    product.id
-                ) {
 
-                    return;
-                }
+                product.allocationMessage =
+                    "Not enough suitable warehouse space.";
 
-                slot.productQuantity =
-                    Number(
-                        slot.productQuantity || 0
-                    ) +
-                    quantityToAllocate;
+
+                failedCount++;
+
+
+                failedProducts.push({
+
+                    name:
+                        product.name,
+
+                    requested:
+                        product.quantity,
+
+                    allocated:
+                        product.allocatedQuantity || 0,
+
+                    remaining:
+                        remainingQuantity,
+
+                    reason:
+                        "Not enough suitable warehouse space."
+
+                });
+
             }
 
-
-            slot.used =
-                Number(slot.used || 0) +
-                quantityToAllocate;
-
-
-            remainingQuantity -=
-                quantityToAllocate;
-
-        });
-
-
-        // ==================================
-        // Allocation result
-        // ==================================
-
-        if (remainingQuantity === 0) {
-
-            product.allocationStatus =
-                "Allocated";
-
-            product.allocatedQuantity =
-                Number(product.quantity);
-
-            allocatedCount++;
-
         }
-
-        else {
-
-            /*
-             * Some quantity couldn't fit.
-             */
-
-            product.allocationStatus =
-                "Pending";
-
-            product.allocatedQuantity =
-                Number(product.quantity) -
-                remainingQuantity;
-
-
-            product.allocationMessage =
-                "Not enough suitable warehouse capacity.";
-
-            failedCount++;
-
-
-            failedProducts.push({
-
-                name: product.name,
-
-                requested:
-                    product.quantity,
-
-                allocated:
-                    product.allocatedQuantity,
-
-                remaining:
-                    remainingQuantity
-
-            });
-
-        }
-
-    });
+    );
 
 
     // ======================================
-    // Save everything
+    // SAVE
     // ======================================
 
-    saveSlots(slots);
-    saveProducts(products);
+    saveSlots(
+        slots
+    );
+
+
+    saveProducts(
+        products
+    );
 
 
     // ======================================
-    // Result message
+    // RESULT MESSAGE
     // ======================================
 
     allocationMessage.innerText =
@@ -501,17 +1029,28 @@ function allocatePendingProducts() {
 
 
     let resultHTML = `
+
         <div class="allocation-success">
-            Successfully allocated:
-            <strong>${allocatedCount}</strong>
+
+            Successfully fully allocated:
+
+            <strong>
+                ${allocatedCount}
+            </strong>
+
             product(s).
+
         </div>
+
     `;
 
 
-    if (failedCount > 0) {
+    if (
+        failedCount > 0
+    ) {
 
         resultHTML += `
+
             <div class="allocation-warning">
 
                 <strong>
@@ -520,32 +1059,48 @@ function allocatePendingProducts() {
                 </strong>
 
                 <ul>
+
         `;
 
 
-        failedProducts.forEach(function (item) {
+        failedProducts.forEach(
+            function (item) {
 
-            resultHTML += `
-                <li>
-                    ${item.name}:
-                    ${item.allocated}
-                    allocated /
-                    ${item.requested}
-                    requested
-                </li>
-            `;
+                resultHTML += `
 
-        });
+                    <li>
+
+                        ${item.name}:
+
+                        ${item.allocated}
+                        allocated /
+
+                        ${item.requested}
+                        requested
+
+                        <br>
+
+                        ${item.reason}
+
+                    </li>
+
+                `;
+
+            }
+        );
 
 
         resultHTML += `
+
                 </ul>
 
                 Create more suitable slots
                 and run allocation again.
 
             </div>
+
         `;
+
     }
 
 
@@ -554,7 +1109,7 @@ function allocatePendingProducts() {
 
 
     // ======================================
-    // Refresh warehouse UI
+    // REFRESH WAREHOUSE
     // ======================================
 
     displaySlots();
@@ -569,45 +1124,118 @@ function allocatePendingProducts() {
 function createSlotBox(slot) {
 
     const slotBox =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     slotBox.className =
         "warehouse-slot";
 
 
-    const used =
-        Number(slot.used || 0);
+    const usedVolume =
+        Number(
+            slot.usedVolume || 0
+        );
 
-    const capacity =
-        Number(slot.capacity || 0);
+
+    const totalVolume =
+        Number(
+            slot.volume || 0
+        );
+
+
+    const availableVolume =
+        Math.max(
+
+            totalVolume -
+            usedVolume,
+
+            0
+
+        );
 
 
     const percentage =
-        capacity > 0
-            ? Math.min(
-                (used / capacity) * 100,
-                100
-            )
-            : 0;
 
+        totalVolume > 0
+
+            ?
+
+            Math.min(
+
+                (
+                    usedVolume /
+                    totalVolume
+                ) * 100,
+
+                100
+
+            )
+
+            :
+
+            0;
+
+
+    // ======================================
+    // STATUS
+    // ======================================
 
     let status =
         "Empty";
 
 
-    if (used >= capacity && capacity > 0) {
+    if (
+        availableVolume <= 0 &&
+        totalVolume > 0
+    ) {
 
-        status = "Full";
-
-    }
-
-    else if (used > 0) {
-
-        status = "Occupied";
+        status =
+            "Full";
 
     }
 
+    else if (
+        usedVolume > 0
+    ) {
+
+        status =
+            "Occupied";
+
+    }
+
+
+    // ======================================
+    // FIND PRODUCT
+    // ======================================
+
+    const products =
+        getProducts();
+
+
+    const product =
+        products.find(
+            function (item) {
+
+                return (
+                    item.id ===
+                    slot.productId
+                );
+
+            }
+        );
+
+
+    const productUnit =
+        product
+            ? product.unit
+            : "units";
+
+
+    // ======================================
+    // HTML
+    // ======================================
 
     slotBox.innerHTML = `
 
@@ -615,58 +1243,106 @@ function createSlotBox(slot) {
             ${slot.id}
         </div>
 
+
         <div class="slot-size">
             ${slot.size}
         </div>
+
 
         <div class="slot-status">
             ${status}
         </div>
 
+
+        <div class="slot-dimensions">
+
+            ${slot.length}
+            ×
+            ${slot.breadth}
+            ×
+            ${slot.height}
+            cm
+
+        </div>
+
+
         ${
             slot.productName
-                ? `
+
+                ?
+
+                `
+
                     <div class="slot-product">
+
                         ${slot.productName}
+
                     </div>
 
+
                     <div class="slot-quantity">
+
                         ${slot.productQuantity}
-                        units
+                        ${productUnit}
+
                     </div>
+
                 `
-                : `
+
+                :
+
+                `
+
                     <div class="slot-product empty">
+
                         Empty
+
                     </div>
+
                 `
         }
 
+
         <div class="slot-capacity">
-            ${used} / ${capacity}
+
+            ${usedVolume.toFixed(2)}
+            /
+            ${totalVolume.toFixed(2)}
+            cm³
+
         </div>
 
+
         <div class="slot-progress">
+
             <div
                 class="slot-progress-bar"
                 style="width:${percentage}%"
             ></div>
+
         </div>
 
     `;
 
 
+    // ======================================
+    // CLICK
+    // ======================================
+
     slotBox.addEventListener(
         "click",
         function () {
 
-            showSlotDetails(slot);
+            showSlotDetails(
+                slot
+            );
 
         }
     );
 
 
     return slotBox;
+
 }
 
 
@@ -680,54 +1356,79 @@ function displaySlots() {
         getSlots();
 
 
-    largeSlots.innerHTML = "";
-    mediumSlots.innerHTML = "";
-    smallSlots.innerHTML = "";
+    largeSlots.innerHTML =
+        "";
+
+    mediumSlots.innerHTML =
+        "";
+
+    smallSlots.innerHTML =
+        "";
 
 
-    if (slots.length === 0) {
+    if (
+        slots.length === 0
+    ) {
 
         largeSlots.innerHTML = `
+
             <p class="empty-message">
+
                 No slots created yet.
+
             </p>
+
         `;
 
         return;
+
     }
 
 
-    slots.forEach(function (slot) {
+    slots.forEach(
+        function (slot) {
 
-        const slotBox =
-            createSlotBox(slot);
+            const slotBox =
+                createSlotBox(
+                    slot
+                );
 
 
-        if (slot.size === "Large") {
+            if (
+                slot.size ===
+                "Large"
+            ) {
 
-            largeSlots.appendChild(
-                slotBox
-            );
+                largeSlots.appendChild(
+                    slotBox
+                );
+
+            }
+
+            else if (
+                slot.size ===
+                "Medium"
+            ) {
+
+                mediumSlots.appendChild(
+                    slotBox
+                );
+
+            }
+
+            else if (
+                slot.size ===
+                "Small"
+            ) {
+
+                smallSlots.appendChild(
+                    slotBox
+                );
+
+            }
 
         }
-
-        else if (slot.size === "Medium") {
-
-            mediumSlots.appendChild(
-                slotBox
-            );
-
-        }
-
-        else if (slot.size === "Small") {
-
-            smallSlots.appendChild(
-                slotBox
-            );
-
-        }
-
-    });
+    );
 
 }
 
@@ -753,48 +1454,90 @@ function showSlotDetails(slot) {
     document.getElementById(
         "modalCapacity"
     ).innerText =
-        slot.capacity + " units";
+
+        slot.length +
+        " × " +
+        slot.breadth +
+        " × " +
+        slot.height +
+        " cm";
 
 
     document.getElementById(
         "modalUsed"
     ).innerText =
-        slot.used + " units";
+
+        Number(
+            slot.usedVolume || 0
+        ).toFixed(2) +
+
+        " cm³";
 
 
-    const available =
+    const availableVolume =
+
         Math.max(
-            slot.capacity - slot.used,
+
+            Number(
+                slot.volume || 0
+            )
+
+            -
+
+            Number(
+                slot.usedVolume || 0
+            ),
+
             0
+
         );
 
 
     document.getElementById(
         "modalAvailable"
     ).innerText =
-        available + " units";
 
+        availableVolume.toFixed(2) +
+        " cm³";
+
+
+    // ======================================
+    // PRODUCT
+    // ======================================
 
     document.getElementById(
         "modalProduct"
     ).innerText =
+
         slot.productName ||
         "Empty";
 
+
+    // ======================================
+    // STATUS
+    // ======================================
 
     let status =
         "Available";
 
 
-    if (available === 0) {
+    if (
+        availableVolume <= 0
+    ) {
 
-        status = "Full";
+        status =
+            "Full";
 
     }
 
-    else if (slot.used === 0) {
+    else if (
+        Number(
+            slot.usedVolume || 0
+        ) === 0
+    ) {
 
-        status = "Empty";
+        status =
+            "Empty";
 
     }
 
@@ -805,13 +1548,40 @@ function showSlotDetails(slot) {
         status;
 
 
+    // ======================================
+    // PROGRESS
+    // ======================================
+
     const percentage =
-        slot.capacity > 0
-            ? Math.min(
-                (slot.used / slot.capacity) * 100,
+
+        Number(
+            slot.volume || 0
+        ) > 0
+
+            ?
+
+            Math.min(
+
+                (
+                    Number(
+                        slot.usedVolume || 0
+                    )
+
+                    /
+
+                    Number(
+                        slot.volume || 0
+                    )
+
+                ) * 100,
+
                 100
+
             )
-            : 0;
+
+            :
+
+            0;
 
 
     document.getElementById(
@@ -819,6 +1589,10 @@ function showSlotDetails(slot) {
     ).style.width =
         percentage + "%";
 
+
+    // ======================================
+    // SHOW MODAL
+    // ======================================
 
     slotModal.classList.add(
         "show"
