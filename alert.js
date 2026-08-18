@@ -189,7 +189,6 @@ function getCurrentUserSlots() {
 // ==========================================
 // CREATE ALERT
 // ==========================================
-
 function createAlert(
     type,
     title,
@@ -197,13 +196,11 @@ function createAlert(
 ) {
 
     const alert =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
+
 
     alert.className =
-        "warehouse-alert " +
-        "alert-" +
+        "warehouse-alert alert-" +
         type;
 
 
@@ -252,7 +249,6 @@ function createAlert(
 
     return alert;
 }
-
 
 // ==========================================
 // LOW STOCK ALERTS
@@ -484,28 +480,27 @@ function checkEmptySlots(
 // ==========================================
 // LOAD ALERTS
 // ==========================================
-
 function loadAlerts() {
 
-    const currentUser =
-        getCurrentUser();
+    console.log("========== ALERT SYSTEM ==========");
+
+    const currentUser = getCurrentUser();
 
     if (!currentUser) {
-
         return;
     }
 
+    console.log("Current user:", currentUser.email);
+
 
     const alertContainer =
-        document.getElementById(
-            "alertsContainer"
-        );
+        document.getElementById("alertsList");
 
 
     if (!alertContainer) {
 
         console.error(
-            "alertsContainer not found."
+            "ERROR: alertsList element not found in HTML."
         );
 
         return;
@@ -514,6 +509,238 @@ function loadAlerts() {
 
     alertContainer.innerHTML = "";
 
+
+    // ======================================
+    // GET USER DATA
+    // ======================================
+
+    const allProducts =
+        getProducts();
+
+    const allSlots =
+        getSlots();
+
+
+    const products =
+        allProducts.filter(function (product) {
+
+            return (
+                product.userEmail ===
+                currentUser.email
+            );
+
+        });
+
+
+    const slots =
+        allSlots.filter(function (slot) {
+
+            return (
+                slot.userEmail ===
+                currentUser.email
+            );
+
+        });
+
+
+    console.log(
+        "User products:",
+        products
+    );
+
+    console.log(
+        "User slots:",
+        slots
+    );
+
+
+    let alertCount = 0;
+
+
+    // ======================================
+    // CHECK PENDING ALLOCATION
+    // ======================================
+
+    products.forEach(function (product) {
+
+        const quantity =
+            Number(product.quantity || 0);
+
+
+        const allocatedQuantity =
+            Number(
+                product.allocatedQuantity || 0
+            );
+
+
+        console.log(
+            product.name,
+            "quantity =",
+            quantity,
+            "allocated =",
+            allocatedQuantity
+        );
+
+
+        if (
+            allocatedQuantity <
+            quantity
+        ) {
+
+            const remaining =
+                quantity -
+                allocatedQuantity;
+
+
+            const alert =
+                createAlert(
+
+                    "warning",
+
+                    "Pending Allocation",
+
+                    product.name +
+                    " has " +
+                    remaining +
+                    " " +
+                    product.unit +
+                    " still waiting for warehouse space."
+
+                );
+
+
+            alertContainer.appendChild(
+                alert
+            );
+
+
+            alertCount++;
+
+        }
+
+    });
+
+
+    // ======================================
+    // LOW STOCK
+    // ======================================
+
+    products.forEach(function (product) {
+
+        const quantity =
+            Number(product.quantity || 0);
+
+
+        if (
+            quantity > 0 &&
+            quantity <= LOW_STOCK_THRESHOLD
+        ) {
+
+            const alert =
+                createAlert(
+
+                    "danger",
+
+                    "Low Stock",
+
+                    product.name +
+                    " has only " +
+                    quantity +
+                    " " +
+                    product.unit +
+                    " remaining."
+
+                );
+
+
+            alertContainer.appendChild(
+                alert
+            );
+
+
+            alertCount++;
+
+        }
+
+    });
+
+
+    // ======================================
+    // FULL SLOTS
+    // ======================================
+
+    slots.forEach(function (slot) {
+
+        const volume =
+            Number(slot.volume || 0);
+
+
+        const usedVolume =
+            Number(slot.usedVolume || 0);
+
+
+        if (
+            volume > 0 &&
+            usedVolume >= volume
+        ) {
+
+            const alert =
+                createAlert(
+
+                    "danger",
+
+                    "Slot " + slot.id + " Full",
+
+                    "This warehouse slot is completely occupied."
+
+                );
+
+
+            alertContainer.appendChild(
+                alert
+            );
+
+
+            alertCount++;
+
+        }
+
+    });
+
+
+    // ======================================
+    // NO ALERTS
+    // ======================================
+
+    if (
+        alertCount === 0
+    ) {
+
+        alertContainer.innerHTML = `
+
+            <div class="no-alerts">
+
+                <strong>
+                    ✅ Everything looks good!
+                </strong>
+
+                <p>
+                    No warehouse alerts at the moment.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+
+    console.log(
+        "Total alerts:",
+        alertCount
+    );
+
+}
 
     // ======================================
     // GET USER DATA
@@ -581,7 +808,6 @@ function loadAlerts() {
 
     }
 
-}
 
 
 // ==========================================
@@ -614,7 +840,7 @@ if (logoutBtn) {
 
 
 // ==========================================
-// INITIAL LOAD
+// INITIAL LOADy
 // ==========================================
 
 document.addEventListener(
