@@ -50,7 +50,6 @@ function getProducts() {
     if (!savedProducts) {
 
         return [];
-
     }
 
     try {
@@ -67,9 +66,7 @@ function getProducts() {
         );
 
         return [];
-
     }
-
 }
 
 
@@ -85,7 +82,6 @@ function getSlots() {
     if (!savedSlots) {
 
         return [];
-
     }
 
     try {
@@ -102,6 +98,25 @@ function getSlots() {
         );
 
         return [];
+    }
+}
+
+
+// ==========================================
+// SET HTML VALUE
+// ==========================================
+
+function setValue(
+    elementId,
+    value
+) {
+
+    const element =
+        document.getElementById(elementId);
+
+    if (element) {
+
+        element.innerText = value;
 
     }
 
@@ -114,7 +129,7 @@ function getSlots() {
 
 function loadAnalytics() {
 
-    console.log("Analytics JS loaded");
+    console.log("Analytics page loaded");
 
 
     // ======================================
@@ -127,18 +142,27 @@ function loadAnalytics() {
     if (!currentUser) {
 
         return;
+    }
+
+
+    // ======================================
+    // WELCOME USER
+    // ======================================
+
+    const welcomeUser =
+        document.getElementById("welcomeUser");
+
+    if (welcomeUser) {
+
+        welcomeUser.innerText =
+            "Welcome, " +
+            currentUser.name;
 
     }
 
 
-    console.log(
-        "Current user:",
-        currentUser
-    );
-
-
     // ======================================
-    // GET ALL DATA
+    // GET DATA
     // ======================================
 
     const allProducts =
@@ -148,19 +172,8 @@ function loadAnalytics() {
         getSlots();
 
 
-    console.log(
-        "All products:",
-        allProducts
-    );
-
-    console.log(
-        "All slots:",
-        allSlots
-    );
-
-
     // ======================================
-    // FILTER CURRENT USER'S DATA
+    // FILTER CURRENT USER DATA
     // ======================================
 
     const products =
@@ -201,80 +214,440 @@ function loadAnalytics() {
 
 
     // ======================================
-    // TOTAL PRODUCTS
+    // PRODUCT ANALYSIS
     // ======================================
 
-    const totalProducts =
-        products.length;
+    displayCategoryDistribution(
+        products
+    );
+
+
+    displayCategoryQuantity(
+        products
+    );
+
+
+    displayAllocationAnalysis(
+        products
+    );
+
+
+    displayProductCharacteristics(
+        products
+    );
 
 
     // ======================================
-    // TOTAL QUANTITY
+    // SLOT ANALYSIS
     // ======================================
 
-    const totalQuantity =
-        products.reduce(
-            function (total, product) {
+    displaySlotAnalysis(
+        slots,
+        "Large"
+    );
 
-                return (
-                    total +
-                    Number(
-                        product.quantity || 0
-                    )
-                );
+    displaySlotAnalysis(
+        slots,
+        "Medium"
+    );
 
-            },
-            0
+    displaySlotAnalysis(
+        slots,
+        "Small"
+    );
+
+    displaySlotAnalysis(
+        slots,
+        "Custom"
+    );
+
+
+    // ======================================
+    // SPACE ANALYSIS
+    // ======================================
+
+    displaySpaceAnalysis(
+        slots
+    );
+
+
+    // ======================================
+    // PENDING PRODUCTS
+    // ======================================
+
+    displayPendingProducts(
+        products
+    );
+
+
+    // ======================================
+    // INSIGHTS
+    // ======================================
+
+    generateInsights(
+        products,
+        slots
+    );
+
+}
+
+
+// ==========================================
+// CATEGORY DISTRIBUTION
+// ==========================================
+
+function displayCategoryDistribution(
+    products
+) {
+
+    const container =
+        document.getElementById(
+            "categoryDistribution"
         );
 
+    if (!container) {
+        return;
+    }
 
-    // ======================================
-    // TOTAL WEIGHT
-    //
-    // quantity × weight per unit
-    // ======================================
 
-    const totalWeight =
-        products.reduce(
-            function (total, product) {
+    if (products.length === 0) {
 
-                return (
-                    total +
+        container.innerHTML = `
+            <p class="empty-message">
+                No category data available.
+            </p>
+        `;
 
-                    (
-                        Number(
-                            product.quantity || 0
-                        )
+        return;
+    }
 
-                        *
 
-                        Number(
-                            product.weight || 0
-                        )
-                    )
-                );
+    const categories = {};
 
-            },
-            0
+
+    products.forEach(
+        function (product) {
+
+            const category =
+                product.category ||
+                "Other";
+
+
+            if (!categories[category]) {
+
+                categories[category] = 0;
+
+            }
+
+
+            categories[category]++;
+
+        }
+    );
+
+
+    container.innerHTML = "";
+
+
+    Object.keys(categories).forEach(
+        function (category) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "category-item";
+
+
+            item.innerHTML = `
+
+                <span>
+                    ${category}
+                </span>
+
+                <strong>
+                    ${categories[category]}
+                </strong>
+
+            `;
+
+
+            container.appendChild(item);
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// QUANTITY BY CATEGORY
+// ==========================================
+
+function displayCategoryQuantity(
+    products
+) {
+
+    const container =
+        document.getElementById(
+            "categoryQuantity"
         );
 
-
-    // ======================================
-    // TOTAL SLOTS
-    // ======================================
-
-    const totalSlots =
-        slots.length;
+    if (!container) {
+        return;
+    }
 
 
-    // ======================================
-    // OCCUPIED SLOTS
-    //
-    // A slot is occupied when usedVolume > 0
-    // ======================================
+    if (products.length === 0) {
 
-    const occupiedSlots =
+        container.innerHTML = `
+            <p class="empty-message">
+                No quantity data available.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const quantities = {};
+
+
+    products.forEach(
+        function (product) {
+
+            const category =
+                product.category ||
+                "Other";
+
+
+            if (!quantities[category]) {
+
+                quantities[category] = 0;
+
+            }
+
+
+            quantities[category] +=
+                Number(
+                    product.quantity || 0
+                );
+
+        }
+    );
+
+
+    container.innerHTML = "";
+
+
+    Object.keys(quantities).forEach(
+        function (category) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "category-item";
+
+
+            item.innerHTML = `
+
+                <span>
+                    ${category}
+                </span>
+
+                <strong>
+                    ${quantities[category]}
+                </strong>
+
+            `;
+
+
+            container.appendChild(item);
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// ALLOCATION ANALYSIS
+// ==========================================
+
+function displayAllocationAnalysis(
+    products
+) {
+
+    let allocated = 0;
+    let pending = 0;
+    let notAllocated = 0;
+
+
+    products.forEach(
+        function (product) {
+
+            const quantity =
+                Number(
+                    product.quantity || 0
+                );
+
+            const allocatedQuantity =
+                Number(
+                    product.allocatedQuantity || 0
+                );
+
+
+            if (allocatedQuantity === 0) {
+
+                notAllocated++;
+
+            }
+
+            else if (
+                allocatedQuantity <
+                quantity
+            ) {
+
+                pending++;
+
+            }
+
+            else {
+
+                allocated++;
+
+            }
+
+        }
+    );
+
+
+    setValue(
+        "allocatedProducts",
+        allocated
+    );
+
+
+    setValue(
+        "pendingProducts",
+        pending
+    );
+
+
+    setValue(
+        "notAllocatedProducts",
+        notAllocated
+    );
+
+}
+
+
+// ==========================================
+// PRODUCT CHARACTERISTICS
+// ==========================================
+
+function displayProductCharacteristics(
+    products
+) {
+
+    let fragile = 0;
+    let nonFragile = 0;
+
+
+    let totalWeight = 0;
+
+
+    products.forEach(
+        function (product) {
+
+            const fragileValue =
+                String(
+                    product.fragile || ""
+                ).toLowerCase();
+
+
+            if (
+                fragileValue === "yes" ||
+                fragileValue === "true"
+            ) {
+
+                fragile++;
+
+            }
+
+            else {
+
+                nonFragile++;
+
+            }
+
+
+            totalWeight +=
+
+                Number(
+                    product.quantity || 0
+                )
+
+                *
+
+                Number(
+                    product.weight || 0
+                );
+
+        }
+    );
+
+
+    setValue(
+        "fragileProducts",
+        fragile
+    );
+
+
+    setValue(
+        "nonFragileProducts",
+        nonFragile
+    );
+
+
+    setValue(
+        "inventoryWeight",
+        totalWeight.toFixed(2) +
+        " kg"
+    );
+
+}
+
+
+// ==========================================
+// SLOT ANALYSIS
+// ==========================================
+
+function displaySlotAnalysis(
+    slots,
+    size
+) {
+
+    const sizeSlots =
         slots.filter(
+            function (slot) {
+
+                return (
+                    slot.size ===
+                    size
+                );
+
+            }
+        );
+
+
+    const total =
+        sizeSlots.length;
+
+
+    const occupied =
+        sizeSlots.filter(
             function (slot) {
 
                 return (
@@ -287,60 +660,32 @@ function loadAnalytics() {
         ).length;
 
 
-    // ======================================
-    // AVAILABLE SLOTS
-    // ======================================
-
-    const availableSlots =
-        totalSlots -
-        occupiedSlots;
+    const empty =
+        total -
+        occupied;
 
 
-    // ======================================
-    // TOTAL WAREHOUSE VOLUME
-    // ======================================
+    let totalVolume = 0;
+    let usedVolume = 0;
 
-    const totalVolume =
-        slots.reduce(
-            function (total, slot) {
 
-                return (
-                    total +
+    sizeSlots.forEach(
+        function (slot) {
 
-                    Number(
-                        slot.volume || 0
-                    )
+            totalVolume +=
+                Number(
+                    slot.volume || 0
                 );
 
-            },
-            0
-        );
 
-
-    // ======================================
-    // USED WAREHOUSE VOLUME
-    // ======================================
-
-    const usedVolume =
-        slots.reduce(
-            function (total, slot) {
-
-                return (
-                    total +
-
-                    Number(
-                        slot.usedVolume || 0
-                    )
+            usedVolume +=
+                Number(
+                    slot.usedVolume || 0
                 );
 
-            },
-            0
-        );
+        }
+    );
 
-
-    // ======================================
-    // WAREHOUSE UTILIZATION
-    // ======================================
 
     let utilization = 0;
 
@@ -366,182 +711,689 @@ function loadAnalytics() {
         );
 
 
-    // ======================================
-    // DISPLAY DATA
-    // ======================================
+    const prefix =
+        size.toLowerCase();
+
 
     setValue(
-        "totalProducts",
-        totalProducts
+        prefix + "Total",
+        total
     );
 
 
     setValue(
-        "totalQuantity",
-        totalQuantity
+        prefix + "Occupied",
+        occupied
     );
 
 
     setValue(
-        "totalWeight",
-        totalWeight.toFixed(2) + " kg"
+        prefix + "Empty",
+        empty
     );
 
 
     setValue(
-        "totalSlots",
-        totalSlots
+        prefix + "Utilization",
+        utilization.toFixed(1) +
+        "%"
     );
 
 
-    setValue(
-        "occupiedSlots",
-        occupiedSlots
-    );
-
-
-    setValue(
-        "availableSlots",
-        availableSlots
-    );
-
-
-    setValue(
-        "warehouseUtilization",
-        utilization.toFixed(1) + "%"
-    );
-
-
-    // ======================================
-    // OPTIONAL PROGRESS BAR
-    // ======================================
-
-    const progressBar =
+    const progress =
         document.getElementById(
-            "utilizationProgress"
+            prefix + "Progress"
         );
 
 
-    if (progressBar) {
+    if (progress) {
 
-        progressBar.style.width =
+        progress.style.width =
             utilization + "%";
 
     }
 
-
-    // ======================================
-    // EXTRA ANALYTICS
-    // ======================================
-
-    displayProductBreakdown(products);
-
 }
 
 
 // ==========================================
-// SET VALUE SAFELY
+// SPACE ANALYSIS
 // ==========================================
 
-function setValue(
-    elementId,
-    value
+function displaySpaceAnalysis(
+    slots
 ) {
 
-    const element =
-        document.getElementById(
-            elementId
+    let totalVolume = 0;
+    let usedVolume = 0;
+
+
+    slots.forEach(
+        function (slot) {
+
+            totalVolume +=
+                Number(
+                    slot.volume || 0
+                );
+
+
+            usedVolume +=
+                Number(
+                    slot.usedVolume || 0
+                );
+
+        }
+    );
+
+
+    const availableVolume =
+        Math.max(
+            totalVolume -
+            usedVolume,
+            0
         );
 
 
-    if (!element) {
-
-        console.error(
-            "Element not found:",
-            elementId
-        );
-
-        return;
-
-    }
+    setValue(
+        "usedVolume",
+        usedVolume.toFixed(2) +
+        " cm³"
+    );
 
 
-    element.innerText =
-        value;
+    setValue(
+        "availableVolume",
+        availableVolume.toFixed(2) +
+        " cm³"
+    );
+
+
+    // ======================================
+    // MOST UTILIZED SLOT TYPE
+    // ======================================
+
+    const sizes = [
+        "Large",
+        "Medium",
+        "Small",
+        "Custom"
+    ];
+
+
+    let mostUtilized =
+        "-";
+
+    let highestUtilization =
+        -1;
+
+
+    sizes.forEach(
+        function (size) {
+
+            const sizeSlots =
+                slots.filter(
+                    function (slot) {
+
+                        return (
+                            slot.size ===
+                            size
+                        );
+
+                    }
+                );
+
+
+            let total = 0;
+            let used = 0;
+
+
+            sizeSlots.forEach(
+                function (slot) {
+
+                    total +=
+                        Number(
+                            slot.volume || 0
+                        );
+
+                    used +=
+                        Number(
+                            slot.usedVolume || 0
+                        );
+
+                }
+            );
+
+
+            if (total > 0) {
+
+                const utilization =
+                    (
+                        used /
+                        total
+                    ) * 100;
+
+
+                if (
+                    utilization >
+                    highestUtilization
+                ) {
+
+                    highestUtilization =
+                        utilization;
+
+                    mostUtilized =
+                        size;
+
+                }
+
+            }
+
+        }
+    );
+
+
+    setValue(
+        "mostUtilizedSlot",
+        mostUtilized
+    );
 
 }
 
 
 // ==========================================
-// PRODUCT BREAKDOWN
+// PENDING PRODUCTS
 // ==========================================
 
-function displayProductBreakdown(products) {
+function displayPendingProducts(
+    products
+) {
 
     const container =
         document.getElementById(
-            "productBreakdown"
+            "pendingProductList"
         );
 
 
     if (!container) {
-
         return;
-
     }
 
 
-    if (products.length === 0) {
+    const pending =
+        products.filter(
+            function (product) {
 
-        container.innerHTML =
-            "<p>No products available.</p>";
+                const quantity =
+                    Number(
+                        product.quantity || 0
+                    );
+
+
+                const allocated =
+                    Number(
+                        product.allocatedQuantity || 0
+                    );
+
+
+                return (
+                    allocated <
+                    quantity
+                );
+
+            }
+        );
+
+
+    if (pending.length === 0) {
+
+        container.innerHTML = `
+
+            <p class="empty-message">
+                No pending products.
+            </p>
+
+        `;
 
         return;
-
     }
 
 
     container.innerHTML = "";
 
 
-    products.forEach(
+    pending.forEach(
         function (product) {
 
-            const item =
-                document.createElement(
-                    "div"
+            const quantity =
+                Number(
+                    product.quantity || 0
                 );
 
 
+            const allocated =
+                Number(
+                    product.allocatedQuantity || 0
+                );
+
+
+            const remaining =
+                quantity -
+                allocated;
+
+
+            const item =
+                document.createElement("div");
+
+
             item.className =
-                "product-breakdown-item";
+                "pending-product-item";
 
 
             item.innerHTML = `
 
-                <strong>
-                    ${product.name}
-                </strong>
+                <div>
 
-                <span>
-                    ${product.quantity}
-                    ${product.unit}
-                </span>
+                    <strong>
+                        ${product.name}
+                    </strong>
 
-                <span>
-                    ${product.weight} kg/unit
-                </span>
+                    <p>
+                        Category:
+                        ${product.category || "Other"}
+                    </p>
 
-                <span>
-                    ${product.allocationStatus}
-                </span>
+                </div>
+
+
+                <div>
+
+                    <strong>
+                        ${remaining}
+                    </strong>
+
+                    remaining
+
+                </div>
 
             `;
 
 
-            container.appendChild(
-                item
+            container.appendChild(item);
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// WAREHOUSE INSIGHTS
+// ==========================================
+
+function generateInsights(
+    products,
+    slots
+) {
+
+    const container =
+        document.getElementById(
+            "warehouseInsights"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    const insights = [];
+
+
+    // ======================================
+    // NO DATA
+    // ======================================
+
+    if (
+        products.length === 0 &&
+        slots.length === 0
+    ) {
+
+        container.innerHTML = `
+
+            <div class="insight-card">
+
+                <strong>
+                    No insights available
+                </strong>
+
+                <p>
+                    Add products and warehouse
+                    slots to generate insights.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    // ======================================
+    // UTILIZATION
+    // ======================================
+
+    let totalVolume = 0;
+    let usedVolume = 0;
+
+
+    slots.forEach(
+        function (slot) {
+
+            totalVolume +=
+                Number(
+                    slot.volume || 0
+                );
+
+            usedVolume +=
+                Number(
+                    slot.usedVolume || 0
+                );
+
+        }
+    );
+
+
+    let utilization = 0;
+
+
+    if (totalVolume > 0) {
+
+        utilization =
+            (
+                usedVolume /
+                totalVolume
+            ) * 100;
+
+    }
+
+
+    if (utilization >= 80) {
+
+        insights.push({
+            title: "Warehouse is highly utilized",
+            text:
+                "Your warehouse is using more than 80% of its available volume."
+        });
+
+    }
+
+    else if (utilization >= 50) {
+
+        insights.push({
+            title: "Warehouse utilization is moderate",
+            text:
+                "Your warehouse has a balanced level of space usage."
+        });
+
+    }
+
+    else {
+
+        insights.push({
+            title: "Warehouse has available space",
+            text:
+                "A significant amount of warehouse volume is still available."
+        });
+
+    }
+
+
+    // ======================================
+    // PENDING PRODUCTS
+    // ======================================
+
+    const pendingProducts =
+        products.filter(
+            function (product) {
+
+                return (
+                    Number(
+                        product.allocatedQuantity || 0
+                    )
+
+                    <
+
+                    Number(
+                        product.quantity || 0
+                    )
+                );
+
+            }
+        );
+
+
+    if (
+        pendingProducts.length > 0
+    ) {
+
+        insights.push({
+
+            title:
+                "Pending allocation detected",
+
+            text:
+                pendingProducts.length +
+                " product(s) still require warehouse space."
+
+        });
+
+    }
+
+    else {
+
+        insights.push({
+
+            title:
+                "All products allocated",
+
+            text:
+                "All your current products have been successfully allocated."
+
+        });
+
+    }
+
+
+    // ======================================
+    // EMPTY SLOTS
+    // ======================================
+
+    const emptySlots =
+        slots.filter(
+            function (slot) {
+
+                return (
+                    Number(
+                        slot.usedVolume || 0
+                    ) === 0
+                );
+
+            }
+        ).length;
+
+
+    if (emptySlots > 0) {
+
+        insights.push({
+
+            title:
+                "Empty slots available",
+
+            text:
+                emptySlots +
+                " warehouse slot(s) are currently empty."
+
+        });
+
+    }
+
+
+    // ======================================
+    // MOST USED SLOT
+    // ======================================
+
+    let mostUsedSlot = null;
+    let highestPercentage = -1;
+
+
+    slots.forEach(
+        function (slot) {
+
+            const volume =
+                Number(
+                    slot.volume || 0
+                );
+
+
+            const used =
+                Number(
+                    slot.usedVolume || 0
+                );
+
+
+            if (volume > 0) {
+
+                const percentage =
+                    (
+                        used /
+                        volume
+                    ) * 100;
+
+
+                if (
+                    percentage >
+                    highestPercentage
+                ) {
+
+                    highestPercentage =
+                        percentage;
+
+                    mostUsedSlot =
+                        slot;
+
+                }
+
+            }
+
+        }
+    );
+
+
+    if (mostUsedSlot) {
+
+        insights.push({
+
+            title:
+                "Most utilized slot",
+
+            text:
+                mostUsedSlot.id +
+                " is currently using " +
+                highestPercentage.toFixed(1) +
+                "% of its capacity."
+
+        });
+
+    }
+
+
+    // ======================================
+    // DISPLAY
+    // ======================================
+
+    container.innerHTML = "";
+
+
+    insights.forEach(
+        function (insight) {
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "insight-card";
+
+
+            card.innerHTML = `
+
+                <strong>
+                    ${insight.title}
+                </strong>
+
+                <p>
+                    ${insight.text}
+                </p>
+
+            `;
+
+
+            container.appendChild(card);
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+const logoutBtn =
+    document.getElementById(
+        "logoutBtn"
+    );
+
+
+if (logoutBtn) {
+
+    logoutBtn.addEventListener(
+        "click",
+        function () {
+
+            localStorage.removeItem(
+                CURRENT_USER_KEY
             );
+
+            window.location.href =
+                "login.html";
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// REFRESH ANALYTICS
+// ==========================================
+
+const refreshAnalytics =
+    document.getElementById(
+        "refreshAnalytics"
+    );
+
+
+if (refreshAnalytics) {
+
+    refreshAnalytics.addEventListener(
+        "click",
+        function () {
+
+            loadAnalytics();
 
         }
     );
