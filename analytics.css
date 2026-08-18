@@ -1,0 +1,737 @@
+/* ==========================================
+   RESET
+========================================== */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+/* ==========================================
+   BODY
+========================================== */
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    color: #1f2937;
+    min-height: 100vh;
+}
+
+
+/* ==========================================
+   HEADER
+========================================== */
+
+.header {
+    background-color: #ffffff;
+    min-height: 90px;
+    padding: 20px 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.header-left h1 {
+    font-size: 28px;
+    margin-bottom: 6px;
+}
+
+
+.header-left p {
+    font-size: 15px;
+    color: #6b7280;
+}
+
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+
+#welcomeUser {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   LOGOUT BUTTON
+========================================== */
+
+.logout-btn {
+    border: none;
+    background-color: #dc2626;
+    color: white;
+
+    padding: 10px 18px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.logout-btn:hover {
+    background-color: #b91c1c;
+}
+
+
+/* ==========================================
+   NAVIGATION
+========================================== */
+
+.navigation {
+    background-color: #ffffff;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 40px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.navigation a {
+    text-decoration: none;
+    color: #4b5563;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    padding: 15px 18px;
+
+    border-bottom: 3px solid transparent;
+
+    transition: 0.2s;
+}
+
+
+.navigation a:hover {
+    color: #111827;
+    background-color: #f9fafb;
+}
+
+
+.navigation a.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+}
+
+
+/* ==========================================
+   MAIN CONTAINER
+========================================== */
+
+.analytics-container {
+    max-width: 1400px;
+
+    margin: 0 auto;
+
+    padding: 35px 40px 60px;
+}
+
+
+/* ==========================================
+   SECTION
+========================================== */
+
+.analytics-section {
+    margin-bottom: 35px;
+}
+
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+
+.section-header h2 {
+    font-size: 23px;
+    margin-bottom: 6px;
+}
+
+
+.section-header p {
+    color: #6b7280;
+    font-size: 15px;
+}
+
+
+/* ==========================================
+   ANALYSIS GRID
+========================================== */
+
+.analysis-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+
+/* ==========================================
+   ANALYSIS CARD
+========================================== */
+
+.analysis-card {
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 24px;
+
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+
+.analysis-card h3 {
+    font-size: 18px;
+
+    margin-bottom: 20px;
+
+    color: #111827;
+}
+
+
+/* ==========================================
+   CATEGORY LIST
+========================================== */
+
+.category-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+.category-item {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+
+.category-name {
+    font-size: 15px;
+
+    font-weight: 600;
+
+    min-width: 120px;
+}
+
+
+.category-bar-container {
+    flex: 1;
+
+    height: 9px;
+
+    background-color: #e5e7eb;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+.category-bar {
+    height: 100%;
+
+    border-radius: 10px;
+
+    transition: width 0.4s ease;
+}
+
+
+.category-value {
+    min-width: 55px;
+
+    text-align: right;
+
+    font-weight: 600;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   ALLOCATION SUMMARY
+========================================== */
+
+.allocation-summary {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+.analysis-stat {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 13px 15px;
+
+    background-color: #f9fafb;
+
+    border-radius: 7px;
+}
+
+
+.analysis-stat span {
+    color: #4b5563;
+
+    font-size: 14px;
+}
+
+
+.analysis-stat strong {
+    font-size: 18px;
+
+    color: #111827;
+}
+
+
+/* ==========================================
+   SLOT ANALYSIS GRID
+========================================== */
+
+.slot-analysis-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+/* ==========================================
+   SLOT ANALYSIS CARD
+========================================== */
+
+.slot-analysis-card {
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+
+.slot-analysis-card h3 {
+    font-size: 18px;
+
+    margin-bottom: 20px;
+}
+
+
+.slot-analysis-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 9px 0;
+
+    border-bottom: 1px solid #f0f0f0;
+}
+
+
+.slot-analysis-row span {
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+.slot-analysis-row strong {
+    font-size: 16px;
+}
+
+
+/* ==========================================
+   SLOT UTILIZATION
+========================================== */
+
+.slot-utilization {
+    margin-top: 20px;
+}
+
+
+.slot-utilization-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+}
+
+
+.slot-utilization-header strong {
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   PROGRESS BAR
+========================================== */
+
+.progress-container {
+    width: 100%;
+
+    height: 10px;
+
+    background-color: #e5e7eb;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+}
+
+
+.progress-bar {
+    height: 100%;
+
+    border-radius: 10px;
+
+    transition: width 0.4s ease;
+}
+
+
+/* ==========================================
+   SPACE SUMMARY
+========================================== */
+
+.space-summary {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+.space-card {
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 25px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+
+.space-card span {
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+.space-card strong {
+    font-size: 22px;
+
+    color: #111827;
+}
+
+
+/* ==========================================
+   PENDING PRODUCTS
+========================================== */
+
+.pending-product-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.pending-product {
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-left: 4px solid #f59e0b;
+
+    border-radius: 8px;
+
+    padding: 18px 20px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+
+.pending-product-info {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.pending-product-name {
+    font-weight: 700;
+
+    font-size: 16px;
+}
+
+
+.pending-product-details {
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+.pending-product-status {
+    font-weight: 600;
+
+    color: #d97706;
+
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   INSIGHTS
+========================================== */
+
+.insights-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 18px;
+}
+
+
+.insight-card {
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+
+.insight-card strong {
+    display: block;
+
+    font-size: 16px;
+
+    margin-bottom: 7px;
+}
+
+
+.insight-card p {
+    color: #6b7280;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================
+   EMPTY MESSAGE
+========================================== */
+
+.empty-message {
+    color: #6b7280;
+
+    font-size: 14px;
+
+    padding: 15px 0;
+}
+
+
+/* ==========================================
+   ANALYTICS ACTIONS
+========================================== */
+
+.analytics-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 10px;
+}
+
+
+.refresh-btn {
+    border: none;
+
+    background-color: #2563eb;
+
+    color: #ffffff;
+
+    padding: 11px 20px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.refresh-btn:hover {
+    background-color: #1d4ed8;
+}
+
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1100px) {
+
+    .slot-analysis-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+@media (max-width: 800px) {
+
+    .header {
+        padding: 20px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+    }
+
+
+    .header-right {
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+
+    .navigation {
+        padding: 0 20px;
+
+        overflow-x: auto;
+    }
+
+
+    .analytics-container {
+        padding: 25px 20px 50px;
+    }
+
+
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .space-summary {
+        grid-template-columns: 1fr;
+    }
+
+
+    .insights-container {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .slot-analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .pending-product {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .header-left h1 {
+        font-size: 24px;
+    }
+
+
+    .section-header h2 {
+        font-size: 20px;
+    }
+
+}
