@@ -11,7 +11,7 @@
     >
 
     <title>Add Slots - Storvia</title>
-
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="inventory.css">
 
 </head>
@@ -47,9 +47,13 @@
         <a href="warehouse.html">
             Warehouse
         </a>
+        <a href="analytics.html">Analytics</a>
 
     </nav>
-
+    <div class="user-section">
+        <span id="welcomeUser">Welcome</span>
+        <button id="logoutBtn">Logout</button>
+    </div>
 </header>
 
 
@@ -62,15 +66,10 @@
     ======================================= -->
 
     <section class="dashboard-intro">
-
+        <span class="page-label">Slot Configuration</span>
         <h2>Add Warehouse Slots</h2>
-
-        <p>
-            Create storage slots based on the actual
-            dimensions of your electronics warehouse.
-        </p>
-
-    </section>
+        <p>Create storage slots based on the physical dimensions and racking layout of your warehouse.</p>
+     </section>
 
 
 
@@ -82,13 +81,10 @@
 
         <div class="section-heading">
 
-            <h2>Create Slots</h2>
+            <h2>Create New Storage Slots</h2>
 
-            <p>
-                Enter the dimensions of one slot and
-                specify how many slots of the same size
-                you want to create.
-            </p>
+           <p>Enter single slot dimensions and 
+            specify how many identical slots to generate.</p>
 
         </div>
 
@@ -116,15 +112,15 @@
                     </option>
 
                     <option value="Small">
-                        Small
+                        Small (Compact Racks)
                     </option>
 
                     <option value="Medium">
-                        Medium
+                        Medium (Standard Racks)
                     </option>
 
                     <option value="Large">
-                        Large
+                        Large (Bulk / Pallet Racks)
                     </option>
 
                    
@@ -149,7 +145,7 @@
                     id="slotLength"
                     min="0.1"
                     step="0.01"
-                    placeholder="Example: 100"
+                    placeholder="e.g. 100"
                     required
                 >
 
@@ -171,7 +167,7 @@
                     id="slotBreadth"
                     min="0.1"
                     step="0.01"
-                    placeholder="Example: 80"
+                    placeholder="e.g. 80"
                     required
                 >
 
@@ -193,7 +189,7 @@
                     id="slotHeight"
                     min="0.1"
                     step="0.01"
-                    placeholder="Example: 60"
+                    placeholder="e.g. 60"
                     required
                 >
 
@@ -214,7 +210,7 @@
                     type="number"
                     id="slotCount"
                     min="1"
-                    placeholder="Enter number of slots"
+                    placeholder="e.g. 10"
                     required
                 >
 
@@ -256,16 +252,10 @@
 
 
             <div class="slot-info">
-
-                <strong>Small</strong>
-
-                <span>
-                    User-defined dimensions
-                </span>
-
-                <small>
-                    Example: 50 × 40 × 40 cm
-                </small>
+                <span class="slot-type-badge badge-small">Small Slot</span>
+               <strong>Compact Goods</strong>
+                <p>Designed for accessories, headphones, routers, and lightweight components.</p>
+                <div class="dim-chip">50 × 40 × 40 cm</div>
 
             </div>
 
@@ -273,15 +263,10 @@
 
             <div class="slot-info">
 
-                <strong>Medium</strong>
-
-                <span>
-                    User-defined dimensions
-                </span>
-
-                <small>
-                    Example: 80 × 60 × 60 cm
-                </small>
+               <span class="slot-type-badge badge-medium">Medium Slot</span>
+                <strong>Standard Products</strong>
+                <p>Ideal for laptops, desktop monitors, boxed electronics, and medium shipments.</p>
+                <div class="dim-chip">80 × 60 × 60 cm</div>
 
             </div>
 
@@ -289,15 +274,10 @@
 
             <div class="slot-info">
 
-                <strong>Large</strong>
-
-                <span>
-                    User-defined dimensions
-                </span>
-
-                <small>
-                    Example: 120 × 100 × 80 cm
-                </small>
+                <span class="slot-type-badge badge-large">Large Slot</span>
+                <strong>Bulk Storage</strong>
+                <p>Configured for large carton boxes, heavy equipment, and bulk inventory bundles.</p>
+                <div class="dim-chip">120 × 100 × 80 cm</div>
 
             </div>
 
@@ -312,6 +292,26 @@
 
 
 <script src="inventory.js"></script>
+<script>
+    // Header user greeting & logout synchronization
+    (function () {
+        const savedUser = localStorage.getItem("currentuser");
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                const welcomeEl = document.getElementById("welcomeUser");
+                if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+            } catch (e) {}
+        }
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("currentuser");
+                window.location.href = "login.html";
+            };
+        }
+    })();
+</script>
 
 </body>
 

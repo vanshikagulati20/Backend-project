@@ -10,8 +10,11 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Warehouse - Storvia</title>
-
+    <title>Warehouse Layout - Storvia</title>
+    <link 
+        rel="stylesheet" 
+        href="style.css"    
+    >
     <link
         rel="stylesheet"
         href="warehouse.css"
@@ -56,8 +59,16 @@
         >
             Warehouse
         </a>
-
+        <a 
+            href="analytics.html"
+        >
+            Analytics
+        </a>
     </nav>
+     <div class="user-section">
+        <span id="welcomeUser">Welcome</span>
+        <button id="logoutBtn">Logout</button>
+    </div>
 
 </header>
 
@@ -76,23 +87,17 @@
 
     <section class="dashboard-intro">
 
-        <div>
-
-            <p class="page-label">
-                STORAGE MANAGEMENT
-            </p>
-
-            <h2>
-                Warehouse Layout
-            </h2>
-
-            <p>
-                View your warehouse slots, monitor
-                available capacity, and allocate
-                pending products automatically.
-            </p>
-
-        </div>
+         <span class="page-label">
+            Storage Layout & Packing
+        </span>
+        <h2>
+            Warehouse Slot Layout
+        </h2>
+        <p>
+            Monitor physical storage capacity, 
+            view individual rack slots,
+             and trigger automated packing optimization.
+        </p>
 
     </section>
 
@@ -107,20 +112,20 @@
         <div class="allocation-info">
 
             <div class="allocation-icon">
-                ↗
+                📦
             </div>
 
             <div>
 
                 <h2>
-                    Warehouse Allocation
+                    Packing & Slot Allocation Engine
                 </h2>
 
                 <p id="allocationMessage">
 
                     Allocate pending products into
-                    suitable warehouse slots using
-                    First Fit Decreasing.
+                    optimal warehouse slots using
+                    First Fit Decreasing(FFD) algorithm.
 
                 </p>
 
@@ -136,7 +141,7 @@
         >
 
             <span>
-                Allocate Pending Products
+                ⚡ Run Slot Allocation
             </span>
 
             <span class="arrow">
@@ -171,15 +176,16 @@
             <div>
 
                 <span class="section-label">
-                    STORAGE AREA
+                    ZONE A — HIGH CAPACITY
                 </span>
 
                 <h2>
-                    Large Slots
+                    Large Storage Slots
                 </h2>
 
                 <p>
-                    High-capacity storage locations
+                    High-volume rack locations for bulk products
+                    and heavy cartons.
                 </p>
 
             </div>
@@ -207,15 +213,16 @@
             <div>
 
                 <span class="section-label">
-                    STORAGE AREA
+                    ZONE B — STANDARD CAPACITY
                 </span>
 
                 <h2>
-                    Medium Slots
+                    Medium Storage Slots
                 </h2>
 
                 <p>
-                    Medium-capacity storage locations
+                    Standard rack locations for 
+                    boxed hardware and mid-sized electronics.
                 </p>
 
             </div>
@@ -243,15 +250,17 @@
             <div>
 
                 <span class="section-label">
-                    STORAGE AREA
+                    ZONE C — COMPACT CAPACITY
                 </span>
 
                 <h2>
-                    Small Slots
+                    Small Storage Slots
                 </h2>
 
                 <p>
-                    Compact storage locations
+                    Compact shelf bins for 
+                    accessories, cables, and 
+                    lightweight units.
                 </p>
 
             </div>
@@ -296,7 +305,7 @@
         <div class="modal-header">
 
             <span class="section-label">
-                WAREHOUSE SLOT
+                RACK LOCATION DETAILS
             </span>
 
             <h2>
@@ -364,7 +373,7 @@
             <div class="detail-row">
 
                 <span>
-                    Dimensions
+                    Physical Dimensions
                 </span>
 
                 <strong id="modalCapacity">
@@ -377,7 +386,7 @@
             <div class="detail-row">
 
                 <span>
-                    Used Capacity
+                    Used Volume
                 </span>
 
                 <strong id="modalUsed">
@@ -390,7 +399,7 @@
             <div class="detail-row">
 
                 <span>
-                    Available Capacity
+                    Available Volume
                 </span>
 
                 <strong id="modalAvailable">
@@ -403,7 +412,7 @@
             <div class="detail-row">
 
                 <span>
-                    Status
+                    Occupancy Status
                 </span>
 
                 <strong
@@ -449,6 +458,26 @@
 
 
 <script src="warehouse.js"></script>
+<script>
+    // Header user greeting & logout synchronization
+    (function () {
+        const savedUser = localStorage.getItem("currentuser");
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                const welcomeEl = document.getElementById("welcomeUser");
+                if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+            } catch (e) {}
+        }
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("currentuser");
+                window.location.href = "login.html";
+            };
+        }
+    })();
+</script>
 
 </body>
 
