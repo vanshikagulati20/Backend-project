@@ -2,669 +2,405 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Management - Storvia</title>
 
+    <!-- Global Design System -->
+    <link rel="stylesheet" href="style.css">
 
     <style>
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            color: #222;
-        }
-
-
-        /* =========================
-           HEADER
-        ========================== */
-
-        .header {
-
-            background-color: #111;
-
-            color: white;
-
-            padding: 18px 40px;
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-        }
-
-
-        .header h1 {
-            font-size: 24px;
-        }
-
-
-        .home-link {
-
-            color: #ff8c00;
-
-            text-decoration: none;
-
-            font-weight: bold;
-        }
-
-
-        .home-link:hover {
-            color: #ffa733;
-        }
-
-
-        /* =========================
-           MAIN
-        ========================== */
-
-        .container {
-
-            width: 90%;
-
-            max-width: 1200px;
-
-            margin: 30px auto;
-        }
-
-
-        /* =========================
-           FORM
-        ========================== */
-
-        .form-box {
-
-            background-color: white;
-
-            padding: 25px;
-
-            border-radius: 10px;
-
-            margin-bottom: 30px;
-
-            box-shadow:
-                0 3px 10px
-                rgba(0, 0, 0, 0.08);
-        }
-
-
-        .form-box h2 {
-            margin-bottom: 20px;
-        }
-
-
+        /* ==========================================================================
+           PRODUCT FORM SPECIFIC STYLES
+           ========================================================================== */
         .form-grid {
-
             display: grid;
-
-            grid-template-columns:
-                1fr 1fr;
-
-            gap: 18px;
-        }
-
-
-        .form-group {
-
-            display: flex;
-
-            flex-direction: column;
-        }
-
-
-        .form-group label {
-
-            font-weight: bold;
-
-            margin-bottom: 7px;
-        }
-
-
-        .form-group input,
-        .form-group select {
-
-            width: 100%;
-
-            padding: 11px;
-
-            border: 1px solid #ccc;
-
-            border-radius: 6px;
-
-            font-size: 15px;
-        }
-
-
-        .full-width {
-            grid-column: 1 / 3;
-        }
-
-
-        /* =========================
-           CUSTOM DIMENSIONS
-        ========================== */
-
-        .custom-dimensions {
-
-            display: none;
-
-            grid-column: 1 / 3;
-
-            background-color: #fff7ed;
-
-            border: 1px solid #ff8c00;
-
-            border-radius: 8px;
-
-            padding: 20px;
-        }
-
-
-        .custom-dimensions h3 {
-            margin-bottom: 8px;
-        }
-
-
-        .custom-dimensions p {
-
-            color: #666;
-
-            margin-bottom: 15px;
-
-            font-size: 14px;
-        }
-
-
-        .dimension-grid {
-
-            display: grid;
-
-            grid-template-columns:
-                1fr 1fr 1fr;
-
-            gap: 15px;
-        }
-
-
-        /* =========================
-           PRODUCT SIZE INFORMATION
-        ========================== */
-
-        .size-info {
-
-            grid-column: 1 / 3;
-
-            background-color: #f8f9fa;
-
-            border: 1px solid #ddd;
-
-            border-radius: 8px;
-
-            padding: 15px;
-
-            font-size: 14px;
-
-            color: #555;
-        }
-
-
-        .size-info strong {
-            color: #222;
-        }
-
-
-        /* =========================
-           BUTTONS
-        ========================== */
-
-        .button-group {
-            margin-top: 5px;
-        }
-
-
-        .btn {
-
-            padding: 11px 20px;
-
-            border: none;
-
-            border-radius: 6px;
-
-            cursor: pointer;
-
-            font-size: 15px;
-
-            font-weight: bold;
-        }
-
-
-        .add-btn {
-
-            background-color: #ff8c00;
-
-            color: white;
-        }
-
-
-        .add-btn:hover {
-            background-color: #e67e00;
-        }
-
-
-        .cancel-btn {
-
-            background-color: #222;
-
-            color: white;
-
-            margin-left: 8px;
-
-            display: none;
-        }
-
-
-        .edit-btn {
-
-            background-color: #ff8c00;
-
-            color: white;
-
-            padding: 7px 12px;
-
-            border: none;
-
-            border-radius: 5px;
-
-            cursor: pointer;
-
-            margin-right: 5px;
-        }
-
-
-        .delete-btn {
-
-            background-color: #222;
-
-            color: white;
-
-            padding: 7px 12px;
-
-            border: none;
-
-            border-radius: 5px;
-
-            cursor: pointer;
-        }
-
-
-        /* =========================
-           PRODUCTS
-        ========================== */
-
-        .products-box {
-
-            background-color: white;
-
-            padding: 25px;
-
-            border-radius: 10px;
-
-            box-shadow:
-                0 3px 10px
-                rgba(0, 0, 0, 0.08);
-        }
-
-
-        .products-top {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            margin-bottom: 20px;
-
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
-
-        .search-input {
-
-            width: 280px;
-
-            padding: 10px;
-
-            border: 1px solid #ccc;
-
-            border-radius: 6px;
+        .form-group {
+            display: flex;
+            flex-direction: column;
         }
 
+        .form-group label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 7px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            background: #ffffff;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Size Info Note */
+        .size-info {
+            grid-column: 1 / -1;
+            background: var(--bg-body);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            font-size: 13.5px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .size-info strong {
+            color: var(--text-primary);
+        }
+
+        /* Custom Dimensions Drawer */
+        .custom-dimensions {
+            display: none;
+            grid-column: 1 / -1;
+            background: var(--accent-subtle);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            border-radius: var(--radius-md);
+            padding: 20px;
+        }
+
+        .custom-dimensions h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--accent-text);
+            margin-bottom: 4px;
+        }
+
+        .custom-dimensions p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 14px;
+        }
+
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+        }
+
+        /* Form Buttons */
+        .button-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .btn {
+            height: 44px;
+            padding: 0 24px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-btn {
+            background: var(--accent);
+            color: #78350f;
+            border: 1px solid #d97706;
+            box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+        }
+
+        .add-btn:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .cancel-btn {
+            background: var(--bg-surface-subtle);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-medium);
+            display: none;
+        }
+
+        .cancel-btn:hover {
+            background: var(--border-subtle);
+            color: var(--text-primary);
+        }
+
+        /* ==========================================================================
+           PRODUCT TABLE & SEARCH
+           ========================================================================== */
+        .products-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            width: 320px;
+            max-width: 100%;
+            height: 42px;
+            padding: 0 16px;
+            border: 1px solid var(--border-medium);
+            border-radius: var(--radius-sm);
+            font-size: 13.5px;
+            font-family: inherit;
+            transition: all var(--transition-fast);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+        }
 
         .table-container {
             overflow-x: auto;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
         }
-
 
         table {
-
             width: 100%;
-
             border-collapse: collapse;
-
-            min-width: 1100px;
-        }
-
-
-        th,
-        td {
-
-            padding: 13px;
-
+            font-size: 13.5px;
             text-align: left;
-
-            border-bottom: 1px solid #ddd;
+            min-width: 950px;
         }
-
 
         th {
-
-            background-color: #111;
-
-            color: white;
+            background: var(--bg-surface-subtle);
+            color: var(--text-primary);
+            font-weight: 700;
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            text-transform: uppercase;
+            font-size: 11.5px;
+            letter-spacing: 0.6px;
         }
 
+        td {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafbfc;
+        }
 
         tr:hover {
-            background-color: #fafafa;
+            background-color: #fffdf5;
         }
 
+        td:first-child {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Status Badges */
+        .status-allocated {
+            display: inline-block;
+            background: var(--status-success-bg);
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            font-weight: 700;
+            font-size: 11.5px;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
 
         .status-pending {
-
-            color: #d97706;
-
-            font-weight: bold;
+            display: inline-block;
+            background: var(--status-warning-bg);
+            color: #b45309;
+            border: 1px solid #fde68a;
+            font-weight: 700;
+            font-size: 11.5px;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
 
-
-        .status-allocated {
-
-            color: #15803d;
-
-            font-weight: bold;
+        /* Table Action Buttons */
+        .edit-btn {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            margin-right: 4px;
         }
 
-
-        .empty-message {
-
-            text-align: center;
-
-            padding: 25px;
-
-            color: #777;
+        .edit-btn:hover {
+            background: var(--accent);
+            color: #78350f;
         }
 
+        .delete-btn {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
 
-        /* =========================
-           RESPONSIVE
-        ========================== */
+        .delete-btn:hover {
+            background: var(--status-danger);
+            color: #ffffff;
+        }
 
-        @media (max-width: 700px) {
-
-            .header {
-                padding: 18px 20px;
-            }
-
-            .container {
-                width: 95%;
-            }
-
+        @media (max-width: 800px) {
             .form-grid {
                 grid-template-columns: 1fr;
             }
-
-            .full-width {
-                grid-column: 1;
-            }
-
-            .custom-dimensions {
-                grid-column: 1;
-            }
-
-            .size-info {
-                grid-column: 1;
-            }
-
             .dimension-grid {
                 grid-template-columns: 1fr;
             }
-
-            .products-top {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .search-input {
-                width: 100%;
-            }
-
         }
-
     </style>
-
 </head>
-
 
 <body>
 
+<!-- ==========================================================================
+     GLOBAL HEADER
+     ========================================================================== -->
+<header class="dashboard-header">
+    <div class="brand">
+        <h1>Storvia</h1>
+    </div>
 
-<header class="header">
+    <nav class="dashboard-nav">
+        <a href="dashBoard.html">Dashboard</a>
+        <a href="product.html" class="active">Products</a>
+        <a href="inventory.html">Add Slots</a>
+        <a href="warehouse.html">Warehouse</a>
+        <a href="analytics.html">Analytics</a>
+    </nav>
 
-    <h1>
-        Storvia
-    </h1>
-
-
-    <a
-        href="dashboard.html"
-        class="home-link"
-    >
-        Home
-    </a>
-
+    <div class="user-section">
+        <span id="welcomeUser">Welcome</span>
+        <button id="logoutBtn">Logout</button>
+    </div>
 </header>
 
+<!-- ==========================================================================
+     MAIN CONTENT
+     ========================================================================== -->
+<main class="dashboard-container">
 
+    <!-- PAGE INTRO -->
+    <section class="dashboard-intro">
+        <span class="page-label">Product Master Catalog</span>
+        <h2>Product Management</h2>
+        <p>Register SKUs, configure packaging dimensions, and monitor automated warehouse slot assignment.</p>
+    </section>
 
-<main class="container">
-
-
-    <!-- ======================================
-         ADD PRODUCT
-    ======================================= -->
-
-    <section class="form-box">
-
-        <h2 id="formTitle">
-            Add Product
-        </h2>
-
+    <!-- ADD / EDIT PRODUCT FORM -->
+    <section class="inventory-card">
+        <div class="section-heading">
+            <h2 id="formTitle">Add Product</h2>
+            <p>Enter product specifications and storage volumetric properties.</p>
+        </div>
 
         <form id="productForm">
-
-
             <div class="form-grid">
 
-
                 <!-- PRODUCT NAME -->
-
                 <div class="form-group">
-
-                    <label for="productName">
-                        Product Name *
-                    </label>
-
+                    <label for="productName">Product Name *</label>
                     <input
                         type="text"
                         id="productName"
-                        placeholder="Example: Dell Laptop"
+                        placeholder="e.g. Dell UltraSharp Monitor"
                         required
                     >
-
                 </div>
-
 
                 <!-- CATEGORY -->
-
                 <div class="form-group">
-
-                    <label for="category">
-                        Category *
-                    </label>
-
-                    <select
-                        id="category"
-                        required
-                    >
-
-                        <option value="">
-                            Select Category
-                        </option>
-
-                        <option value="Laptop">
-                            Laptop
-                        </option>
-
-                        <option value="Mobile">
-                            Mobile
-                        </option>
-
-                        <option value="Monitor">
-                            Monitor
-                        </option>
-
-                        <option value="Keyboard">
-                            Keyboard
-                        </option>
-
-                        <option value="Mouse">
-                            Mouse
-                        </option>
-
-                        <option value="Headphones">
-                            Headphones
-                        </option>
-
-                        <option value="Printer">
-                            Printer
-                        </option>
-
-                        <option value="Router">
-                            Router
-                        </option>
-
-                        <option value="Cables">
-                            Cables
-                        </option>
-
-                        <option value="Computer Accessories">
-                            Computer Accessories
-                        </option>
-
-                        <option value="Other">
-                            Other
-                        </option>
-
+                    <label for="category">Category *</label>
+                    <select id="category" required>
+                        <option value="">Select Category</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="Mobile">Mobile</option>
+                        <option value="Monitor">Monitor</option>
+                        <option value="Keyboard">Keyboard</option>
+                        <option value="Mouse">Mouse</option>
+                        <option value="Headphones">Headphones</option>
+                        <option value="Printer">Printer</option>
+                        <option value="Router">Router</option>
+                        <option value="Cables">Cables</option>
+                        <option value="Computer Accessories">Computer Accessories</option>
+                        <option value="Other">Other</option>
                     </select>
-
                 </div>
 
-
                 <!-- QUANTITY -->
-
                 <div class="form-group">
-
-                    <label for="quantity">
-                        Quantity *
-                    </label>
-
+                    <label for="quantity">Quantity *</label>
                     <input
                         type="number"
                         id="quantity"
                         min="1"
                         step="1"
-                        placeholder="Example: 30"
+                        placeholder="e.g. 25"
                         required
                     >
-
                 </div>
-
 
                 <!-- UNIT -->
-
                 <div class="form-group">
-
-                    <label for="unit">
-                        Unit *
-                    </label>
-
-                    <select
-                        id="unit"
-                        required
-                    >
-
-                        <option value="Pieces">
-                            Pieces
-                        </option>
-
-                        <option value="Boxes">
-                            Boxes
-                        </option>
-
-                        <option value="Sets">
-                            Sets
-                        </option>
-
-                        <option value="Packs">
-                            Packs
-                        </option>
-
-                        <option value="Cartons">
-                            Cartons
-                        </option>
-
+                    <label for="unit">Packaging Unit *</label>
+                    <select id="unit" required>
+                        <option value="Pieces">Pieces</option>
+                        <option value="Boxes">Boxes</option>
+                        <option value="Sets">Sets</option>
+                        <option value="Packs">Packs</option>
+                        <option value="Cartons">Cartons</option>
                     </select>
-
                 </div>
 
-
                 <!-- ITEMS PER UNIT -->
-
                 <div class="form-group">
-
-                    <label
-                        for="itemsPerUnit"
-                        id="itemsPerUnitLabel"
-                    >
-                        Items per Piece *
-                    </label>
-
+                    <label for="itemsPerUnit" id="itemsPerUnitLabel">Items per Piece *</label>
                     <input
                         type="number"
                         id="itemsPerUnit"
@@ -673,299 +409,160 @@
                         value="1"
                         required
                     >
-
                 </div>
-
 
                 <!-- PRODUCT SIZE -->
-
                 <div class="form-group">
-
-                    <label for="size">
-                        Product Size *
-                    </label>
-
-                    <select
-                        id="size"
-                        required
-                    >
-
-                        <option value="">
-                            Select Product Size
-                        </option>
-
-                        <option value="Small">
-                            Small — 30 × 20 × 20 cm
-                        </option>
-
-                        <option value="Medium">
-                            Medium — 60 × 40 × 40 cm
-                        </option>
-
-                        <option value="Large">
-                            Large — 100 × 80 × 80 cm
-                        </option>
-
-                        <option value="Custom">
-                            Custom Dimensions
-                        </option>
-
+                    <label for="size">Storage Size *</label>
+                    <select id="size" required>
+                        <option value="">Select Product Size</option>
+                        <option value="Small">Small — 30 × 20 × 20 cm</option>
+                        <option value="Medium">Medium — 60 × 40 × 40 cm</option>
+                        <option value="Large">Large — 100 × 80 × 80 cm</option>
+                        <option value="Custom">Custom Dimensions</option>
                     </select>
-
                 </div>
-
 
                 <!-- SIZE EXPLANATION -->
-
                 <div class="size-info">
-
-                    <strong>
-                        Storage size:
-                    </strong>
-
-                    Small, Medium and Large already have
-                    predefined physical dimensions.
-
-                    Choose Custom only when the actual product
-                    dimensions are different.
-
-                    <br><br>
-
-                    These dimensions will be used by the
-                    warehouse allocation system to calculate
-                    the required storage volume.
-
+                    <strong>Physical Storage Size:</strong> Standard sizes (Small, Medium, Large) have predefined volumetric footprints. Select <em>Custom</em> only when the physical item requires custom dimensional measurements.
                 </div>
 
-
-                <!-- CUSTOM DIMENSIONS -->
-
-                <div
-                    id="customDimensions"
-                    class="custom-dimensions"
-                >
-
-                    <h3>
-                        Enter Product Dimensions
-                    </h3>
-
-                    <p>
-                        Enter the actual dimensions of one
-                        physical product/unit.
-                    </p>
-
+                <!-- CUSTOM DIMENSIONS DRAWER -->
+                <div id="customDimensions" class="custom-dimensions">
+                    <h3>Custom Physical Dimensions</h3>
+                    <p>Enter the exact outer packaging measurements for one unit.</p>
 
                     <div class="dimension-grid">
-
-
                         <div class="form-group">
-
-                            <label for="length">
-                                Length (cm) *
-                            </label>
-
+                            <label for="length">Length (cm) *</label>
                             <input
                                 type="number"
                                 id="length"
                                 min="0.1"
                                 step="0.01"
-                                placeholder="Example: 45"
+                                placeholder="e.g. 45"
                             >
-
                         </div>
-
-
                         <div class="form-group">
-
-                            <label for="breadth">
-                                Breadth (cm) *
-                            </label>
-
+                            <label for="breadth">Breadth (cm) *</label>
                             <input
                                 type="number"
                                 id="breadth"
                                 min="0.1"
                                 step="0.01"
-                                placeholder="Example: 30"
+                                placeholder="e.g. 30"
                             >
-
                         </div>
-
-
                         <div class="form-group">
-
-                            <label for="height">
-                                Height (cm) *
-                            </label>
-
+                            <label for="height">Height (cm) *</label>
                             <input
                                 type="number"
                                 id="height"
                                 min="0.1"
                                 step="0.01"
-                                placeholder="Example: 10"
+                                placeholder="e.g. 15"
                             >
-
                         </div>
-
-
                     </div>
-
                 </div>
 
-
                 <!-- WEIGHT -->
-
                 <div class="form-group">
-
-                    <label for="weight">
-                        Weight per Unit (kg) *
-                    </label>
-
+                    <label for="weight">Weight per Unit (kg) *</label>
                     <input
                         type="number"
                         id="weight"
                         min="0.01"
                         step="0.01"
-                        placeholder="Example: 4"
+                        placeholder="e.g. 4.5"
                         required
                     >
-
                 </div>
-
 
                 <!-- FRAGILE -->
-
                 <div class="form-group">
-
-                    <label for="fragile">
-                        Fragile *
-                    </label>
-
-                    <select
-                        id="fragile"
-                        required
-                    >
-
-                        <option value="No">
-                            No
-                        </option>
-
-                        <option value="Yes">
-                            Yes
-                        </option>
-
+                    <label for="fragile">Fragile Item *</label>
+                    <select id="fragile" required>
+                        <option value="No">No</option>
+                        <option value="Yes">Yes (Requires Top Shelf / Gentle Packing)</option>
                     </select>
-
                 </div>
-
 
                 <!-- BUTTONS -->
-
                 <div class="full-width button-group">
-
-                    <button
-                        type="submit"
-                        class="btn add-btn"
-                        id="submitBtn"
-                    >
+                    <button type="submit" class="btn add-btn" id="submitBtn">
                         Add Product
                     </button>
-
-
-                    <button
-                        type="button"
-                        class="btn cancel-btn"
-                        id="cancelBtn"
-                    >
-                        Cancel
+                    <button type="button" class="btn cancel-btn" id="cancelBtn">
+                        Cancel Edit
                     </button>
-
                 </div>
 
-
             </div>
-
         </form>
-
     </section>
 
-
-
-    <!-- ======================================
-         PRODUCTS TABLE
-    ======================================= -->
-
-    <section class="products-box">
-
-
+    <!-- PRODUCTS DATA TABLE -->
+    <section class="inventory-card">
         <div class="products-top">
-
-            <h2>
-                Products
-            </h2>
-
+            <div class="section-heading" style="margin-bottom: 0;">
+                <h2>Product Inventory List</h2>
+                <p>All registered warehouse SKU records and real-time slot occupancy status.</p>
+            </div>
 
             <input
                 type="text"
                 id="searchInput"
                 class="search-input"
-                placeholder="Search product..."
+                placeholder="🔍 Search by name, category, unit..."
             >
-
         </div>
-
 
         <div class="table-container">
-
             <table>
-
                 <thead>
-
                     <tr>
-
                         <th>Product Name</th>
-
                         <th>Category</th>
-
-                        <th>Quantity</th>
-
+                        <th>Qty</th>
                         <th>Unit</th>
-
-                        <th>Items per Unit</th>
-
+                        <th>Items/Unit</th>
                         <th>Size</th>
-
                         <th>Weight</th>
-
                         <th>Fragile</th>
-
                         <th>Dimensions</th>
-
                         <th>Status</th>
-
                         <th>Actions</th>
-
                     </tr>
-
                 </thead>
-
-
                 <tbody id="productTableBody"></tbody>
-
             </table>
-
         </div>
-
     </section>
-
 
 </main>
 
-
-
 <script src="product.js"></script>
-
+<script>
+    // Header user greeting & logout synchronization
+    (function () {
+        const savedUser = localStorage.getItem("currentuser");
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                const welcomeEl = document.getElementById("welcomeUser");
+                if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+            } catch (e) {}
+        }
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("currentuser");
+                window.location.href = "login.html";
+            };
+        }
+    })();
+</script>
 </body>
-
 </html>

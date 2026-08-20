@@ -257,7 +257,7 @@ button:active {
    LOGISTICS NAVBAR
    ========================================================================== */
 .dashboard-header {
-    background-color: #fffbeb;                  /* Warm off-yellow / light amber */
+    background-color: var(--primary);                  /* Warm off-yellow / light amber */
     color: var(--text-primary);
     padding: 14px 32px;
     display: flex;
@@ -269,17 +269,18 @@ button:active {
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.08);
+    box-shadow: 0 4px 15px rgba(188, 130, 31, 0.08);
 }
 
 .brand {
+    color: rgb(228, 216, 146);
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .brand h1 {
-    color: var(--text-primary);
+    color: var(--accent-light);
     font-size: 22px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -311,7 +312,7 @@ button:active {
 }
 
 .dashboard-nav a {
-    color: var(--text-secondary);
+    color: var(--border-focus);
     text-decoration: none;
     font-size: 14px;
     font-weight: 600;
@@ -323,9 +324,9 @@ button:active {
 }
 
 .dashboard-nav a:hover {
-    color: var(--text-primary);
-    background-color: rgba(245, 158, 11, 0.18);
-    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--status-warning);
+    background-color: rgba(247, 228, 63, 0.18);
+    border-color: rgba(245, 228, 52, 0.3);
     transform: translateY(-1px);
 }
 

@@ -1,784 +1,399 @@
-/* ==========================================
-   RESET
-========================================== */
-
-/* ==========================================
-   SLOT UTILIZATION
-========================================== */
-
-.slot-utilization {
-    margin-top: 20px;
-}
-
-.slot-utilization-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 8px;
-}
-
-.slot-utilization-header span {
-    font-size: 14px;
-    color: #555;
-}
-
-.slot-utilization-header strong {
-    font-size: 15px;
-    color: #f59e0b;
-}
-
-
-/* ==========================================
-   PROGRESS BAR
-========================================== */
-
-.progress-container {
-    width: 100%;
-    height: 12px;
-    background-color: #e5e7eb;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    width: 0%;
-    background-color: #f59e0b;
-    border-radius: 10px;
-
-    transition:
-        width 0.6s ease;
-}
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-
-/* ==========================================
-   BODY
-========================================== */
-
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
-    color: #1f2937;
-    min-height: 100vh;
-}
-
-
-/* ==========================================
-   HEADER
-========================================== */
-
-.header {
-    background-color: #ffffff;
-    min-height: 90px;
-    padding: 20px 40px;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    border-bottom: 1px solid #e5e7eb;
-}
-
-
-.header-left h1 {
-    font-size: 28px;
-    margin-bottom: 6px;
-}
-
-
-.header-left p {
-    font-size: 15px;
-    color: #6b7280;
-}
-
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-
-#welcomeUser {
-    font-size: 16px;
-    font-weight: 600;
-}
-
-
-/* ==========================================
-   LOGOUT BUTTON
-========================================== */
-
-.logout-btn {
-    border: none;
-    background-color: #dc2626;
-    color: white;
-
-    padding: 10px 18px;
-
-    border-radius: 6px;
-
-    font-size: 14px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-.logout-btn:hover {
-    background-color: #b91c1c;
-}
-
-
-/* ==========================================
-   NAVIGATION
-========================================== */
-
-.navigation {
-    background-color: #ffffff;
-
-    display: flex;
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 0 40px;
-
-    border-bottom: 1px solid #e5e7eb;
-}
-
-
-.navigation a {
-    text-decoration: none;
-    color: #4b5563;
-
-    font-size: 15px;
-    font-weight: 600;
-
-    padding: 15px 18px;
-
-    border-bottom: 3px solid transparent;
-
-    transition: 0.2s;
-}
-
-
-.navigation a:hover {
-    color: #111827;
-    background-color: #f9fafb;
-}
-
-
-.navigation a.active {
-    color: #2563eb;
-    border-bottom-color: #2563eb;
-}
-
-
-/* ==========================================
-   MAIN CONTAINER
-========================================== */
-
-.analytics-container {
-    max-width: 1400px;
-
-    margin: 0 auto;
-
-    padding: 35px 40px 60px;
-}
-
-
-/* ==========================================
-   SECTION
-========================================== */
-
+/* ==========================================================================
+   ANALYTICS SECTION & HEADERS
+   ========================================================================== */
 .analytics-section {
-    margin-bottom: 35px;
+    margin-bottom: 36px;
 }
-
 
 .section-header {
     margin-bottom: 20px;
 }
 
-
 .section-header h2 {
-    font-size: 23px;
-    margin-bottom: 6px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 4px;
 }
-
 
 .section-header p {
-    color: #6b7280;
-    font-size: 15px;
+    color: var(--text-secondary);
+    font-size: 14px;
 }
 
+.section-label {
+    display: inline-block;
+    color: var(--accent-text);
+    background: var(--accent-subtle);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
 
-/* ==========================================
-   ANALYSIS GRID
-========================================== */
-
+/* ==========================================================================
+   2-COLUMN ANALYSIS GRID
+   ========================================================================== */
 .analysis-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
+    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
-
     margin-bottom: 20px;
 }
-
-
-/* ==========================================
-   ANALYSIS CARD
-========================================== */
 
 .analysis-card {
-    background-color: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-
-    padding: 24px;
-
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.04);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px 26px;
+    box-shadow: var(--shadow-sm);
 }
-
 
 .analysis-card h3 {
-    font-size: 18px;
-
-    margin-bottom: 20px;
-
-    color: #111827;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 18px;
 }
 
-
-/* ==========================================
-   CATEGORY LIST
-========================================== */
-
+/* Category List */
 .category-list {
     display: flex;
-
     flex-direction: column;
-
-    gap: 14px;
+    gap: 10px;
 }
-
 
 .category-item {
     display: flex;
-
-    align-items: center;
-
     justify-content: space-between;
-
-    gap: 15px;
-}
-
-
-.category-name {
-    font-size: 15px;
-
-    font-weight: 600;
-
-    min-width: 120px;
-}
-
-
-.category-bar-container {
-    flex: 1;
-
-    height: 9px;
-
-    background-color: #e5e7eb;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-
-.category-bar {
-    height: 100%;
-
-    border-radius: 10px;
-
-    transition: width 0.4s ease;
-}
-
-
-.category-value {
-    min-width: 55px;
-
-    text-align: right;
-
-    font-weight: 600;
-
+    align-items: center;
+    padding: 11px 16px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
     font-size: 14px;
+    transition: all var(--transition-fast);
 }
 
+.category-item:hover {
+    background: #ffffff;
+    border-color: #fde68a;
+    transform: translateX(2px);
+}
 
-/* ==========================================
-   ALLOCATION SUMMARY
-========================================== */
+.category-item span {
+    font-weight: 600;
+    color: var(--text-primary);
+}
 
+.category-item strong {
+    font-weight: 800;
+    color: #92400e;
+    background: var(--accent-subtle);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+}
+
+/* Allocation Summary Rows */
 .allocation-summary {
     display: flex;
-
     flex-direction: column;
-
-    gap: 14px;
+    gap: 10px;
 }
-
 
 .analysis-stat {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    padding: 13px 15px;
-
-    background-color: #f9fafb;
-
-    border-radius: 7px;
+    padding: 12px 16px;
+    background: var(--bg-body);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
 }
-
 
 .analysis-stat span {
-    color: #4b5563;
-
-    font-size: 14px;
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    font-weight: 600;
 }
-
 
 .analysis-stat strong {
-    font-size: 18px;
-
-    color: #111827;
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
+.stat-green {
+    color: #047857 !important;
+}
 
-/* ==========================================
-   SLOT ANALYSIS GRID
-========================================== */
+.stat-amber {
+    color: #b45309 !important;
+}
 
+.stat-red {
+    color: #b91c1c !important;
+}
+
+/* ==========================================================================
+   4-COLUMN SLOT ANALYSIS GRID
+   ========================================================================== */
 .slot-analysis-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(4, minmax(0, 1fr));
-
+    grid-template-columns: repeat(4, 1fr);
     gap: 18px;
 }
 
-
-/* ==========================================
-   SLOT ANALYSIS CARD
-========================================== */
-
 .slot-analysis-card {
-    background-color: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
     padding: 22px;
-
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    transition: all var(--transition-normal);
 }
 
+.slot-analysis-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: #fde68a;
+}
+
+.slot-type-badge {
+    align-self: flex-start;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+}
+
+.badge-small {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-large {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.badge-custom {
+    background: #f3e8ff;
+    color: #7e22ce;
+}
 
 .slot-analysis-card h3 {
-    font-size: 18px;
-
-    margin-bottom: 20px;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 14px;
 }
-
 
 .slot-analysis-row {
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    padding: 9px 0;
-
-    border-bottom: 1px solid #f0f0f0;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
 }
-
 
 .slot-analysis-row span {
-    color: #6b7280;
-
-    font-size: 14px;
+    color: var(--text-secondary);
 }
-
 
 .slot-analysis-row strong {
-    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
 }
-
-
-/* ==========================================
-   SLOT UTILIZATION
-========================================== */
 
 .slot-utilization {
-    margin-top: 20px;
+    margin-top: 14px;
 }
-
 
 .slot-utilization-header {
     display: flex;
-
     justify-content: space-between;
-
-    margin-bottom: 8px;
-
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
 }
-
 
 .slot-utilization-header strong {
-    font-size: 14px;
+    color: #b45309;
 }
 
-
-/* ==========================================
-   PROGRESS BAR
-========================================== */
-
-.progress-container {
-    width: 100%;
-
-    height: 10px;
-
-    background-color: #e5e7eb;
-
-    border-radius: 10px;
-
-    overflow: hidden;
-}
-
-
-.progress-bar {
-    height: 100%;
-
-    border-radius: 10px;
-
-    transition: width 0.4s ease;
-}
-
-
-/* ==========================================
-   SPACE SUMMARY
-========================================== */
-
+/* ==========================================================================
+   SPACE SUMMARY CARDS
+   ========================================================================== */
 .space-summary {
     display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
-
 
 .space-card {
-    background-color: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-
-    padding: 25px;
-
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 24px;
     display: flex;
-
     flex-direction: column;
-
-    gap: 10px;
-
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.04);
+    gap: 8px;
+    box-shadow: var(--shadow-sm);
 }
-
 
 .space-card span {
-    color: #6b7280;
-
-    font-size: 14px;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
-
 
 .space-card strong {
-    font-size: 22px;
-
-    color: #111827;
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
 }
 
-
-/* ==========================================
-   PENDING PRODUCTS
-========================================== */
-
+/* ==========================================================================
+   PENDING PRODUCTS & INSIGHTS
+   ========================================================================== */
 .pending-product-list {
     display: flex;
-
     flex-direction: column;
-
-    gap: 12px;
+    gap: 10px;
 }
-
 
 .pending-product {
-    background-color: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-left: 4px solid #f59e0b;
-
-    border-radius: 8px;
-
-    padding: 18px 20px;
-
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
     display: flex;
-
     justify-content: space-between;
-
     align-items: center;
-
-    gap: 20px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
-
-
-.pending-product-info {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 5px;
-}
-
 
 .pending-product-name {
     font-weight: 700;
-
-    font-size: 16px;
+    color: var(--text-primary);
+    font-size: 15px;
 }
-
 
 .pending-product-details {
-    color: #6b7280;
-
-    font-size: 14px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: 2px;
 }
-
 
 .pending-product-status {
-    font-weight: 600;
-
-    color: #d97706;
-
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #92400e;
+    background: var(--accent-subtle);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
 }
-
-
-/* ==========================================
-   INSIGHTS
-========================================== */
 
 .insights-container {
     display: grid;
-
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
-
-    gap: 18px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
 }
-
 
 .insight-card {
-    background-color: #ffffff;
-
-    border: 1px solid #e5e7eb;
-
-    border-radius: 10px;
-
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-left: 4px solid #0284c7;
+    border-radius: var(--radius-md);
     padding: 20px;
-
-    box-shadow:
-        0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
 }
-
 
 .insight-card strong {
     display: block;
-
-    font-size: 16px;
-
-    margin-bottom: 7px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
 }
-
 
 .insight-card p {
-    color: #6b7280;
-
-    font-size: 14px;
-
+    color: var(--text-secondary);
+    font-size: 13.5px;
     line-height: 1.5;
+    margin: 0;
 }
 
-
-/* ==========================================
-   EMPTY MESSAGE
-========================================== */
-
-.empty-message {
-    color: #6b7280;
-
-    font-size: 14px;
-
-    padding: 15px 0;
-}
-
-
-/* ==========================================
-   ANALYTICS ACTIONS
-========================================== */
-
+/* ==========================================================================
+   REFRESH BUTTON
+   ========================================================================== */
 .analytics-actions {
     display: flex;
-
     justify-content: flex-end;
-
-    margin-top: 10px;
+    margin-top: 28px;
 }
-
 
 .refresh-btn {
-    border: none;
-
-    background-color: #2563eb;
-
-    color: #ffffff;
-
-    padding: 11px 20px;
-
-    border-radius: 6px;
-
+    border: 1px solid #d97706;
+    background: var(--accent);
+    color: #78350f;
+    padding: 12px 22px;
+    border-radius: var(--radius-sm);
     font-size: 14px;
-
-    font-weight: 600;
-
+    font-weight: 800;
     cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
 }
-
 
 .refresh-btn:hover {
-    background-color: #1d4ed8;
+    background: var(--accent-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
 }
 
-
-/* ==========================================
+/* ==========================================================================
    RESPONSIVE
-========================================== */
-
-@media (max-width: 1100px) {
-
+   ========================================================================== */
+@media (max-width: 1000px) {
     .slot-analysis-grid {
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
-
 }
 
-
-@media (max-width: 800px) {
-
-    .header {
-        padding: 20px;
-
-        flex-direction: column;
-
-        align-items: flex-start;
-
-        gap: 15px;
-    }
-
-
-    .header-right {
-        width: 100%;
-
-        justify-content: space-between;
-    }
-
-
-    .navigation {
-        padding: 0 20px;
-
-        overflow-x: auto;
-    }
-
-
-    .analytics-container {
-        padding: 25px 20px 50px;
-    }
-
-
+@media (max-width: 768px) {
     .analysis-grid {
         grid-template-columns: 1fr;
     }
-
-
     .space-summary {
         grid-template-columns: 1fr;
     }
-
-
     .insights-container {
         grid-template-columns: 1fr;
     }
-
-}
-
-
-@media (max-width: 600px) {
-
     .slot-analysis-grid {
         grid-template-columns: 1fr;
     }
-
-
-    .pending-product {
-        flex-direction: column;
-
-        align-items: flex-start;
-    }
-
-
-    .header-left h1 {
-        font-size: 24px;
-    }
-
-
-    .section-header h2 {
-        font-size: 20px;
-    }
-
 }
