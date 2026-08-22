@@ -3,9 +3,18 @@ const SLOT_KEY = "warehouseSlots";
 const CURRENT_USER_KEY = "currentuser";
 
 
-// ==========================================
-// GET CURRENT USER
-// ==========================================
+// *==========================================*
+// *CHART INSTANCES*
+// *==========================================*
+
+let categoryChartInstance = null;
+let allocationChartInstance = null;
+let slotUtilizationChartInstance = null;
+
+
+// *==========================================*
+// *GET CURRENT USER*
+// *==========================================*
 
 function getCurrentUser() {
 
@@ -27,20 +36,26 @@ function getCurrentUser() {
 
     catch (error) {
 
-        console.error("Invalid current user:", error);
+        console.error(
+            "Invalid current user:",
+            error
+        );
 
-        localStorage.removeItem(CURRENT_USER_KEY);
+        localStorage.removeItem(
+            CURRENT_USER_KEY
+        );
 
-        window.location.href = "login.html";
+        window.location.href =
+            "login.html";
 
         return null;
     }
 }
 
 
-// ==========================================
-// GET PRODUCTS
-// ==========================================
+// *==========================================*
+// *GET PRODUCTS*
+// *==========================================*
 
 function getProducts() {
 
@@ -48,13 +63,14 @@ function getProducts() {
         localStorage.getItem(PRODUCT_KEY);
 
     if (!savedProducts) {
-
         return [];
     }
 
     try {
 
-        return JSON.parse(savedProducts);
+        return JSON.parse(
+            savedProducts
+        );
 
     }
 
@@ -70,9 +86,9 @@ function getProducts() {
 }
 
 
-// ==========================================
-// GET SLOTS
-// ==========================================
+// *==========================================*
+// *GET SLOTS*
+// *==========================================*
 
 function getSlots() {
 
@@ -80,13 +96,14 @@ function getSlots() {
         localStorage.getItem(SLOT_KEY);
 
     if (!savedSlots) {
-
         return [];
     }
 
     try {
 
-        return JSON.parse(savedSlots);
+        return JSON.parse(
+            savedSlots
+        );
 
     }
 
@@ -102,9 +119,9 @@ function getSlots() {
 }
 
 
-// ==========================================
-// SET HTML VALUE
-// ==========================================
+// *==========================================*
+// *SET HTML VALUE*
+// *==========================================*
 
 function setValue(
     elementId,
@@ -112,58 +129,61 @@ function setValue(
 ) {
 
     const element =
-        document.getElementById(elementId);
+        document.getElementById(
+            elementId
+        );
 
     if (element) {
 
-        element.innerText = value;
-
+        element.innerText =
+            value;
     }
-
 }
 
 
-// ==========================================
-// LOAD ANALYTICS
-// ==========================================
+// *==========================================*
+// *LOAD ANALYTICS*
+// *==========================================*
 
 function loadAnalytics() {
 
-    console.log("Analytics page loaded");
+    console.log(
+        "Analytics page loaded"
+    );
 
 
-    // ======================================
-    // CURRENT USER
-    // ======================================
+    // *======================================*
+    // *CURRENT USER*
+    // *======================================*
 
     const currentUser =
         getCurrentUser();
 
     if (!currentUser) {
-
         return;
     }
 
 
-    // ======================================
-    // WELCOME USER
-    // ======================================
+    // *======================================*
+    // *WELCOME USER*
+    // *======================================*
 
     const welcomeUser =
-        document.getElementById("welcomeUser");
+        document.getElementById(
+            "welcomeUser"
+        );
 
     if (welcomeUser) {
 
         welcomeUser.innerText =
             "Welcome, " +
             currentUser.name;
-
     }
 
 
-    // ======================================
-    // GET DATA
-    // ======================================
+    // *======================================*
+    // *GET DATA*
+    // *======================================*
 
     const allProducts =
         getProducts();
@@ -172,9 +192,9 @@ function loadAnalytics() {
         getSlots();
 
 
-    // ======================================
-    // FILTER CURRENT USER DATA
-    // ======================================
+    // *======================================*
+    // *FILTER CURRENT USER DATA*
+    // *======================================*
 
     const products =
         allProducts.filter(
@@ -213,33 +233,30 @@ function loadAnalytics() {
     );
 
 
-    // ======================================
-    // PRODUCT ANALYSIS
-    // ======================================
+    // *======================================*
+    // *PRODUCT ANALYSIS*
+    // *======================================*
 
     displayCategoryDistribution(
         products
     );
 
-
     displayCategoryQuantity(
         products
     );
 
-
     displayAllocationAnalysis(
         products
     );
-
 
     displayProductCharacteristics(
         products
     );
 
 
-    // ======================================
-    // SLOT ANALYSIS
-    // ======================================
+    // *======================================*
+    // *SLOT ANALYSIS*
+    // *======================================*
 
     displaySlotAnalysis(
         slots,
@@ -262,39 +279,55 @@ function loadAnalytics() {
     );
 
 
-    // ======================================
-    // SPACE ANALYSIS
-    // ======================================
+    // *======================================*
+    // *SPACE ANALYSIS*
+    // *======================================*
 
     displaySpaceAnalysis(
         slots
     );
 
 
-    // ======================================
-    // PENDING PRODUCTS
-    // ======================================
+    // *======================================*
+    // *PENDING PRODUCTS*
+    // *======================================*
 
     displayPendingProducts(
         products
     );
 
 
-    // ======================================
-    // INSIGHTS
-    // ======================================
+    // *======================================*
+    // *INSIGHTS*
+    // *======================================*
 
     generateInsights(
         products,
         slots
     );
 
+
+    // *======================================*
+    // *ANALYTICS CHARTS*
+    // *======================================*
+
+    displayCategoryChart(
+        products
+    );
+
+    displayAllocationChart(
+        products
+    );
+
+    displaySlotUtilizationChart(
+        slots
+    );
 }
 
 
-// ==========================================
-// CATEGORY DISTRIBUTION
-// ==========================================
+// *==========================================*
+// *CATEGORY DISTRIBUTION*
+// *==========================================*
 
 function displayCategoryDistribution(
     products
@@ -332,16 +365,13 @@ function displayCategoryDistribution(
                 product.category ||
                 "Other";
 
-
             if (!categories[category]) {
 
-                categories[category] = 0;
-
+                categories[category] =
+                    0;
             }
 
-
             categories[category]++;
-
         }
     );
 
@@ -353,14 +383,14 @@ function displayCategoryDistribution(
         function (category) {
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             item.className =
                 "category-item";
 
-
             item.innerHTML = `
-
                 <span>
                     ${category}
                 </span>
@@ -368,21 +398,19 @@ function displayCategoryDistribution(
                 <strong>
                     ${categories[category]}
                 </strong>
-
             `;
 
-
-            container.appendChild(item);
-
+            container.appendChild(
+                item
+            );
         }
     );
-
 }
 
 
-// ==========================================
-// QUANTITY BY CATEGORY
-// ==========================================
+// *==========================================*
+// *QUANTITY BY CATEGORY*
+// *==========================================*
 
 function displayCategoryQuantity(
     products
@@ -420,19 +448,16 @@ function displayCategoryQuantity(
                 product.category ||
                 "Other";
 
-
             if (!quantities[category]) {
 
-                quantities[category] = 0;
-
+                quantities[category] =
+                    0;
             }
-
 
             quantities[category] +=
                 Number(
                     product.quantity || 0
                 );
-
         }
     );
 
@@ -444,14 +469,14 @@ function displayCategoryQuantity(
         function (category) {
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
             item.className =
                 "category-item";
 
-
             item.innerHTML = `
-
                 <span>
                     ${category}
                 </span>
@@ -459,21 +484,19 @@ function displayCategoryQuantity(
                 <strong>
                     ${quantities[category]}
                 </strong>
-
             `;
 
-
-            container.appendChild(item);
-
+            container.appendChild(
+                item
+            );
         }
     );
-
 }
 
 
-// ==========================================
-// ALLOCATION ANALYSIS
-// ==========================================
+// *==========================================*
+// *ALLOCATION ANALYSIS*
+// *==========================================*
 
 function displayAllocationAnalysis(
     products
@@ -501,7 +524,6 @@ function displayAllocationAnalysis(
             if (allocatedQuantity === 0) {
 
                 notAllocated++;
-
             }
 
             else if (
@@ -510,15 +532,12 @@ function displayAllocationAnalysis(
             ) {
 
                 pending++;
-
             }
 
             else {
 
                 allocated++;
-
             }
-
         }
     );
 
@@ -528,24 +547,21 @@ function displayAllocationAnalysis(
         allocated
     );
 
-
     setValue(
         "pendingProducts",
         pending
     );
 
-
     setValue(
         "notAllocatedProducts",
         notAllocated
     );
-
 }
 
 
-// ==========================================
-// PRODUCT CHARACTERISTICS
-// ==========================================
+// *==========================================*
+// *PRODUCT CHARACTERISTICS*
+// *==========================================*
 
 function displayProductCharacteristics(
     products
@@ -553,7 +569,6 @@ function displayProductCharacteristics(
 
     let fragile = 0;
     let nonFragile = 0;
-
 
     let totalWeight = 0;
 
@@ -573,28 +588,21 @@ function displayProductCharacteristics(
             ) {
 
                 fragile++;
-
             }
 
             else {
 
                 nonFragile++;
-
             }
 
 
             totalWeight +=
-
                 Number(
                     product.quantity || 0
-                )
-
-                *
-
+                ) *
                 Number(
                     product.weight || 0
                 );
-
         }
     );
 
@@ -604,25 +612,22 @@ function displayProductCharacteristics(
         fragile
     );
 
-
     setValue(
         "nonFragileProducts",
         nonFragile
     );
-
 
     setValue(
         "inventoryWeight",
         totalWeight.toFixed(2) +
         " kg"
     );
-
 }
 
 
-// ==========================================
-// SLOT ANALYSIS
-// ==========================================
+// *==========================================*
+// *SLOT ANALYSIS*
+// *==========================================*
 
 function displaySlotAnalysis(
     slots,
@@ -637,7 +642,6 @@ function displaySlotAnalysis(
                     slot.size ===
                     size
                 );
-
             }
         );
 
@@ -655,7 +659,6 @@ function displaySlotAnalysis(
                         slot.usedVolume || 0
                     ) > 0
                 );
-
             }
         ).length;
 
@@ -677,12 +680,10 @@ function displaySlotAnalysis(
                     slot.volume || 0
                 );
 
-
             usedVolume +=
                 Number(
                     slot.usedVolume || 0
                 );
-
         }
     );
 
@@ -697,7 +698,6 @@ function displaySlotAnalysis(
                 usedVolume /
                 totalVolume
             ) * 100;
-
     }
 
 
@@ -720,18 +720,15 @@ function displaySlotAnalysis(
         total
     );
 
-
     setValue(
         prefix + "Occupied",
         occupied
     );
 
-
     setValue(
         prefix + "Empty",
         empty
     );
-
 
     setValue(
         prefix + "Utilization",
@@ -750,15 +747,13 @@ function displaySlotAnalysis(
 
         progress.style.width =
             utilization + "%";
-
     }
-
 }
 
 
-// ==========================================
-// SPACE ANALYSIS
-// ==========================================
+// *==========================================*
+// *SPACE ANALYSIS*
+// *==========================================*
 
 function displaySpaceAnalysis(
     slots
@@ -776,12 +771,10 @@ function displaySpaceAnalysis(
                     slot.volume || 0
                 );
 
-
             usedVolume +=
                 Number(
                     slot.usedVolume || 0
                 );
-
         }
     );
 
@@ -808,9 +801,9 @@ function displaySpaceAnalysis(
     );
 
 
-    // ======================================
-    // MOST UTILIZED SLOT TYPE
-    // ======================================
+    // *======================================*
+    // *MOST UTILIZED SLOT TYPE*
+    // *======================================*
 
     const sizes = [
         "Large",
@@ -820,11 +813,9 @@ function displaySpaceAnalysis(
     ];
 
 
-    let mostUtilized =
-        "-";
+    let mostUtilized = "-";
 
-    let highestUtilization =
-        -1;
+    let highestUtilization = -1;
 
 
     sizes.forEach(
@@ -838,7 +829,6 @@ function displaySpaceAnalysis(
                             slot.size ===
                             size
                         );
-
                     }
                 );
 
@@ -859,7 +849,6 @@ function displaySpaceAnalysis(
                         Number(
                             slot.usedVolume || 0
                         );
-
                 }
             );
 
@@ -883,11 +872,8 @@ function displaySpaceAnalysis(
 
                     mostUtilized =
                         size;
-
                 }
-
             }
-
         }
     );
 
@@ -896,13 +882,12 @@ function displaySpaceAnalysis(
         "mostUtilizedSlot",
         mostUtilized
     );
-
 }
 
 
-// ==========================================
-// PENDING PRODUCTS
-// ==========================================
+// *==========================================*
+// *PENDING PRODUCTS*
+// *==========================================*
 
 function displayPendingProducts(
     products
@@ -912,7 +897,6 @@ function displayPendingProducts(
         document.getElementById(
             "pendingProductList"
         );
-
 
     if (!container) {
         return;
@@ -928,18 +912,15 @@ function displayPendingProducts(
                         product.quantity || 0
                     );
 
-
                 const allocated =
                     Number(
                         product.allocatedQuantity || 0
                     );
 
-
                 return (
                     allocated <
                     quantity
                 );
-
             }
         );
 
@@ -947,11 +928,9 @@ function displayPendingProducts(
     if (pending.length === 0) {
 
         container.innerHTML = `
-
             <p class="empty-message">
                 No pending products.
             </p>
-
         `;
 
         return;
@@ -969,12 +948,10 @@ function displayPendingProducts(
                     product.quantity || 0
                 );
 
-
             const allocated =
                 Number(
                     product.allocatedQuantity || 0
                 );
-
 
             const remaining =
                 quantity -
@@ -982,53 +959,46 @@ function displayPendingProducts(
 
 
             const item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             item.className =
-                "pending-product-item";
+                "pending-product";
 
 
             item.innerHTML = `
-
                 <div>
 
-                    <strong>
+                    <strong class="pending-product-name">
                         ${product.name}
                     </strong>
 
-                    <p>
+                    <p class="pending-product-details">
                         Category:
                         ${product.category || "Other"}
                     </p>
 
                 </div>
 
-
-                <div>
-
-                    <strong>
-                        ${remaining}
-                    </strong>
-
-                    remaining
-
+                <div class="pending-product-status">
+                    ${remaining} remaining
                 </div>
-
             `;
 
 
-            container.appendChild(item);
-
+            container.appendChild(
+                item
+            );
         }
     );
-
 }
 
 
-// ==========================================
-// WAREHOUSE INSIGHTS
-// ==========================================
+// *==========================================*
+// *WAREHOUSE INSIGHTS*
+// *==========================================*
 
 function generateInsights(
     products,
@@ -1040,7 +1010,6 @@ function generateInsights(
             "warehouseInsights"
         );
 
-
     if (!container) {
         return;
     }
@@ -1049,9 +1018,9 @@ function generateInsights(
     const insights = [];
 
 
-    // ======================================
-    // NO DATA
-    // ======================================
+    // *======================================*
+    // *NO DATA*
+    // *======================================*
 
     if (
         products.length === 0 &&
@@ -1059,7 +1028,6 @@ function generateInsights(
     ) {
 
         container.innerHTML = `
-
             <div class="insight-card">
 
                 <strong>
@@ -1072,17 +1040,15 @@ function generateInsights(
                 </p>
 
             </div>
-
         `;
 
         return;
-
     }
 
 
-    // ======================================
-    // UTILIZATION
-    // ======================================
+    // *======================================*
+    // *UTILIZATION*
+    // *======================================*
 
     let totalVolume = 0;
     let usedVolume = 0;
@@ -1100,7 +1066,6 @@ function generateInsights(
                 Number(
                     slot.usedVolume || 0
                 );
-
         }
     );
 
@@ -1115,14 +1080,16 @@ function generateInsights(
                 usedVolume /
                 totalVolume
             ) * 100;
-
     }
 
 
     if (utilization >= 80) {
 
         insights.push({
-            title: "Warehouse is highly utilized",
+
+            title:
+                "Warehouse is highly utilized",
+
             text:
                 "Your warehouse is using more than 80% of its available volume."
         });
@@ -1132,7 +1099,10 @@ function generateInsights(
     else if (utilization >= 50) {
 
         insights.push({
-            title: "Warehouse utilization is moderate",
+
+            title:
+                "Warehouse utilization is moderate",
+
             text:
                 "Your warehouse has a balanced level of space usage."
         });
@@ -1142,17 +1112,19 @@ function generateInsights(
     else {
 
         insights.push({
-            title: "Warehouse has available space",
+
+            title:
+                "Warehouse has available space",
+
             text:
                 "A significant amount of warehouse volume is still available."
         });
-
     }
 
 
-    // ======================================
-    // PENDING PRODUCTS
-    // ======================================
+    // *======================================*
+    // *PENDING PRODUCTS*
+    // *======================================*
 
     const pendingProducts =
         products.filter(
@@ -1162,14 +1134,11 @@ function generateInsights(
                     Number(
                         product.allocatedQuantity || 0
                     )
-
                     <
-
                     Number(
                         product.quantity || 0
                     )
                 );
-
             }
         );
 
@@ -1186,7 +1155,6 @@ function generateInsights(
             text:
                 pendingProducts.length +
                 " product(s) still require warehouse space."
-
         });
 
     }
@@ -1200,15 +1168,13 @@ function generateInsights(
 
             text:
                 "All your current products have been successfully allocated."
-
         });
-
     }
 
 
-    // ======================================
-    // EMPTY SLOTS
-    // ======================================
+    // *======================================*
+    // *EMPTY SLOTS*
+    // *======================================*
 
     const emptySlots =
         slots.filter(
@@ -1219,7 +1185,6 @@ function generateInsights(
                         slot.usedVolume || 0
                     ) === 0
                 );
-
             }
         ).length;
 
@@ -1234,17 +1199,16 @@ function generateInsights(
             text:
                 emptySlots +
                 " warehouse slot(s) are currently empty."
-
         });
-
     }
 
 
-    // ======================================
-    // MOST USED SLOT
-    // ======================================
+    // *======================================*
+    // *MOST USED SLOT*
+    // *======================================*
 
     let mostUsedSlot = null;
+
     let highestPercentage = -1;
 
 
@@ -1255,7 +1219,6 @@ function generateInsights(
                 Number(
                     slot.volume || 0
                 );
-
 
             const used =
                 Number(
@@ -1282,11 +1245,8 @@ function generateInsights(
 
                     mostUsedSlot =
                         slot;
-
                 }
-
             }
-
         }
     );
 
@@ -1303,15 +1263,13 @@ function generateInsights(
                 " is currently using " +
                 highestPercentage.toFixed(1) +
                 "% of its capacity."
-
         });
-
     }
 
 
-    // ======================================
-    // DISPLAY
-    // ======================================
+    // *======================================*
+    // *DISPLAY*
+    // *======================================*
 
     container.innerHTML = "";
 
@@ -1320,7 +1278,9 @@ function generateInsights(
         function (insight) {
 
             const card =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
 
 
             card.className =
@@ -1340,17 +1300,954 @@ function generateInsights(
             `;
 
 
-            container.appendChild(card);
-
+            container.appendChild(
+                card
+            );
         }
     );
-
 }
 
 
-// ==========================================
-// LOGOUT
-// ==========================================
+// *==========================================*
+// *CHART HELPER*
+// *==========================================*
+
+function prepareChartCanvas(
+    canvas,
+    height
+) {
+
+    if (!canvas) {
+        return;
+    }
+
+
+    /*
+     * Chart.js with
+     * maintainAspectRatio:false
+     * needs a real height.
+     *
+     * This fixes the blank
+     * Slot Utilization chart.
+     */
+
+    canvas.style.width =
+        "100%";
+
+    canvas.style.height =
+        height + "px";
+
+
+    const parent =
+        canvas.parentElement;
+
+
+    if (parent) {
+
+        parent.style.position =
+            "relative";
+
+        parent.style.width =
+            "100%";
+
+        parent.style.minHeight =
+            height + "px";
+    }
+}
+
+
+// *==========================================*
+// *CHART TOOLTIP DEFAULTS*
+// *==========================================*
+
+function getChartTooltipOptions() {
+
+    return {
+
+        backgroundColor:
+            "#111827",
+
+        titleColor:
+            "#ffffff",
+
+        bodyColor:
+            "#f8fafc",
+
+        borderColor:
+            "#374151",
+
+        borderWidth:
+            1,
+
+        padding:
+            12,
+
+        cornerRadius:
+            8,
+
+        displayColors:
+            true
+    };
+}
+
+
+// *==========================================*
+// *CATEGORY QUANTITY CHART*
+// *==========================================*
+
+function displayCategoryChart(
+    products
+) {
+
+    const canvas =
+        document.getElementById(
+            "categoryChart"
+        );
+
+    if (!canvas) {
+        return;
+    }
+
+
+    prepareChartCanvas(
+        canvas,
+        300
+    );
+
+
+    const categories = {};
+
+
+    products.forEach(
+        function (product) {
+
+            const category =
+                product.category ||
+                "Other";
+
+
+            if (!categories[category]) {
+
+                categories[category] =
+                    0;
+            }
+
+
+            categories[category] +=
+                Number(
+                    product.quantity || 0
+                );
+        }
+    );
+
+
+    let labels =
+        Object.keys(
+            categories
+        );
+
+
+    let values =
+        Object.values(
+            categories
+        );
+
+
+    /*
+     * Empty state
+     */
+
+    if (labels.length === 0) {
+
+        labels = [
+            "No Data"
+        ];
+
+        values = [
+            0
+        ];
+    }
+
+
+    if (categoryChartInstance) {
+
+        categoryChartInstance.destroy();
+
+        categoryChartInstance =
+            null;
+    }
+
+
+    const context =
+        canvas.getContext(
+            "2d"
+        );
+
+
+    /*
+     * Amber gradient
+     */
+
+    const gradient =
+        context.createLinearGradient(
+            0,
+            0,
+            0,
+            300
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#fbbf24"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#f59e0b"
+    );
+
+
+    categoryChartInstance =
+        new Chart(
+            canvas,
+            {
+
+                type: "bar",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Quantity",
+
+                            data:
+                                values,
+
+                            backgroundColor:
+                                gradient,
+
+                            borderColor:
+                                "#d97706",
+
+                            borderWidth:
+                                1,
+
+                            borderRadius:
+                                8,
+
+                            borderSkipped:
+                                false,
+
+                            barPercentage:
+                                0.62,
+
+                            categoryPercentage:
+                                0.72
+                        }
+
+                    ]
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    animation: {
+
+                        duration:
+                            700,
+
+                        easing:
+                            "easeOutQuart"
+                    },
+
+
+                    plugins: {
+
+                        legend: {
+
+                            display:
+                                false
+                        },
+
+
+                        tooltip:
+                            getChartTooltipOptions()
+                    },
+
+
+                    scales: {
+
+                        x: {
+
+                            grid: {
+
+                                display:
+                                    false
+                            },
+
+
+                            border: {
+
+                                display:
+                                    false
+                            },
+
+
+                            ticks: {
+
+                                color:
+                                    "#64748b",
+
+                                font: {
+
+                                    size:
+                                        12,
+
+                                    weight:
+                                        "600"
+                                }
+                            }
+                        },
+
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+
+                            border: {
+
+                                display:
+                                    false
+                            },
+
+
+                            grid: {
+
+                                color:
+                                    "#e5e7eb",
+
+                                drawTicks:
+                                    false
+                            },
+
+
+                            ticks: {
+
+                                color:
+                                    "#64748b",
+
+                                padding:
+                                    10,
+
+                                precision:
+                                    0,
+
+                                font: {
+
+                                    size:
+                                        11
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+// *==========================================*
+// *ALLOCATION STATUS CHART*
+// *==========================================*
+
+function displayAllocationChart(
+    products
+) {
+
+    const canvas =
+        document.getElementById(
+            "allocationChart"
+        );
+
+    if (!canvas) {
+        return;
+    }
+
+
+    prepareChartCanvas(
+        canvas,
+        300
+    );
+
+
+    let allocated = 0;
+    let pending = 0;
+    let notAllocated = 0;
+
+
+    products.forEach(
+        function (product) {
+
+            const quantity =
+                Number(
+                    product.quantity || 0
+                );
+
+
+            const allocatedQuantity =
+                Number(
+                    product.allocatedQuantity || 0
+                );
+
+
+            if (
+                allocatedQuantity === 0
+            ) {
+
+                notAllocated++;
+            }
+
+            else if (
+                allocatedQuantity <
+                quantity
+            ) {
+
+                pending++;
+            }
+
+            else {
+
+                allocated++;
+            }
+        }
+    );
+
+
+    /*
+     * If there are no products,
+     * keep the chart visible.
+     */
+
+    let chartData = [
+        allocated,
+        pending,
+        notAllocated
+    ];
+
+
+    if (
+        allocated === 0 &&
+        pending === 0 &&
+        notAllocated === 0
+    ) {
+
+        chartData = [
+            1,
+            0,
+            0
+        ];
+    }
+
+
+    if (allocationChartInstance) {
+
+        allocationChartInstance.destroy();
+
+        allocationChartInstance =
+            null;
+    }
+
+
+    allocationChartInstance =
+        new Chart(
+            canvas,
+            {
+
+                type:
+                    "doughnut",
+
+
+                data: {
+
+                    labels: [
+
+                        "Fully Allocated",
+
+                        "Pending",
+
+                        "Not Allocated"
+                    ],
+
+
+                    datasets: [
+
+                        {
+
+                            data:
+                                chartData,
+
+
+                            backgroundColor: [
+
+                                "#16a34a",
+
+                                "#f59e0b",
+
+                                "#ef4444"
+                            ],
+
+
+                            borderColor:
+                                "#ffffff",
+
+
+                            borderWidth:
+                                4,
+
+
+                            hoverOffset:
+                                8,
+
+
+                            spacing:
+                                3
+                        }
+
+                    ]
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    cutout:
+                        "68%",
+
+
+                    animation: {
+
+                        animateRotate:
+                            true,
+
+                        duration:
+                            800
+                    },
+
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+
+                            labels: {
+
+                                usePointStyle:
+                                    true,
+
+                                pointStyle:
+                                    "circle",
+
+                                padding:
+                                    18,
+
+                                color:
+                                    "#475569",
+
+                                font: {
+
+                                    size:
+                                        12,
+
+                                    weight:
+                                        "600"
+                                }
+                            }
+                        },
+
+
+                        tooltip:
+                            getChartTooltipOptions()
+                    }
+                }
+            }
+        );
+}
+
+
+// *==========================================*
+// *SLOT UTILIZATION CHART*
+// *==========================================*
+
+function displaySlotUtilizationChart(
+    slots
+) {
+
+    const canvas =
+        document.getElementById(
+            "slotUtilizationChart"
+        );
+
+    if (!canvas) {
+        return;
+    }
+
+
+    /*
+     * IMPORTANT:
+     * Give this chart a fixed height.
+     * This prevents the blank chart
+     * problem.
+     */
+
+    prepareChartCanvas(
+        canvas,
+        320
+    );
+
+
+    const sizes = [
+
+        "Large",
+
+        "Medium",
+
+        "Small",
+
+        "Custom"
+    ];
+
+
+    const utilizationValues = [];
+
+
+    sizes.forEach(
+        function (size) {
+
+            const sizeSlots =
+                slots.filter(
+                    function (slot) {
+
+                        return (
+                            slot.size ===
+                            size
+                        );
+                    }
+                );
+
+
+            let totalVolume = 0;
+
+            let usedVolume = 0;
+
+
+            sizeSlots.forEach(
+                function (slot) {
+
+                    totalVolume +=
+                        Number(
+                            slot.volume || 0
+                        );
+
+
+                    usedVolume +=
+                        Number(
+                            slot.usedVolume || 0
+                        );
+                }
+            );
+
+
+            let utilization = 0;
+
+
+            if (totalVolume > 0) {
+
+                utilization =
+                    (
+                        usedVolume /
+                        totalVolume
+                    ) * 100;
+            }
+
+
+            utilization =
+                Math.min(
+                    Math.max(
+                        utilization,
+                        0
+                    ),
+                    100
+                );
+
+
+            utilizationValues.push(
+                Number(
+                    utilization.toFixed(1)
+                )
+            );
+        }
+    );
+
+
+    if (slotUtilizationChartInstance) {
+
+        slotUtilizationChartInstance.destroy();
+
+        slotUtilizationChartInstance =
+            null;
+    }
+
+
+    slotUtilizationChartInstance =
+        new Chart(
+            canvas,
+            {
+
+                type:
+                    "bar",
+
+
+                data: {
+
+                    labels:
+                        sizes,
+
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Utilization",
+
+                            data:
+                                utilizationValues,
+
+
+                            backgroundColor: [
+
+                                "#f59e0b",
+
+                                "#fbbf24",
+
+                                "#fcd34d",
+
+                                "#fde68a"
+                            ],
+
+
+                            borderColor: [
+
+                                "#d97706",
+
+                                "#d97706",
+
+                                "#d97706",
+
+                                "#d97706"
+                            ],
+
+
+                            borderWidth:
+                                1,
+
+
+                            borderRadius:
+                                10,
+
+
+                            borderSkipped:
+                                false,
+
+
+                            barPercentage:
+                                0.55,
+
+                            categoryPercentage:
+                                0.72
+                        }
+
+                    ]
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    animation: {
+
+                        duration:
+                            700,
+
+                        easing:
+                            "easeOutQuart"
+                    },
+
+
+                    plugins: {
+
+                        legend: {
+
+                            display:
+                                false
+                        },
+
+
+                        tooltip: {
+
+                            ...getChartTooltipOptions(),
+
+
+                            callbacks: {
+
+                                label:
+                                    function (
+                                        context
+                                    ) {
+
+                                        return (
+                                            " Utilization: " +
+                                            context.parsed.y +
+                                            "%"
+                                        );
+                                    }
+                            }
+                        }
+                    },
+
+
+                    scales: {
+
+                        x: {
+
+                            grid: {
+
+                                display:
+                                    false
+                            },
+
+
+                            border: {
+
+                                display:
+                                    false
+                            },
+
+
+                            ticks: {
+
+                                color:
+                                    "#475569",
+
+                                font: {
+
+                                    size:
+                                        12,
+
+                                    weight:
+                                        "700"
+                                }
+                            }
+                        },
+
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+                            max:
+                                100,
+
+
+                            border: {
+
+                                display:
+                                    false
+                            },
+
+
+                            grid: {
+
+                                color:
+                                    "#e5e7eb",
+
+                                drawTicks:
+                                    false
+                            },
+
+
+                            ticks: {
+
+                                stepSize:
+                                    20,
+
+                                color:
+                                    "#64748b",
+
+                                padding:
+                                    10,
+
+
+                                callback:
+                                    function (
+                                        value
+                                    ) {
+
+                                        return (
+                                            value +
+                                            "%"
+                                        );
+                                    },
+
+
+                                font: {
+
+                                    size:
+                                        11
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        );
+}
+
+
+// *==========================================*
+// *LOGOUT*
+// *==========================================*
 
 const logoutBtn =
     document.getElementById(
@@ -1370,16 +2267,14 @@ if (logoutBtn) {
 
             window.location.href =
                 "login.html";
-
         }
     );
-
 }
 
 
-// ==========================================
-// REFRESH ANALYTICS
-// ==========================================
+// *==========================================*
+// *REFRESH ANALYTICS*
+// *==========================================*
 
 const refreshAnalytics =
     document.getElementById(
@@ -1394,22 +2289,19 @@ if (refreshAnalytics) {
         function () {
 
             loadAnalytics();
-
         }
     );
-
 }
 
 
-// ==========================================
-// START
-// ==========================================
+// *==========================================*
+// *START*
+// *==========================================*
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
         loadAnalytics();
-
     }
 );

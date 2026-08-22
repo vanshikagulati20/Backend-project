@@ -3,318 +3,948 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Warehouse Analytics - Storvia</title>
 
-    <!-- Global Base & Component Styles -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="analytics.css">
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="analytics.css"
+    >
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
 
-<!-- ==========================================================================
-     GLOBAL HEADER
-     ========================================================================== -->
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
 <header class="dashboard-header">
+
     <div class="brand">
         <h1>Storvia</h1>
     </div>
 
+
     <nav class="dashboard-nav">
-        <a href="dashBoard.html">Dashboard</a>
-        <a href="product.html">Products</a>
-        <a href="inventory.html">Add Slots</a>
-        <a href="warehouse.html">Warehouse</a>
-        <a href="analytics.html" class="active">Analytics</a>
+
+        <a href="dashBoard.html">
+            Dashboard
+        </a>
+
+        <a href="product.html">
+            Products
+        </a>
+
+        <a href="inventory.html">
+            Add Slots
+        </a>
+
+        <a href="warehouse.html">
+            Warehouse
+        </a>
+
+        <a
+            href="analytics.html"
+            class="active"
+        >
+            Analytics
+        </a>
+
     </nav>
 
+
     <div class="user-section">
-        <span id="welcomeUser">Welcome</span>
-        <button id="logoutBtn">Logout</button>
+
+        <span id="welcomeUser">
+            Welcome
+        </span>
+
+        <button id="logoutBtn">
+            Logout
+        </button>
+
     </div>
+
 </header>
 
-<!-- ==========================================================================
+
+
+<!-- ==========================================
      MAIN CONTENT
-     ========================================================================== -->
+========================================== -->
+
 <main class="dashboard-container">
 
-    <!-- PAGE INTRO -->
+
+    <!-- ==========================================
+         PAGE INTRO
+    ========================================== -->
+
     <section class="dashboard-intro">
-        <span class="page-label">Business Intelligence & Capacity</span>
-        <h2>Warehouse Analytics</h2>
-        <p>Analyze product distribution, rack volumetric consumption, and algorithm allocation efficiency.</p>
+
+        <span class="page-label">
+            Business Intelligence & Capacity
+        </span>
+
+        <h2>
+            Warehouse Analytics
+        </h2>
+
+        <p>
+            Analyze product distribution, rack volumetric
+            consumption, and allocation efficiency.
+        </p>
+
     </section>
 
-    <!-- PRODUCT ANALYSIS -->
+
+
+    <!-- ==========================================
+         PRODUCT SUMMARY
+    ========================================== -->
+
     <section class="analytics-section">
+
         <div class="section-header">
-            <span class="section-label">INVENTORY BREAKDOWN</span>
-            <h2>Product Catalog Distribution</h2>
-            <p>Understand SKU category clustering and physical inventory weight.</p>
+
+            <span class="section-label">
+                INVENTORY BREAKDOWN
+            </span>
+
+            <h2>
+                Product Catalog Distribution
+            </h2>
+
+            <p>
+                Understand SKU category clustering and
+                physical inventory weight.
+            </p>
+
         </div>
 
-        <div class="analysis-grid">
-            <!-- CATEGORY DISTRIBUTION -->
-            <div class="analysis-card">
-                <h3>Product Count by Category</h3>
-                <div id="categoryDistribution" class="category-list">
-                    <p class="empty-message">No category data available.</p>
-                </div>
-            </div>
-
-            <!-- QUANTITY BY CATEGORY -->
-            <div class="analysis-card">
-                <h3>Total Quantity by Category</h3>
-                <div id="categoryQuantity" class="category-list">
-                    <p class="empty-message">No quantity data available.</p>
-                </div>
-            </div>
-        </div>
 
         <div class="analysis-grid">
+
+
             <!-- ALLOCATION SUMMARY -->
+
             <div class="analysis-card">
-                <h3>Product Allocation Status</h3>
+
+                <h3>
+                    Product Allocation Status
+                </h3>
+
+
                 <div class="allocation-summary">
+
+
                     <div class="analysis-stat">
-                        <span>Fully Allocated</span>
-                        <strong id="allocatedProducts" class="stat-green">0</strong>
+
+                        <span>
+                            Fully Allocated
+                        </span>
+
+                        <strong
+                            id="allocatedProducts"
+                            class="stat-green"
+                        >
+                            0
+                        </strong>
+
                     </div>
+
+
                     <div class="analysis-stat">
-                        <span>Pending Allocation</span>
-                        <strong id="pendingProducts" class="stat-amber">0</strong>
+
+                        <span>
+                            Pending Allocation
+                        </span>
+
+                        <strong
+                            id="pendingProducts"
+                            class="stat-amber"
+                        >
+                            0
+                        </strong>
+
                     </div>
+
+
                     <div class="analysis-stat">
-                        <span>Not Allocated</span>
-                        <strong id="notAllocatedProducts" class="stat-red">0</strong>
+
+                        <span>
+                            Not Allocated
+                        </span>
+
+                        <strong
+                            id="notAllocatedProducts"
+                            class="stat-red"
+                        >
+                            0
+                        </strong>
+
                     </div>
+
                 </div>
+
             </div>
+
+
 
             <!-- PRODUCT CHARACTERISTICS -->
+
             <div class="analysis-card">
-                <h3>Physical Characteristics</h3>
+
+                <h3>
+                    Physical Characteristics
+                </h3>
+
+
                 <div class="allocation-summary">
+
+
                     <div class="analysis-stat">
-                        <span>Fragile Products</span>
-                        <strong id="fragileProducts">0</strong>
+
+                        <span>
+                            Fragile Products
+                        </span>
+
+                        <strong id="fragileProducts">
+                            0
+                        </strong>
+
                     </div>
+
+
                     <div class="analysis-stat">
-                        <span>Non-Fragile Products</span>
-                        <strong id="nonFragileProducts">0</strong>
+
+                        <span>
+                            Non-Fragile Products
+                        </span>
+
+                        <strong id="nonFragileProducts">
+                            0
+                        </strong>
+
                     </div>
+
+
                     <div class="analysis-stat">
-                        <span>Total Inventory Mass</span>
-                        <strong id="inventoryWeight">0 kg</strong>
+
+                        <span>
+                            Total Inventory Mass
+                        </span>
+
+                        <strong id="inventoryWeight">
+                            0 kg
+                        </strong>
+
                     </div>
+
                 </div>
+
             </div>
+
+
         </div>
+
     </section>
 
-    <!-- WAREHOUSE SPACE ANALYSIS -->
+
+
+    <!-- ==========================================
+         VISUAL ANALYTICS
+         ONLY ONE SET OF CANVASES
+    ========================================== -->
+
     <section class="analytics-section">
+
         <div class="section-header">
-            <span class="section-label">VOLUMETRIC UTILIZATION</span>
-            <h2>Rack Zone Utilization</h2>
-            <p>Compare occupancy metrics and space efficiency across slot size classes.</p>
+
+            <span class="section-label">
+                VISUAL ANALYTICS
+            </span>
+
+            <h2>
+                Warehouse Performance Charts
+            </h2>
+
+            <p>
+                Visual overview of product distribution,
+                allocation status, and warehouse utilization.
+            </p>
+
         </div>
+
+
+
+        <!-- TOP TWO CHARTS -->
+
+        <div class="charts-grid">
+
+
+            <!-- CATEGORY CHART -->
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <div>
+
+                        <h3>
+                            Quantity by Category
+                        </h3>
+
+                        <p>
+                            Total product quantity grouped
+                            by category.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="chart-container">
+
+                    <canvas id="categoryChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ALLOCATION CHART -->
+
+            <div class="chart-card">
+
+                <div class="chart-card-header">
+
+                    <div>
+
+                        <h3>
+                            Allocation Status
+                        </h3>
+
+                        <p>
+                            Current product allocation
+                            distribution.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="chart-container chart-doughnut"
+                >
+
+                    <canvas id="allocationChart"></canvas>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- SLOT UTILIZATION -->
+
+        <div class="chart-card chart-wide">
+
+            <div class="chart-card-header">
+
+                <div>
+
+                    <h3>
+                        Warehouse Slot Utilization
+                    </h3>
+
+                    <p>
+                        Compare utilization across warehouse
+                        slot sizes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="chart-container">
+
+                <canvas
+                    id="slotUtilizationChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==========================================
+         WAREHOUSE SLOT ANALYSIS
+    ========================================== -->
+
+    <section class="analytics-section">
+
+        <div class="section-header">
+
+            <span class="section-label">
+                VOLUMETRIC UTILIZATION
+            </span>
+
+            <h2>
+                Rack Zone Utilization
+            </h2>
+
+            <p>
+                Compare occupancy metrics and space
+                efficiency across slot size classes.
+            </p>
+
+        </div>
+
+
 
         <div class="slot-analysis-grid">
-            <!-- LARGE SLOTS -->
+
+
+            <!-- LARGE -->
+
             <div class="slot-analysis-card">
-                <span class="slot-type-badge badge-large">Zone A</span>
-                <h3>Large Slots</h3>
+
+                <span class="slot-type-badge badge-large">
+                    Zone A
+                </span>
+
+                <h3>
+                    Large Slots
+                </h3>
+
+
                 <div class="slot-analysis-row">
-                    <span>Total Slots</span>
-                    <strong id="largeTotal">0</strong>
+
+                    <span>
+                        Total Slots
+                    </span>
+
+                    <strong id="largeTotal">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Occupied</span>
-                    <strong id="largeOccupied">0</strong>
+
+                    <span>
+                        Occupied
+                    </span>
+
+                    <strong id="largeOccupied">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Available</span>
-                    <strong id="largeEmpty">0</strong>
+
+                    <span>
+                        Available
+                    </span>
+
+                    <strong id="largeEmpty">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-utilization">
+
                     <div class="slot-utilization-header">
-                        <span>Utilization Rate</span>
-                        <strong id="largeUtilization">0%</strong>
+
+                        <span>
+                            Utilization Rate
+                        </span>
+
+                        <strong id="largeUtilization">
+                            0%
+                        </strong>
+
                     </div>
+
+
                     <div class="progress-container">
-                        <div id="largeProgress" class="progress-bar" style="width: 0%"></div>
+
+                        <div
+                            id="largeProgress"
+                            class="progress-bar"
+                            style="width: 0%"
+                        ></div>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- MEDIUM SLOTS -->
+
+
+            <!-- MEDIUM -->
+
             <div class="slot-analysis-card">
-                <span class="slot-type-badge badge-medium">Zone B</span>
-                <h3>Medium Slots</h3>
+
+                <span class="slot-type-badge badge-medium">
+                    Zone B
+                </span>
+
+                <h3>
+                    Medium Slots
+                </h3>
+
+
                 <div class="slot-analysis-row">
-                    <span>Total Slots</span>
-                    <strong id="mediumTotal">0</strong>
+
+                    <span>
+                        Total Slots
+                    </span>
+
+                    <strong id="mediumTotal">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Occupied</span>
-                    <strong id="mediumOccupied">0</strong>
+
+                    <span>
+                        Occupied
+                    </span>
+
+                    <strong id="mediumOccupied">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Available</span>
-                    <strong id="mediumEmpty">0</strong>
+
+                    <span>
+                        Available
+                    </span>
+
+                    <strong id="mediumEmpty">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-utilization">
+
                     <div class="slot-utilization-header">
-                        <span>Utilization Rate</span>
-                        <strong id="mediumUtilization">0%</strong>
+
+                        <span>
+                            Utilization Rate
+                        </span>
+
+                        <strong id="mediumUtilization">
+                            0%
+                        </strong>
+
                     </div>
+
+
                     <div class="progress-container">
-                        <div id="mediumProgress" class="progress-bar" style="width: 0%"></div>
+
+                        <div
+                            id="mediumProgress"
+                            class="progress-bar"
+                            style="width: 0%"
+                        ></div>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- SMALL SLOTS -->
+
+
+            <!-- SMALL -->
+
             <div class="slot-analysis-card">
-                <span class="slot-type-badge badge-small">Zone C</span>
-                <h3>Small Slots</h3>
+
+                <span class="slot-type-badge badge-small">
+                    Zone C
+                </span>
+
+                <h3>
+                    Small Slots
+                </h3>
+
+
                 <div class="slot-analysis-row">
-                    <span>Total Slots</span>
-                    <strong id="smallTotal">0</strong>
+
+                    <span>
+                        Total Slots
+                    </span>
+
+                    <strong id="smallTotal">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Occupied</span>
-                    <strong id="smallOccupied">0</strong>
+
+                    <span>
+                        Occupied
+                    </span>
+
+                    <strong id="smallOccupied">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Available</span>
-                    <strong id="smallEmpty">0</strong>
+
+                    <span>
+                        Available
+                    </span>
+
+                    <strong id="smallEmpty">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-utilization">
+
                     <div class="slot-utilization-header">
-                        <span>Utilization Rate</span>
-                        <strong id="smallUtilization">0%</strong>
+
+                        <span>
+                            Utilization Rate
+                        </span>
+
+                        <strong id="smallUtilization">
+                            0%
+                        </strong>
+
                     </div>
+
+
                     <div class="progress-container">
-                        <div id="smallProgress" class="progress-bar" style="width: 0%"></div>
+
+                        <div
+                            id="smallProgress"
+                            class="progress-bar"
+                            style="width: 0%"
+                        ></div>
+
                     </div>
+
                 </div>
+
             </div>
 
-            <!-- CUSTOM SLOTS -->
+
+
+            <!-- CUSTOM -->
+
             <div class="slot-analysis-card">
-                <span class="slot-type-badge badge-custom">Zone D</span>
-                <h3>Custom Slots</h3>
+
+                <span class="slot-type-badge badge-custom">
+                    Zone D
+                </span>
+
+                <h3>
+                    Custom Slots
+                </h3>
+
+
                 <div class="slot-analysis-row">
-                    <span>Total Slots</span>
-                    <strong id="customTotal">0</strong>
+
+                    <span>
+                        Total Slots
+                    </span>
+
+                    <strong id="customTotal">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Occupied</span>
-                    <strong id="customOccupied">0</strong>
+
+                    <span>
+                        Occupied
+                    </span>
+
+                    <strong id="customOccupied">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-analysis-row">
-                    <span>Available</span>
-                    <strong id="customEmpty">0</strong>
+
+                    <span>
+                        Available
+                    </span>
+
+                    <strong id="customEmpty">
+                        0
+                    </strong>
+
                 </div>
+
+
                 <div class="slot-utilization">
+
                     <div class="slot-utilization-header">
-                        <span>Utilization Rate</span>
-                        <strong id="customUtilization">0%</strong>
+
+                        <span>
+                            Utilization Rate
+                        </span>
+
+                        <strong id="customUtilization">
+                            0%
+                        </strong>
+
                     </div>
+
+
                     <div class="progress-container">
-                        <div id="customProgress" class="progress-bar" style="width: 0%"></div>
+
+                        <div
+                            id="customProgress"
+                            class="progress-bar"
+                            style="width: 0%"
+                        ></div>
+
                     </div>
+
                 </div>
+
             </div>
+
+
         </div>
+
     </section>
 
-    <!-- SPACE COMPARISON -->
+
+
+    <!-- ==========================================
+         SPACE SUMMARY
+    ========================================== -->
+
     <section class="analytics-section">
+
         <div class="section-header">
-            <span class="section-label">GLOBAL VOLUME</span>
-            <h2>Volumetric Space Summary</h2>
-            <p>Overall warehouse volume distribution in cubic centimeters.</p>
+
+            <span class="section-label">
+                GLOBAL VOLUME
+            </span>
+
+            <h2>
+                Volumetric Space Summary
+            </h2>
+
+            <p>
+                Overall warehouse volume distribution
+                in cubic centimeters.
+            </p>
+
         </div>
+
 
         <div class="space-summary">
+
+
             <div class="space-card">
-                <span>Used Warehouse Volume</span>
-                <strong id="usedVolume" class="stat-amber">0 cm³</strong>
+
+                <span>
+                    Used Warehouse Volume
+                </span>
+
+                <strong
+                    id="usedVolume"
+                    class="stat-amber"
+                >
+                    0 cm³
+                </strong>
+
             </div>
+
+
             <div class="space-card">
-                <span>Available Volume</span>
-                <strong id="availableVolume" class="stat-green">0 cm³</strong>
+
+                <span>
+                    Available Volume
+                </span>
+
+                <strong
+                    id="availableVolume"
+                    class="stat-green"
+                >
+                    0 cm³
+                </strong>
+
             </div>
+
+
             <div class="space-card">
-                <span>Most Utilized Rack Class</span>
-                <strong id="mostUtilizedSlot">-</strong>
+
+                <span>
+                    Most Utilized Rack Class
+                </span>
+
+                <strong id="mostUtilizedSlot">
+                    -
+                </strong>
+
             </div>
+
+
         </div>
+
     </section>
 
-    <!-- PENDING ALLOCATION -->
+
+
+    <!-- ==========================================
+         PENDING PRODUCTS
+    ========================================== -->
+
     <section class="analytics-section">
+
         <div class="section-header">
-            <span class="section-label">UNFULFILLED STORAGE DEMAND</span>
-            <h2>Pending Products</h2>
-            <p>SKUs currently queued for slot allocation.</p>
+
+            <span class="section-label">
+                UNFULFILLED STORAGE DEMAND
+            </span>
+
+            <h2>
+                Pending Products
+            </h2>
+
+            <p>
+                SKUs currently queued for slot allocation.
+            </p>
+
         </div>
 
-        <div id="pendingProductList" class="pending-product-list">
-            <p class="empty-message">No pending products.</p>
+
+        <div
+            id="pendingProductList"
+            class="pending-product-list"
+        >
+
+            <p class="empty-message">
+                No pending products.
+            </p>
+
         </div>
+
     </section>
 
-    <!-- WAREHOUSE INSIGHTS -->
+
+
+    <!-- ==========================================
+         INSIGHTS
+    ========================================== -->
+
     <section class="analytics-section">
+
         <div class="section-header">
-            <span class="section-label">ALGORITHMIC INTELLIGENCE</span>
-            <h2>Automated Space Insights</h2>
-            <p>Data-driven recommendations to optimize storage efficiency.</p>
+
+            <span class="section-label">
+                WAREHOUSE INSIGHTS
+            </span>
+
+            <h2>
+                Operational Insights
+            </h2>
+
+            <p>
+                Automatically generated insights based on
+                your warehouse data.
+            </p>
+
         </div>
 
-        <div id="warehouseInsights" class="insights-container">
-            <div class="insight-card">
-                <strong>No insights available</strong>
-                <p>Add products and warehouse slots to generate automated recommendations.</p>
-            </div>
-        </div>
+
+        <div
+            id="warehouseInsights"
+            class="warehouse-insights"
+        ></div>
+
     </section>
 
-    <!-- ACTIONS -->
+
+
+    <!-- ==========================================
+         ACTIONS
+    ========================================== -->
+
     <div class="analytics-actions">
-        <button id="refreshAnalytics" class="refresh-btn">
+
+        <button
+            id="refreshAnalytics"
+            class="refresh-btn"
+        >
             🔄 Refresh Analytics Data
         </button>
+
     </div>
+
 
 </main>
 
+
+
+<!-- ==========================================
+     JAVASCRIPT
+========================================== -->
+
 <script src="analytics.js"></script>
-<script>
-    // Header user greeting & logout synchronization
-    (function () {
-        const savedUser = localStorage.getItem("currentuser");
-        if (savedUser) {
-            try {
-                const user = JSON.parse(savedUser);
-                const welcomeEl = document.getElementById("welcomeUser");
-                if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
-            } catch (e) {}
-        }
-        const logoutBtn = document.getElementById("logoutBtn");
-        if (logoutBtn) {
-            logoutBtn.onclick = function () {
-                localStorage.removeItem("currentuser");
-                window.location.href = "login.html";
-            };
-        }
-    })();
-</script>
+
+
 </body>
+
 </html>
