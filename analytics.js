@@ -2602,3 +2602,28 @@ document.addEventListener(
         loadAnalytics();
     }
 );
+
+// Center the active nav link smoothly
+(function () {
+    function centerActiveNavLink() {
+        var nav = document.querySelector('.dashboard-nav');
+        var active = nav && nav.querySelector('a.active');
+        if (nav && active) {
+            var navRect = nav.getBoundingClientRect();
+            var activeRect = active.getBoundingClientRect();
+            var relativeLeft = activeRect.left - navRect.left + nav.scrollLeft;
+            var targetScroll = relativeLeft - (nav.clientWidth - active.clientWidth) / 2;
+            nav.style.scrollBehavior = 'auto';
+            nav.scrollLeft = Math.max(0, targetScroll);
+            requestAnimationFrame(function () {
+                nav.style.scrollBehavior = '';
+            });
+        }
+    }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        centerActiveNavLink();
+    } else {
+        document.addEventListener('DOMContentLoaded', centerActiveNavLink);
+    }
+    window.addEventListener('load', centerActiveNavLink);
+})();

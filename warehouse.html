@@ -33,13 +33,25 @@
 <header class="dashboard-header">
 
     <div class="brand">
-
+        <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3"  y="3"  width="8" height="8" rx="1.5" fill="currentColor"/>
+                <rect x="13" y="3"  width="8" height="8" rx="1.5" fill="currentColor" opacity="0.55"/>
+                <rect x="3"  y="13" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.55"/>
+                <rect x="13" y="13" width="8" height="8" rx="1.5" fill="currentColor"/>
+            </svg>
+        </span>
         <h1>Storvia</h1>
-
     </div>
 
 
     <nav class="dashboard-nav">
+
+        <a
+            href="index.html"
+        >
+            Home
+        </a>
 
         <a href="dashboard.html">
             Dashboard
@@ -476,6 +488,30 @@
                 window.location.href = "login.html";
             };
         }
+    })();
+    // Center the active nav link smoothly
+    (function () {
+        function centerActiveNavLink() {
+            var nav = document.querySelector('.dashboard-nav');
+            var active = nav && nav.querySelector('a.active');
+            if (nav && active) {
+                var navRect = nav.getBoundingClientRect();
+                var activeRect = active.getBoundingClientRect();
+                var relativeLeft = activeRect.left - navRect.left + nav.scrollLeft;
+                var targetScroll = relativeLeft - (nav.clientWidth - active.clientWidth) / 2;
+                nav.style.scrollBehavior = 'auto';
+                nav.scrollLeft = Math.max(0, targetScroll);
+                requestAnimationFrame(function () {
+                    nav.style.scrollBehavior = '';
+                });
+            }
+        }
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            centerActiveNavLink();
+        } else {
+            document.addEventListener('DOMContentLoaded', centerActiveNavLink);
+        }
+        window.addEventListener('load', centerActiveNavLink);
     })();
 </script>
 
