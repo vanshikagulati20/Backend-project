@@ -1,22 +1,77 @@
+"use strict";
+
+/* =========================================================
+   STORAGE KEYS
+   ========================================================= */
+
 const PRODUCT_KEY = "products";
 const SLOT_KEY = "warehouseSlots";
 const CURRENT_USER_KEY = "currentuser";
 
-// *==========================================*
-// *CHART INSTANCES*
-// *==========================================*
+/* =========================================================
+   CHART INSTANCES
+   ========================================================= */
 
 let categoryChartInstance = null;
 let allocationChartInstance = null;
 let slotUtilizationChartInstance = null;
 
-// *==========================================*
-// *GET CURRENT USER*
-// *==========================================*
+/* =========================================================
+   GENERAL HELPERS
+   ========================================================= */
+
+/**
+ * Safely convert a value to a number.
+ */
+function toNumber(value, fallback = 0) {
+    const number = Number(value);
+
+    return Number.isFinite(number)
+        ? number
+        : fallback;
+}
+
+/**
+ * Safely escape text before inserting it into HTML.
+ */
+function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+/**
+ * Set text content of an element.
+ */
+function setValue(elementId, value) {
+    const element = document.getElementById(elementId);
+
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+/**
+ * Clamp a number between min and max.
+ */
+function clamp(value, min, max) {
+    return Math.min(
+        Math.max(value, min),
+        max
+    );
+}
+
+/* =========================================================
+   GET CURRENT USER
+   ========================================================= */
 
 function getCurrentUser() {
-    const savedUser =
-        localStorage.getItem(CURRENT_USER_KEY);
+    const savedUser = localStorage.getItem(
+        CURRENT_USER_KEY
+    );
 
     if (!savedUser) {
         window.location.href = "login.html";
@@ -24,7 +79,13 @@ function getCurrentUser() {
     }
 
     try {
-        return JSON.parse(savedUser);
+        const user = JSON.parse(savedUser);
+
+        if (!user || typeof user !== "object") {
+            throw new Error("Invalid user object.");
+        }
+
+        return user;
     } catch (error) {
         console.error(
             "Invalid current user:",
@@ -36,25 +97,26 @@ function getCurrentUser() {
         );
 
         window.location.href = "login.html";
+
         return null;
     }
 }
 
-// *==========================================*
-// *GET PRODUCTS*
-// *==========================================*
+/* =========================================================
+   GET PRODUCTS
+   ========================================================= */
 
 function getProducts() {
-    const savedProducts =
-        localStorage.getItem(PRODUCT_KEY);
+    const savedProducts = localStorage.getItem(
+        PRODUCT_KEY
+    );
 
     if (!savedProducts) {
         return [];
     }
 
     try {
-        const products =
-            JSON.parse(savedProducts);
+        const products = JSON.parse(savedProducts);
 
         return Array.isArray(products)
             ? products
@@ -69,21 +131,21 @@ function getProducts() {
     }
 }
 
-// *==========================================*
-// *GET SLOTS*
-// *==========================================*
+/* =========================================================
+   GET WAREHOUSE SLOTS
+   ========================================================= */
 
 function getSlots() {
-    const savedSlots =
-        localStorage.getItem(SLOT_KEY);
+    const savedSlots = localStorage.getItem(
+        SLOT_KEY
+    );
 
     if (!savedSlots) {
         return [];
     }
 
     try {
-        const slots =
-            JSON.parse(savedSlots);
+        const slots = JSON.parse(savedSlots);
 
         return Array.isArray(slots)
             ? slots
@@ -98,56 +160,173 @@ function getSlots() {
     }
 }
 
-// *==========================================*
-// *GET TOTAL PRODUCT QUANTITY*
-// *==========================================*
+/* =========================================================
+   GET TOTAL PRODUCT QUANTITY
+   ========================================================= */
 
 function getTotalProductQuantity(products) {
     return products.reduce(
         function (total, product) {
-            return total +
-                Number(product.quantity || 0);
+            return (
+                total +
+                Math.max(
+                    toNumber(product.quantity),
+                    0
+                )
+            );
         },
         0
     );
 }
 
-// *==========================================*
-// *SET HTML VALUE*
-// *==========================================*
+/* =========================================================
+   PRODUCT ALLOCATION HELPERS
+   ========================================================= */
 
-function setValue(elementId, value) {
-    const element =
-        document.getElementById(elementId);
-
-    if (element) {
-        element.innerText = value;
-    }
-}
-
-// *==========================================*
-// *LOAD ANALYTICS*
-// *==========================================*
-
-function loadAnalytics() {
-    console.log(
-        "Analytics page loaded"
+/**
+ * Get a safe allocated quantity.
+ */
+function getAllocatedQuantity(product) {
+    const quantity = Math.max(
+        toNumber(product.quantity),
+        0
     );
 
-    // *======================================*
-    // *CURRENT USER*
-    // *======================================*
+    const allocated = Math.max(
+        toNumber(product.allocatedQuantity),
+        0
+    );
 
-    const currentUser =
-        getCurrentUser();
+    return Math.min(
+        allocated,
+        quantity
+    );
+}
+
+/**
+ * Get pending quantity for a product.
+ */
+function getPendingQuantity(product) {
+    const quantity = Math.max(
+        toNumber(product.quantity),
+        0
+    );
+
+    const allocated = getAllocatedQuantity(
+        product
+    );
+
+    return Math.max(
+        quantity - allocated,
+        0
+    );
+}
+
+/**
+ * Determine allocation status.
+ */
+function getAllocationStatus(product) {
+    const quantity = Math.max(
+        toNumber(product.quantity),
+        0
+    );
+
+    const allocated = getAllocatedQuantity(
+        product
+    );
+
+    if (quantity <= 0) {
+        return "Not Allocated";
+    }
+
+    if (allocated <= 0) {
+        return "Not Allocated";
+    }
+
+    if (allocated < quantity) {
+        return "Pending";
+    }
+
+    return "Fully Allocated";
+}
+
+/* =========================================================
+   SLOT HELPERS
+   ========================================================= */
+
+/**
+ * Determine whether a slot is occupied.
+ */
+function isSlotOccupied(slot) {
+    const usedVolume = Math.max(
+        toNumber(slot.usedVolume),
+        0
+    );
+
+    const productQuantity = Math.max(
+        toNumber(slot.productQuantity),
+        0
+    );
+
+    const hasProductId =
+        slot.productId !== null &&
+        slot.productId !== undefined &&
+        String(slot.productId).trim() !== "";
+
+    const hasProductName =
+        slot.productName !== null &&
+        slot.productName !== undefined &&
+        String(slot.productName).trim() !== "";
+
+    return (
+        usedVolume > 0 ||
+        productQuantity > 0 ||
+        hasProductId ||
+        hasProductName
+    );
+}
+
+/**
+ * Calculate slot utilization.
+ */
+function getSlotUtilization(slot) {
+    const volume = Math.max(
+        toNumber(slot.volume),
+        0
+    );
+
+    const usedVolume = Math.max(
+        toNumber(slot.usedVolume),
+        0
+    );
+
+    if (volume <= 0) {
+        return 0;
+    }
+
+    return clamp(
+        (usedVolume / volume) * 100,
+        0,
+        100
+    );
+}
+
+/* =========================================================
+   LOAD ANALYTICS
+   ========================================================= */
+
+function loadAnalytics() {
+    console.log("Analytics page loaded.");
+
+    const currentUser = getCurrentUser();
 
     if (!currentUser) {
         return;
     }
 
-    // *======================================*
-    // *WELCOME USER*
-    // *======================================*
+    /* -----------------------------------------------------
+       WELCOME USER
+       ----------------------------------------------------- */
 
     const welcomeUser =
         document.getElementById(
@@ -155,51 +334,60 @@ function loadAnalytics() {
         );
 
     if (welcomeUser) {
-        welcomeUser.innerText =
+        welcomeUser.textContent =
             "Welcome, " +
-            currentUser.name;
+            (currentUser.name || "User");
     }
 
-    // *======================================*
-    // *GET DATA*
-    // *======================================*
+    /* -----------------------------------------------------
+       GET DATA
+       ----------------------------------------------------- */
 
-    const allProducts =
-        getProducts();
+    const allProducts = getProducts();
+    const allSlots = getSlots();
 
-    const allSlots =
-        getSlots();
+    /* -----------------------------------------------------
+       FILTER CURRENT USER DATA
+       ----------------------------------------------------- */
 
-    // *======================================*
-    // *FILTER CURRENT USER DATA*
-    // *======================================*
+    const userEmail = String(
+        currentUser.email || ""
+    )
+        .trim()
+        .toLowerCase();
 
-    const products =
-        allProducts.filter(
-            function (product) {
-                return (
-                    product.userEmail ===
-                    currentUser.email
-                );
-            }
-        );
+    const products = allProducts.filter(
+        function (product) {
+            return (
+                String(
+                    product.userEmail || ""
+                )
+                    .trim()
+                    .toLowerCase() === userEmail
+            );
+        }
+    );
 
-    const slots =
-        allSlots.filter(
-            function (slot) {
-                return (
-                    slot.userEmail ===
-                    currentUser.email
-                );
-            }
-        );
+    const slots = allSlots.filter(
+        function (slot) {
+            return (
+                String(
+                    slot.userEmail || ""
+                )
+                    .trim()
+                    .toLowerCase() === userEmail
+            );
+        }
+    );
 
-    // *======================================*
-    // *TOTAL ACTUAL INVENTORY*
-    // *======================================*
+    /* -----------------------------------------------------
+       DEBUG
+       ----------------------------------------------------- */
 
     const totalQuantity =
-        getTotalProductQuantity(products);
+        getTotalProductQuantity(
+            products
+        );
 
     console.log(
         "Product records:",
@@ -221,9 +409,9 @@ function loadAnalytics() {
         slots
     );
 
-    // *======================================*
-    // *PRODUCT ANALYSIS*
-    // *======================================*
+    /* -----------------------------------------------------
+       PRODUCT ANALYSIS
+       ----------------------------------------------------- */
 
     displayCategoryDistribution(
         products
@@ -241,9 +429,9 @@ function loadAnalytics() {
         products
     );
 
-    // *======================================*
-    // *SLOT ANALYSIS*
-    // *======================================*
+    /* -----------------------------------------------------
+       SLOT ANALYSIS
+       ----------------------------------------------------- */
 
     displaySlotAnalysis(
         slots,
@@ -265,34 +453,34 @@ function loadAnalytics() {
         "Custom"
     );
 
-    // *======================================*
-    // *SPACE ANALYSIS*
-    // *======================================*
+    /* -----------------------------------------------------
+       SPACE ANALYSIS
+       ----------------------------------------------------- */
 
     displaySpaceAnalysis(
         slots
     );
 
-    // *======================================*
-    // *PENDING PRODUCTS*
-    // *======================================*
+    /* -----------------------------------------------------
+       PENDING PRODUCTS
+       ----------------------------------------------------- */
 
     displayPendingProducts(
         products
     );
 
-    // *======================================*
-    // *INSIGHTS*
-    // *======================================*
+    /* -----------------------------------------------------
+       INSIGHTS
+       ----------------------------------------------------- */
 
     generateInsights(
         products,
         slots
     );
 
-    // *======================================*
-    // *ANALYTICS CHARTS*
-    // *======================================*
+    /* -----------------------------------------------------
+       CHARTS
+       ----------------------------------------------------- */
 
     displayCategoryChart(
         products
@@ -307,11 +495,13 @@ function loadAnalytics() {
     );
 }
 
-// *==========================================*
-// *CATEGORY DISTRIBUTION*
-// *==========================================*
+/* =========================================================
+   CATEGORY DISTRIBUTION
+   ========================================================= */
 
-function displayCategoryDistribution(products) {
+function displayCategoryDistribution(
+    products
+) {
     const container =
         document.getElementById(
             "categoryDistribution"
@@ -327,6 +517,7 @@ function displayCategoryDistribution(products) {
                 No category data available.
             </p>
         `;
+
         return;
     }
 
@@ -335,52 +526,59 @@ function displayCategoryDistribution(products) {
     products.forEach(
         function (product) {
             const category =
-                product.category ||
-                "Other";
+                String(
+                    product.category || "Other"
+                ).trim() || "Other";
 
             if (!categories[category]) {
                 categories[category] = 0;
             }
 
-            categories[category] +=
-                Number(
-                    product.quantity || 0
-                );
+            categories[category] += Math.max(
+                toNumber(product.quantity),
+                0
+            );
         }
     );
 
     container.innerHTML = "";
 
-    Object.keys(categories).forEach(
-        function (category) {
-            const item =
-                document.createElement(
-                    "div"
+    Object.keys(categories)
+        .sort()
+        .forEach(
+            function (category) {
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "category-item";
+
+                item.innerHTML = `
+                    <span>
+                        ${escapeHTML(category)}
+                    </span>
+
+                    <strong>
+                        ${categories[category]}
+                    </strong>
+                `;
+
+                container.appendChild(
+                    item
                 );
-
-            item.className =
-                "category-item";
-
-            item.innerHTML = `
-                <span>
-                    ${category}
-                </span>
-
-                <strong>
-                    ${categories[category]}
-                </strong>
-            `;
-
-            container.appendChild(item);
-        }
-    );
+            }
+        );
 }
 
-// *==========================================*
-// *QUANTITY BY CATEGORY*
-// *==========================================*
+/* =========================================================
+   QUANTITY BY CATEGORY
+   ========================================================= */
 
-function displayCategoryQuantity(products) {
+function displayCategoryQuantity(
+    products
+) {
     const container =
         document.getElementById(
             "categoryQuantity"
@@ -396,6 +594,7 @@ function displayCategoryQuantity(products) {
                 No quantity data available.
             </p>
         `;
+
         return;
     }
 
@@ -404,80 +603,81 @@ function displayCategoryQuantity(products) {
     products.forEach(
         function (product) {
             const category =
-                product.category ||
-                "Other";
+                String(
+                    product.category || "Other"
+                ).trim() || "Other";
 
             if (!quantities[category]) {
                 quantities[category] = 0;
             }
 
-            quantities[category] +=
-                Number(
-                    product.quantity || 0
-                );
+            quantities[category] += Math.max(
+                toNumber(product.quantity),
+                0
+            );
         }
     );
 
     container.innerHTML = "";
 
-    Object.keys(quantities).forEach(
-        function (category) {
-            const item =
-                document.createElement(
-                    "div"
+    Object.keys(quantities)
+        .sort()
+        .forEach(
+            function (category) {
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "category-item";
+
+                item.innerHTML = `
+                    <span>
+                        ${escapeHTML(category)}
+                    </span>
+
+                    <strong>
+                        ${quantities[category]}
+                    </strong>
+                `;
+
+                container.appendChild(
+                    item
                 );
-
-            item.className =
-                "category-item";
-
-            item.innerHTML = `
-                <span>
-                    ${category}
-                </span>
-
-                <strong>
-                    ${quantities[category]}
-                </strong>
-            `;
-
-            container.appendChild(item);
-        }
-    );
+            }
+        );
 }
 
-// *==========================================*
-// *ALLOCATION ANALYSIS*
-// *==========================================*
+/* =========================================================
+   ALLOCATION ANALYSIS
+   ========================================================= */
 
-function displayAllocationAnalysis(products) {
+function calculateAllocation(
+    products
+) {
     let allocated = 0;
     let pending = 0;
     let notAllocated = 0;
 
     products.forEach(
         function (product) {
-            const quantity =
-                Number(
-                    product.quantity || 0
-                );
+            const quantity = Math.max(
+                toNumber(product.quantity),
+                0
+            );
 
             const allocatedQuantity =
-                Math.max(
-                    0,
-                    Math.min(
-                        Number(
-                            product.allocatedQuantity || 0
-                        ),
-                        quantity
-                    )
+                getAllocatedQuantity(
+                    product
                 );
 
-            if (allocatedQuantity === 0) {
-                notAllocated +=
-                    quantity;
+            if (
+                allocatedQuantity <= 0
+            ) {
+                notAllocated += quantity;
             } else if (
-                allocatedQuantity <
-                quantity
+                allocatedQuantity < quantity
             ) {
                 allocated +=
                     allocatedQuantity;
@@ -486,64 +686,82 @@ function displayAllocationAnalysis(products) {
                     quantity -
                     allocatedQuantity;
             } else {
-                allocated +=
-                    quantity;
+                allocated += quantity;
             }
         }
     );
 
+    return {
+        allocated,
+        pending,
+        notAllocated
+    };
+}
+
+function displayAllocationAnalysis(
+    products
+) {
+    const allocation =
+        calculateAllocation(
+            products
+        );
+
     setValue(
         "allocatedProducts",
-        allocated
+        allocation.allocated
     );
 
     setValue(
         "pendingProducts",
-        pending
+        allocation.pending
     );
 
     setValue(
         "notAllocatedProducts",
-        notAllocated
+        allocation.notAllocated
     );
 }
 
-// *==========================================*
-// *PRODUCT CHARACTERISTICS*
-// *==========================================*
+/* =========================================================
+   PRODUCT CHARACTERISTICS
+   ========================================================= */
 
-function displayProductCharacteristics(products) {
+function displayProductCharacteristics(
+    products
+) {
     let fragile = 0;
     let nonFragile = 0;
     let totalWeight = 0;
 
     products.forEach(
         function (product) {
-            const quantity =
-                Number(
-                    product.quantity || 0
-                );
+            const quantity = Math.max(
+                toNumber(product.quantity),
+                0
+            );
 
             const fragileValue =
                 String(
                     product.fragile || ""
-                ).toLowerCase();
+                )
+                    .trim()
+                    .toLowerCase();
 
             if (
                 fragileValue === "yes" ||
-                fragileValue === "true"
+                fragileValue === "true" ||
+                fragileValue === "1"
             ) {
-                fragile +=
-                    quantity;
+                fragile += quantity;
             } else {
-                nonFragile +=
-                    quantity;
+                nonFragile += quantity;
             }
 
             totalWeight +=
                 quantity *
-                Number(
-                    product.weight || 0
+                Math.max(
+                    toNumber(product.weight),
+                    0
                 );
         }
     );
@@ -561,21 +779,26 @@ function displayProductCharacteristics(products) {
     setValue(
         "inventoryWeight",
         totalWeight.toFixed(2) +
-        " kg"
+            " kg"
     );
 }
 
-// *==========================================*
-// *SLOT ANALYSIS*
-// *==========================================*
+/* =========================================================
+   SLOT ANALYSIS
+   ========================================================= */
 
-function displaySlotAnalysis(slots, size) {
+function displaySlotAnalysis(
+    slots,
+    size
+) {
     const sizeSlots =
         slots.filter(
             function (slot) {
                 return (
-                    slot.size ===
-                    size
+                    String(
+                        slot.size || ""
+                    ).toLowerCase() ===
+                    size.toLowerCase()
                 );
             }
         );
@@ -586,32 +809,29 @@ function displaySlotAnalysis(slots, size) {
     const occupied =
         sizeSlots.filter(
             function (slot) {
-                return (
-                    Number(
-                        slot.usedVolume || 0
-                    ) > 0
+                return isSlotOccupied(
+                    slot
                 );
             }
         ).length;
 
     const empty =
-        total -
-        occupied;
+        total - occupied;
 
     let totalVolume = 0;
     let usedVolume = 0;
 
     sizeSlots.forEach(
         function (slot) {
-            totalVolume +=
-                Number(
-                    slot.volume || 0
-                );
+            totalVolume += Math.max(
+                toNumber(slot.volume),
+                0
+            );
 
-            usedVolume +=
-                Number(
-                    slot.usedVolume || 0
-                );
+            usedVolume += Math.max(
+                toNumber(slot.usedVolume),
+                0
+            );
         }
     );
 
@@ -619,20 +839,16 @@ function displaySlotAnalysis(slots, size) {
 
     if (totalVolume > 0) {
         utilization =
-            (
-                usedVolume /
-                totalVolume
-            ) * 100;
+            (usedVolume /
+                totalVolume) *
+            100;
     }
 
-    utilization =
-        Math.min(
-            Math.max(
-                utilization,
-                0
-            ),
-            100
-        );
+    utilization = clamp(
+        utilization,
+        0,
+        100
+    );
 
     const prefix =
         size.toLowerCase();
@@ -655,7 +871,7 @@ function displaySlotAnalysis(slots, size) {
     setValue(
         prefix + "Utilization",
         utilization.toFixed(1) +
-        "%"
+            "%"
     );
 
     const progress =
@@ -666,53 +882,60 @@ function displaySlotAnalysis(slots, size) {
     if (progress) {
         progress.style.width =
             utilization + "%";
+
+        progress.setAttribute(
+            "aria-valuenow",
+            utilization.toFixed(1)
+        );
     }
 }
 
-// *==========================================*
-// *SPACE ANALYSIS*
-// *==========================================*
+/* =========================================================
+   SPACE ANALYSIS
+   ========================================================= */
 
-function displaySpaceAnalysis(slots) {
+function displaySpaceAnalysis(
+    slots
+) {
     let totalVolume = 0;
     let usedVolume = 0;
 
     slots.forEach(
         function (slot) {
-            totalVolume +=
-                Number(
-                    slot.volume || 0
-                );
+            totalVolume += Math.max(
+                toNumber(slot.volume),
+                0
+            );
 
-            usedVolume +=
-                Number(
-                    slot.usedVolume || 0
-                );
+            usedVolume += Math.max(
+                toNumber(slot.usedVolume),
+                0
+            );
         }
     );
 
     const availableVolume =
         Math.max(
             totalVolume -
-            usedVolume,
+                usedVolume,
             0
         );
 
     setValue(
         "usedVolume",
         usedVolume.toFixed(2) +
-        " cm³"
+            " cm³"
     );
 
     setValue(
         "availableVolume",
         availableVolume.toFixed(2) +
-        " cm³"
+            " cm³"
     );
 
-    // *======================================*
-    // *MOST UTILIZED SLOT TYPE*
-    // *======================================*
+    /* -----------------------------------------------------
+       MOST UTILIZED SLOT TYPE
+       ----------------------------------------------------- */
 
     const sizes = [
         "Large",
@@ -730,8 +953,10 @@ function displaySpaceAnalysis(slots) {
                 slots.filter(
                     function (slot) {
                         return (
-                            slot.size ===
-                            size
+                            String(
+                                slot.size || ""
+                            ).toLowerCase() ===
+                            size.toLowerCase()
                         );
                     }
                 );
@@ -741,24 +966,26 @@ function displaySpaceAnalysis(slots) {
 
             sizeSlots.forEach(
                 function (slot) {
-                    total +=
-                        Number(
-                            slot.volume || 0
-                        );
+                    total += Math.max(
+                        toNumber(
+                            slot.volume
+                        ),
+                        0
+                    );
 
-                    used +=
-                        Number(
-                            slot.usedVolume || 0
-                        );
+                    used += Math.max(
+                        toNumber(
+                            slot.usedVolume
+                        ),
+                        0
+                    );
                 }
             );
 
             if (total > 0) {
                 const utilization =
-                    (
-                        used /
-                        total
-                    ) * 100;
+                    (used / total) *
+                    100;
 
                 if (
                     utilization >
@@ -780,11 +1007,13 @@ function displaySpaceAnalysis(slots) {
     );
 }
 
-// *==========================================*
-// *PENDING PRODUCTS*
-// *==========================================*
+/* =========================================================
+   PENDING PRODUCTS
+   ========================================================= */
 
-function displayPendingProducts(products) {
+function displayPendingProducts(
+    products
+) {
     const container =
         document.getElementById(
             "pendingProductList"
@@ -797,19 +1026,10 @@ function displayPendingProducts(products) {
     const pending =
         products.filter(
             function (product) {
-                const quantity =
-                    Number(
-                        product.quantity || 0
-                    );
-
-                const allocated =
-                    Number(
-                        product.allocatedQuantity || 0
-                    );
-
                 return (
-                    allocated <
-                    quantity
+                    getPendingQuantity(
+                        product
+                    ) > 0
                 );
             }
         );
@@ -820,6 +1040,7 @@ function displayPendingProducts(products) {
                 No pending products.
             </p>
         `;
+
         return;
     }
 
@@ -827,21 +1048,9 @@ function displayPendingProducts(products) {
 
     pending.forEach(
         function (product) {
-            const quantity =
-                Number(
-                    product.quantity || 0
-                );
-
-            const allocated =
-                Number(
-                    product.allocatedQuantity || 0
-                );
-
             const remaining =
-                Math.max(
-                    quantity -
-                    allocated,
-                    0
+                getPendingQuantity(
+                    product
                 );
 
             const item =
@@ -855,12 +1064,18 @@ function displayPendingProducts(products) {
             item.innerHTML = `
                 <div>
                     <strong class="pending-product-name">
-                        ${product.name || ""}
+                        ${escapeHTML(
+                            product.name ||
+                            "Unnamed Product"
+                        )}
                     </strong>
 
                     <p class="pending-product-details">
                         Category:
-                        ${product.category || "Other"}
+                        ${escapeHTML(
+                            product.category ||
+                            "Other"
+                        )}
                     </p>
                 </div>
 
@@ -869,16 +1084,21 @@ function displayPendingProducts(products) {
                 </div>
             `;
 
-            container.appendChild(item);
+            container.appendChild(
+                item
+            );
         }
     );
 }
 
-// *==========================================*
-// *WAREHOUSE INSIGHTS*
-// *==========================================*
+/* =========================================================
+   WAREHOUSE INSIGHTS
+   ========================================================= */
 
-function generateInsights(products, slots) {
+function generateInsights(
+    products,
+    slots
+) {
     const container =
         document.getElementById(
             "warehouseInsights"
@@ -890,9 +1110,9 @@ function generateInsights(products, slots) {
 
     const insights = [];
 
-    // *======================================*
-    // *NO DATA*
-    // *======================================*
+    /* -----------------------------------------------------
+       NO DATA
+       ----------------------------------------------------- */
 
     if (
         products.length === 0 &&
@@ -914,24 +1134,24 @@ function generateInsights(products, slots) {
         return;
     }
 
-    // *======================================*
-    // *UTILIZATION*
-    // *======================================*
+    /* -----------------------------------------------------
+       WAREHOUSE UTILIZATION
+       ----------------------------------------------------- */
 
     let totalVolume = 0;
     let usedVolume = 0;
 
     slots.forEach(
         function (slot) {
-            totalVolume +=
-                Number(
-                    slot.volume || 0
-                );
+            totalVolume += Math.max(
+                toNumber(slot.volume),
+                0
+            );
 
-            usedVolume +=
-                Number(
-                    slot.usedVolume || 0
-                );
+            usedVolume += Math.max(
+                toNumber(slot.usedVolume),
+                0
+            );
         }
     );
 
@@ -939,11 +1159,16 @@ function generateInsights(products, slots) {
 
     if (totalVolume > 0) {
         utilization =
-            (
-                usedVolume /
-                totalVolume
-            ) * 100;
+            (usedVolume /
+                totalVolume) *
+            100;
     }
+
+    utilization = clamp(
+        utilization,
+        0,
+        100
+    );
 
     if (utilization >= 80) {
         insights.push({
@@ -971,21 +1196,17 @@ function generateInsights(products, slots) {
         });
     }
 
-    // *======================================*
-    // *PENDING PRODUCTS*
-    // *======================================*
+    /* -----------------------------------------------------
+       PENDING PRODUCTS
+       ----------------------------------------------------- */
 
     const pendingProducts =
         products.filter(
             function (product) {
                 return (
-                    Number(
-                        product.allocatedQuantity || 0
-                    )
-                    <
-                    Number(
-                        product.quantity || 0
-                    )
+                    getPendingQuantity(
+                        product
+                    ) > 0
                 );
             }
         );
@@ -999,22 +1220,12 @@ function generateInsights(products, slots) {
                     total,
                     product
                 ) {
-                    const quantity =
-                        Number(
-                            product.quantity || 0
-                        );
-
-                    const allocated =
-                        Number(
-                            product.allocatedQuantity || 0
-                        );
-
-                    return total +
-                        Math.max(
-                            quantity -
-                            allocated,
-                            0
-                        );
+                    return (
+                        total +
+                        getPendingQuantity(
+                            product
+                        )
+                    );
                 },
                 0
             );
@@ -1037,17 +1248,15 @@ function generateInsights(products, slots) {
         });
     }
 
-    // *======================================*
-    // *EMPTY SLOTS*
-    // *======================================*
+    /* -----------------------------------------------------
+       EMPTY SLOTS
+       ----------------------------------------------------- */
 
     const emptySlots =
         slots.filter(
             function (slot) {
-                return (
-                    Number(
-                        slot.usedVolume || 0
-                    ) === 0
+                return !isSlotOccupied(
+                    slot
                 );
             }
         ).length;
@@ -1063,42 +1272,35 @@ function generateInsights(products, slots) {
         });
     }
 
-    // *======================================*
-    // *MOST USED SLOT*
-    // *======================================*
+    /* -----------------------------------------------------
+       MOST USED SLOT
+       ----------------------------------------------------- */
 
     let mostUsedSlot = null;
     let highestPercentage = -1;
 
     slots.forEach(
         function (slot) {
-            const volume =
-                Number(
-                    slot.volume || 0
+            const percentage =
+                getSlotUtilization(
+                    slot
                 );
 
-            const used =
-                Number(
-                    slot.usedVolume || 0
-                );
+            const volume = Math.max(
+                toNumber(slot.volume),
+                0
+            );
 
-            if (volume > 0) {
-                const percentage =
-                    (
-                        used /
-                        volume
-                    ) * 100;
-
-                if (
-                    percentage >
+            if (
+                volume > 0 &&
+                percentage >
                     highestPercentage
-                ) {
-                    highestPercentage =
-                        percentage;
+            ) {
+                highestPercentage =
+                    percentage;
 
-                    mostUsedSlot =
-                        slot;
-                }
+                mostUsedSlot =
+                    slot;
             }
         }
     );
@@ -1109,16 +1311,21 @@ function generateInsights(products, slots) {
                 "Most utilized slot",
 
             text:
-                mostUsedSlot.id +
+                String(
+                    mostUsedSlot.id ||
+                    "Unnamed slot"
+                ) +
                 " is currently using " +
-                highestPercentage.toFixed(1) +
+                highestPercentage.toFixed(
+                    1
+                ) +
                 "% of its capacity."
         });
     }
 
-    // *======================================*
-    // *DISPLAY*
-    // *======================================*
+    /* -----------------------------------------------------
+       DISPLAY INSIGHTS
+       ----------------------------------------------------- */
 
     container.innerHTML = "";
 
@@ -1134,31 +1341,38 @@ function generateInsights(products, slots) {
 
             card.innerHTML = `
                 <strong>
-                    ${insight.title}
+                    ${escapeHTML(
+                        insight.title
+                    )}
                 </strong>
 
                 <p>
-                    ${insight.text}
+                    ${escapeHTML(
+                        insight.text
+                    )}
                 </p>
             `;
 
-            container.appendChild(card);
+            container.appendChild(
+                card
+            );
         }
     );
 }
 
-// *==========================================*
-// *CHART HELPER*
-// *==========================================*
+/* =========================================================
+   CHART HELPER
+   ========================================================= */
 
-function prepareChartCanvas(canvas, height) {
+function prepareChartCanvas(
+    canvas,
+    height
+) {
     if (!canvas) {
         return;
     }
 
-    canvas.style.width =
-        "100%";
-
+    canvas.style.width = "100%";
     canvas.style.height =
         height + "px";
 
@@ -1177,9 +1391,28 @@ function prepareChartCanvas(canvas, height) {
     }
 }
 
-// *==========================================*
-// *CHART TOOLTIP DEFAULTS*
-// *==========================================*
+/* =========================================================
+   CHART.JS AVAILABILITY
+   ========================================================= */
+
+function isChartJSAvailable() {
+    if (
+        typeof window.Chart ===
+        "undefined"
+    ) {
+        console.error(
+            "Chart.js is not loaded. Please include Chart.js before this analytics script."
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+/* =========================================================
+   CHART TOOLTIP DEFAULTS
+   ========================================================= */
 
 function getChartTooltipOptions() {
     return {
@@ -1195,136 +1428,94 @@ function getChartTooltipOptions() {
         borderColor:
             "#374151",
 
-        borderWidth:
-            1,
+        borderWidth: 1,
 
-        padding:
-            12,
+        padding: 12,
 
-        cornerRadius:
-            8,
+        cornerRadius: 8,
 
-        displayColors:
-            true
+        displayColors: true
     };
 }
 
-// *==========================================*
-// *HOVER ANIMATION HELPER*
-// *==========================================*
+/* =========================================================
+   CHART HOVER ANIMATION
+   ========================================================= */
 
 function setupChartHoverAnimation(
-    chart,
-    type
+    chart
 ) {
     if (!chart) {
         return;
     }
 
-    chart._hoverAnimating = false;
-
     chart.options.onHover =
-        function (event, activeElements) {
+        function (
+            event,
+            activeElements
+        ) {
             if (
-                activeElements.length === 0 ||
-                chart._hoverAnimating
+                !activeElements ||
+                activeElements.length ===
+                    0
             ) {
                 return;
             }
 
-            chart._hoverAnimating = true;
+            const activeElement =
+                activeElements[0];
 
-            // *==================================*
-            // *SAVE ORIGINAL DATA*
-            // *==================================*
+            if (!activeElement) {
+                return;
+            }
 
-            chart.data.datasets.forEach(
-                function (dataset) {
-                    dataset._hoverOriginalData =
-                        Array.isArray(dataset.data)
-                            ? [...dataset.data]
-                            : [];
-                }
-            );
+            const datasetIndex =
+                activeElement.datasetIndex;
 
-            // *==================================*
-            // *STOP ALL ANIMATION*
-            // *==================================*
+            const index =
+                activeElement.index;
 
-            chart.options.animation =
-                false;
+            if (
+                chart.data.datasets[
+                    datasetIndex
+                ]
+            ) {
+                chart.setActiveElements([
+                    {
+                        datasetIndex:
+                            datasetIndex,
+                        index: index
+                    }
+                ]);
 
-            // *==================================*
-            // *SET CHART TO ZERO*
-            // *==================================*
+                chart.tooltip.setActiveElements(
+                    [
+                        {
+                            datasetIndex:
+                                datasetIndex,
+                            index: index
+                        }
+                    ],
+                    {
+                        x: event.x,
+                        y: event.y
+                    }
+                );
 
-            chart.data.datasets.forEach(
-                function (dataset) {
-                    dataset.data =
-                        dataset.data.map(
-                            function () {
-                                return 0;
-                            }
-                        );
-                }
-            );
-
-            // *Render immediately at zero*
-
-            chart.update("none");
-
-            // *==================================*
-            // *RESTORE REAL VALUES*
-            // *==================================*
-
-            chart.data.datasets.forEach(
-                function (dataset) {
-                    dataset.data =
-                        dataset._hoverOriginalData
-                            ? [...dataset._hoverOriginalData]
-                            : [];
-                }
-            );
-
-            // *==================================*
-            // *ANIMATE ZERO -> REAL VALUE*
-            // *==================================*
-
-            chart.options.animation = {
-                duration: 700,
-                easing: "easeOutCubic"
-            };
-
-            chart.update();
-
-            // *==================================*
-            // *RESET AFTER ANIMATION*
-            // *==================================*
-
-            setTimeout(
-                function () {
-                    chart.options.animation =
-                        false;
-
-                    chart._hoverAnimating =
-                        false;
-                },
-                750
-            );
-        };
-
-    chart.options.onLeave =
-        function () {
-            chart._hoverAnimating =
-                false;
+                chart.update(
+                    "none"
+                );
+            }
         };
 }
 
-// *==========================================*
-// *CATEGORY QUANTITY CHART*
-// *==========================================*
+/* =========================================================
+   CATEGORY QUANTITY CHART
+   ========================================================= */
 
-function displayCategoryChart(products) {
+function displayCategoryChart(
+    products
+) {
     const canvas =
         document.getElementById(
             "categoryChart"
@@ -1334,21 +1525,24 @@ function displayCategoryChart(products) {
         return;
     }
 
+    if (!isChartJSAvailable()) {
+        return;
+    }
+
     prepareChartCanvas(
         canvas,
         220
     );
-
-    // *======================================*
-    // *PREPARE DATA*
-    // *======================================*
 
     const categories = {};
 
     products.forEach(
         function (product) {
             const category =
-                product.category ||
+                String(
+                    product.category ||
+                        "Other"
+                ).trim() ||
                 "Other";
 
             if (!categories[category]) {
@@ -1356,44 +1550,41 @@ function displayCategoryChart(products) {
             }
 
             categories[category] +=
-                Number(
-                    product.quantity || 0
+                Math.max(
+                    toNumber(
+                        product.quantity
+                    ),
+                    0
                 );
         }
     );
 
     let labels =
-        Object.keys(categories);
+        Object.keys(
+            categories
+        );
 
     let values =
-        Object.values(categories);
+        Object.values(
+            categories
+        );
 
     if (labels.length === 0) {
-        labels = [
-            "No Data"
-        ];
-
-        values = [
-            0
-        ];
+        labels = ["No Data"];
+        values = [0];
     }
-
-    // *======================================*
-    // *DESTROY OLD CHART*
-    // *======================================*
 
     if (categoryChartInstance) {
         categoryChartInstance.destroy();
-        categoryChartInstance =
-            null;
+        categoryChartInstance = null;
     }
 
     const context =
         canvas.getContext("2d");
 
-    // *======================================*
-    // *GRADIENT*
-    // *======================================*
+    if (!context) {
+        return;
+    }
 
     const gradient =
         context.createLinearGradient(
@@ -1413,28 +1604,21 @@ function displayCategoryChart(products) {
         "#f59e0b"
     );
 
-    // *======================================*
-    // *CREATE CHART*
-    // *======================================*
-
     categoryChartInstance =
         new Chart(
             canvas,
             {
-                type:
-                    "bar",
+                type: "bar",
 
                 data: {
-                    labels:
-                        labels,
+                    labels: labels,
 
                     datasets: [
                         {
                             label:
                                 "Quantity",
 
-                            data:
-                                values,
+                            data: values,
 
                             backgroundColor:
                                 gradient,
@@ -1442,11 +1626,9 @@ function displayCategoryChart(products) {
                             borderColor:
                                 "#d97706",
 
-                            borderWidth:
-                                1,
+                            borderWidth: 1,
 
-                            borderRadius:
-                                8,
+                            borderRadius: 8,
 
                             borderSkipped:
                                 false,
@@ -1461,19 +1643,21 @@ function displayCategoryChart(products) {
                 },
 
                 options: {
-                    responsive:
-                        true,
+                    responsive: true,
 
                     maintainAspectRatio:
                         false,
 
-                    animation:
-                        false,
+                    animation: false,
+
+                    interaction: {
+                        mode: "index",
+                        intersect: false
+                    },
 
                     plugins: {
                         legend: {
-                            display:
-                                false
+                            display: false
                         },
 
                         tooltip:
@@ -1483,13 +1667,11 @@ function displayCategoryChart(products) {
                     scales: {
                         x: {
                             grid: {
-                                display:
-                                    false
+                                display: false
                             },
 
                             border: {
-                                display:
-                                    false
+                                display: false
                             },
 
                             ticks: {
@@ -1497,9 +1679,7 @@ function displayCategoryChart(products) {
                                     "#64748b",
 
                                 font: {
-                                    size:
-                                        12,
-
+                                    size: 12,
                                     weight:
                                         "600"
                                 }
@@ -1511,8 +1691,7 @@ function displayCategoryChart(products) {
                                 true,
 
                             border: {
-                                display:
-                                    false
+                                display: false
                             },
 
                             grid: {
@@ -1527,15 +1706,12 @@ function displayCategoryChart(products) {
                                 color:
                                     "#64748b",
 
-                                padding:
-                                    10,
+                                padding: 10,
 
-                                precision:
-                                    0,
+                                precision: 0,
 
                                 font: {
-                                    size:
-                                        11
+                                    size: 11
                                 }
                             }
                         }
@@ -1544,21 +1720,18 @@ function displayCategoryChart(products) {
             }
         );
 
-    // *======================================*
-    // *ENABLE HOVER ANIMATION*
-    // *======================================*
-
     setupChartHoverAnimation(
-        categoryChartInstance,
-        "bar"
+        categoryChartInstance
     );
 }
 
-// *==========================================*
-// *ALLOCATION STATUS DOUGHNUT CHART*
-// *==========================================*
+/* =========================================================
+   ALLOCATION STATUS DOUGHNUT CHART
+   ========================================================= */
 
-function displayAllocationChart(products) {
+function displayAllocationChart(
+    products
+) {
     const canvas =
         document.getElementById(
             "allocationChart"
@@ -1568,101 +1741,49 @@ function displayAllocationChart(products) {
         return;
     }
 
+    if (!isChartJSAvailable()) {
+        return;
+    }
+
     prepareChartCanvas(
         canvas,
         220
     );
 
-    let allocated = 0;
-    let pending = 0;
-    let notAllocated = 0;
-
-    // *======================================*
-    // *CALCULATE DATA*
-    // *======================================*
-
-    products.forEach(
-        function (product) {
-            const quantity =
-                Number(
-                    product.quantity || 0
-                );
-
-            const allocatedQuantity =
-                Math.max(
-                    0,
-                    Math.min(
-                        Number(
-                            product.allocatedQuantity || 0
-                        ),
-                        quantity
-                    )
-                );
-
-            if (
-                allocatedQuantity === 0
-            ) {
-                notAllocated +=
-                    quantity;
-            } else if (
-                allocatedQuantity <
-                quantity
-            ) {
-                allocated +=
-                    allocatedQuantity;
-
-                pending +=
-                    quantity -
-                    allocatedQuantity;
-            } else {
-                allocated +=
-                    quantity;
-            }
-        }
-    );
+    const allocation =
+        calculateAllocation(
+            products
+        );
 
     let chartData = [
-        allocated,
-        pending,
-        notAllocated
+        allocation.allocated,
+        allocation.pending,
+        allocation.notAllocated
     ];
 
-    // *======================================*
-    // *NO DATA*
-    // *======================================*
+    let isNoData = false;
 
     if (
-        allocated === 0 &&
-        pending === 0 &&
-        notAllocated === 0
+        allocation.allocated === 0 &&
+        allocation.pending === 0 &&
+        allocation.notAllocated === 0
     ) {
-        chartData = [
-            1,
-            0,
-            0
-        ];
+        chartData = [1, 0, 0];
+        isNoData = true;
     }
-
-    // *======================================*
-    // *DESTROY OLD CHART*
-    // *======================================*
 
     if (allocationChartInstance) {
         allocationChartInstance.destroy();
+
         allocationChartInstance =
             null;
     }
-
-    // *======================================*
-    // *CREATE DOUGHNUT*
-    // *======================================*
 
     allocationChartInstance =
         new Chart(
             canvas,
             {
-                type:
-                    "doughnut",
+                type: "doughnut",
 
                 data: {
                     labels: [
@@ -1673,8 +1794,7 @@ function displayAllocationChart(products) {
 
                     datasets: [
                         {
-                            data:
-                                chartData,
+                            data: chartData,
 
                             backgroundColor: [
                                 "#16a34a",
@@ -1685,30 +1805,24 @@ function displayAllocationChart(products) {
                             borderColor:
                                 "#ffffff",
 
-                            borderWidth:
-                                4,
+                            borderWidth: 4,
 
-                            hoverOffset:
-                                8,
+                            hoverOffset: 8,
 
-                            spacing:
-                                3
+                            spacing: 3
                         }
                     ]
                 },
 
                 options: {
-                    responsive:
-                        true,
+                    responsive: true,
 
                     maintainAspectRatio:
                         false,
 
-                    cutout:
-                        "68%",
+                    cutout: "68%",
 
-                    animation:
-                        false,
+                    animation: false,
 
                     plugins: {
                         legend: {
@@ -1722,15 +1836,13 @@ function displayAllocationChart(products) {
                                 pointStyle:
                                     "circle",
 
-                                padding:
-                                    18,
+                                padding: 18,
 
                                 color:
                                     "#475569",
 
                                 font: {
-                                    size:
-                                        12,
+                                    size: 12,
 
                                     weight:
                                         "600"
@@ -1738,34 +1850,56 @@ function displayAllocationChart(products) {
                             }
                         },
 
-                        tooltip:
-                            getChartTooltipOptions()
+                        tooltip: {
+                            ...getChartTooltipOptions(),
+
+                            callbacks: {
+                                label:
+                                    function (
+                                        context
+                                    ) {
+                                        if (
+                                            isNoData
+                                        ) {
+                                            return " No data available";
+                                        }
+
+                                        return (
+                                            " " +
+                                            context.label +
+                                            ": " +
+                                            context.raw
+                                        );
+                                    }
+                            }
+                        }
                     }
                 }
             }
         );
 
-    // *======================================*
-    // *ENABLE HOVER ANIMATION*
-    // *======================================*
-
     setupChartHoverAnimation(
-        allocationChartInstance,
-        "doughnut"
+        allocationChartInstance
     );
 }
 
-// *==========================================*
-// *SLOT UTILIZATION CHART*
-// *==========================================*
+/* =========================================================
+   SLOT UTILIZATION CHART
+   ========================================================= */
 
-function displaySlotUtilizationChart(slots) {
+function displaySlotUtilizationChart(
+    slots
+) {
     const canvas =
         document.getElementById(
             "slotUtilizationChart"
         );
 
     if (!canvas) {
+        return;
+    }
+
+    if (!isChartJSAvailable()) {
         return;
     }
 
@@ -1781,11 +1915,8 @@ function displaySlotUtilizationChart(slots) {
         "Custom"
     ];
 
-    const utilizationValues = [];
-
-    // *======================================*
-    // *CALCULATE UTILIZATION*
-    // *======================================*
+    const utilizationValues =
+        [];
 
     sizes.forEach(
         function (size) {
@@ -1793,8 +1924,11 @@ function displaySlotUtilizationChart(slots) {
                 slots.filter(
                     function (slot) {
                         return (
-                            slot.size ===
-                            size
+                            String(
+                                slot.size ||
+                                    ""
+                            ).toLowerCase() ===
+                            size.toLowerCase()
                         );
                     }
                 );
@@ -1805,69 +1939,67 @@ function displaySlotUtilizationChart(slots) {
             sizeSlots.forEach(
                 function (slot) {
                     totalVolume +=
-                        Number(
-                            slot.volume || 0
+                        Math.max(
+                            toNumber(
+                                slot.volume
+                            ),
+                            0
                         );
 
                     usedVolume +=
-                        Number(
-                            slot.usedVolume || 0
+                        Math.max(
+                            toNumber(
+                                slot.usedVolume
+                            ),
+                            0
                         );
                 }
             );
 
             let utilization = 0;
 
-            if (totalVolume > 0) {
+            if (
+                totalVolume > 0
+            ) {
                 utilization =
-                    (
-                        usedVolume /
-                        totalVolume
-                    ) * 100;
+                    (usedVolume /
+                        totalVolume) *
+                    100;
             }
 
-            utilization =
-                Math.min(
-                    Math.max(
-                        utilization,
-                        0
-                    ),
-                    100
-                );
+            utilization = clamp(
+                utilization,
+                0,
+                100
+            );
 
             utilizationValues.push(
                 Number(
-                    utilization.toFixed(1)
+                    utilization.toFixed(
+                        1
+                    )
                 )
             );
         }
     );
 
-    // *======================================*
-    // *DESTROY OLD CHART*
-    // *======================================*
-
-    if (slotUtilizationChartInstance) {
+    if (
+        slotUtilizationChartInstance
+    ) {
         slotUtilizationChartInstance.destroy();
 
         slotUtilizationChartInstance =
             null;
     }
 
-    // *======================================*
-    // *CREATE CHART*
-    // *======================================*
-
     slotUtilizationChartInstance =
         new Chart(
             canvas,
             {
-                type:
-                    "bar",
+                type: "bar",
 
                 data: {
-                    labels:
-                        sizes,
+                    labels: sizes,
 
                     datasets: [
                         {
@@ -1891,11 +2023,9 @@ function displaySlotUtilizationChart(slots) {
                                 "#d97706"
                             ],
 
-                            borderWidth:
-                                1,
+                            borderWidth: 1,
 
-                            borderRadius:
-                                10,
+                            borderRadius: 10,
 
                             borderSkipped:
                                 false,
@@ -1910,19 +2040,21 @@ function displaySlotUtilizationChart(slots) {
                 },
 
                 options: {
-                    responsive:
-                        true,
+                    responsive: true,
 
                     maintainAspectRatio:
                         false,
 
-                    animation:
-                        false,
+                    animation: false,
+
+                    interaction: {
+                        mode: "index",
+                        intersect: false
+                    },
 
                     plugins: {
                         legend: {
-                            display:
-                                false
+                            display: false
                         },
 
                         tooltip: {
@@ -1930,7 +2062,9 @@ function displaySlotUtilizationChart(slots) {
 
                             callbacks: {
                                 label:
-                                    function (context) {
+                                    function (
+                                        context
+                                    ) {
                                         return (
                                             " Utilization: " +
                                             context.parsed.y +
@@ -1944,13 +2078,11 @@ function displaySlotUtilizationChart(slots) {
                     scales: {
                         x: {
                             grid: {
-                                display:
-                                    false
+                                display: false
                             },
 
                             border: {
-                                display:
-                                    false
+                                display: false
                             },
 
                             ticks: {
@@ -1958,8 +2090,7 @@ function displaySlotUtilizationChart(slots) {
                                     "#475569",
 
                                 font: {
-                                    size:
-                                        12,
+                                    size: 12,
 
                                     weight:
                                         "700"
@@ -1971,12 +2102,10 @@ function displaySlotUtilizationChart(slots) {
                             beginAtZero:
                                 true,
 
-                            max:
-                                100,
+                            max: 100,
 
                             border: {
-                                display:
-                                    false
+                                display: false
                             },
 
                             grid: {
@@ -1988,17 +2117,17 @@ function displaySlotUtilizationChart(slots) {
                             },
 
                             ticks: {
-                                stepSize:
-                                    20,
+                                stepSize: 20,
 
                                 color:
                                     "#64748b",
 
-                                padding:
-                                    10,
+                                padding: 10,
 
                                 callback:
-                                    function (value) {
+                                    function (
+                                        value
+                                    ) {
                                         return (
                                             value +
                                             "%"
@@ -2006,8 +2135,7 @@ function displaySlotUtilizationChart(slots) {
                                     },
 
                                 font: {
-                                    size:
-                                        11
+                                    size: 11
                                 }
                             }
                         }
@@ -2016,64 +2144,14 @@ function displaySlotUtilizationChart(slots) {
             }
         );
 
-    // *======================================*
-    // *ENABLE HOVER ANIMATION*
-    // *======================================*
-
     setupChartHoverAnimation(
-        slotUtilizationChartInstance,
-        "bar"
+        slotUtilizationChartInstance
     );
 }
 
-// *==========================================*
-// *LOGOUT*
-// *==========================================*
-
-const logoutBtn =
-    document.getElementById(
-        "logoutBtn"
-    );
-
-if (logoutBtn) {
-    logoutBtn.addEventListener(
-        "click",
-        function () {
-            localStorage.removeItem(
-                CURRENT_USER_KEY
-            );
-
-            window.location.href =
-                "login.html";
-        }
-    );
-}
-
-// *==========================================*
-// *REFRESH ANALYTICS*
-// *==========================================*
-
-const refreshAnalytics =
-    document.getElementById(
-        "refreshAnalytics"
-    );
-
-if (refreshAnalytics) {
-    refreshAnalytics.addEventListener(
-        "click",
-        function () {
-            loadAnalytics();
-        }
-    );
-}
-
-// *==========================================*
-// *CSV EXPORT*
-// *==========================================*
-
-// *==========================================*
-// *CSV VALUE FORMATTER*
-// *==========================================*
+/* =========================================================
+   CSV VALUE FORMATTER
+   ========================================================= */
 
 function csvValue(value) {
     if (
@@ -2086,20 +2164,24 @@ function csvValue(value) {
     const stringValue =
         String(value);
 
-    // Escape quotes and wrap every value
-    // inside quotes.
-
-    return '"' +
-        stringValue
-            .replace(/"/g, '""') +
-        '"';
+    return (
+        '"' +
+        stringValue.replace(
+            /"/g,
+            '""'
+        ) +
+        '"'
+    );
 }
 
-// *==========================================*
-// *CREATE CSV*
-// *==========================================*
+/* =========================================================
+   CREATE CSV
+   ========================================================= */
 
-function createCSV(headers, rows) {
+function createCSV(
+    headers,
+    rows
+) {
     const headerRow =
         headers
             .map(csvValue)
@@ -2117,28 +2199,24 @@ function createCSV(headers, rows) {
     return [
         headerRow,
         ...dataRows
-    ].join("\n");
+    ].join("\r\n");
 }
 
-// *==========================================*
-// *DOWNLOAD CSV*
-// *==========================================*
+/* =========================================================
+   DOWNLOAD CSV
+   ========================================================= */
 
 function downloadCSV(
     csvContent,
     filename
 ) {
-    // BOM helps Excel correctly recognize
-    // UTF-8 CSV files.
-
-    const BOM =
-        "\uFEFF";
+    const BOM = "\uFEFF";
 
     const blob =
         new Blob(
             [
                 BOM +
-                csvContent
+                    csvContent
             ],
             {
                 type:
@@ -2147,16 +2225,17 @@ function downloadCSV(
         );
 
     const url =
-        URL.createObjectURL(blob);
+        URL.createObjectURL(
+            blob
+        );
 
     const link =
-        document.createElement("a");
+        document.createElement(
+            "a"
+        );
 
-    link.href =
-        url;
-
-    link.download =
-        filename;
+    link.href = url;
+    link.download = filename;
 
     document.body.appendChild(
         link
@@ -2168,14 +2247,19 @@ function downloadCSV(
         link
     );
 
-    URL.revokeObjectURL(
-        url
+    setTimeout(
+        function () {
+            URL.revokeObjectURL(
+                url
+            );
+        },
+        100
     );
 }
 
-// *==========================================*
-// *CURRENT USER FOR EXPORT*
-// *==========================================*
+/* =========================================================
+   GET EXPORT USER
+   ========================================================= */
 
 function getExportUser() {
     const savedUser =
@@ -2188,7 +2272,19 @@ function getExportUser() {
     }
 
     try {
-        return JSON.parse(savedUser);
+        const user =
+            JSON.parse(
+                savedUser
+            );
+
+        if (
+            !user ||
+            typeof user !== "object"
+        ) {
+            return null;
+        }
+
+        return user;
     } catch (error) {
         console.error(
             "Invalid user data:",
@@ -2199,11 +2295,13 @@ function getExportUser() {
     }
 }
 
-// *==========================================*
-// *FORMAT DATE FOR CSV*
-// *==========================================*
+/* =========================================================
+   FORMAT DATE FOR CSV
+   ========================================================= */
 
-function formatCSVDate(dateValue) {
+function formatCSVDate(
+    dateValue
+) {
     if (!dateValue) {
         return "";
     }
@@ -2216,27 +2314,30 @@ function formatCSVDate(dateValue) {
             date.getTime()
         )
     ) {
-        return String(dateValue);
+        return String(
+            dateValue
+        );
     }
 
     return date.toLocaleString();
 }
 
-// *==========================================*
-// *GET PRODUCT ADDED DATE*
-// *==========================================*
+/* =========================================================
+   GET PRODUCT ADDED DATE
+   ========================================================= */
 
-function getProductAddedDate(product) {
+function getProductAddedDate(
+    product
+) {
     /*
-     * IMPORTANT:
-     *
-     * addedAt is the preferred property.
+     * addedAt is preferred.
      *
      * createdAt and date are fallback
      * properties for compatibility with
      * older product records.
      *
-     * We NEVER use the CSV export date here.
+     * The CSV export date is never used
+     * as the product added date.
      */
 
     return (
@@ -2247,9 +2348,9 @@ function getProductAddedDate(product) {
     );
 }
 
-// *==========================================*
-// *EXPORT PRODUCTS CSV*
-// *==========================================*
+/* =========================================================
+   EXPORT PRODUCTS CSV
+   ========================================================= */
 
 function exportProductsCSV() {
     const currentUser =
@@ -2266,17 +2367,24 @@ function exportProductsCSV() {
     const allProducts =
         getProducts();
 
-    /*
-     * Only export products belonging
-     * to the currently logged-in user.
-     */
+    const userEmail =
+        String(
+            currentUser.email || ""
+        )
+            .trim()
+            .toLowerCase();
 
     const products =
         allProducts.filter(
             function (product) {
                 return (
-                    product.userEmail ===
-                    currentUser.email
+                    String(
+                        product.userEmail ||
+                            ""
+                    )
+                        .trim()
+                        .toLowerCase() ===
+                    userEmail
                 );
             }
         );
@@ -2290,84 +2398,86 @@ function exportProductsCSV() {
     }
 
     const headers = [
+        "Product ID",
         "Product Name",
         "Category",
         "Quantity",
-        "Weight (kg)",
-        "Size",
         "Allocated Quantity",
-        "Remaining Quantity",
+        "Pending Quantity",
         "Allocation Status",
-        "Product Added Date & Time"
+        "Fragile",
+        "Weight per Unit (kg)",
+        "Total Weight (kg)",
+        "Added Date"
     ];
 
     const rows =
         products.map(
             function (product) {
                 const quantity =
-                    Number(
-                        product.quantity || 0
-                    );
-
-                const allocated =
                     Math.max(
-                        0,
-                        Math.min(
-                            Number(
-                                product.allocatedQuantity || 0
-                            ),
-                            quantity
-                        )
-                    );
-
-                const remaining =
-                    Math.max(
-                        quantity -
-                        allocated,
+                        toNumber(
+                            product.quantity
+                        ),
                         0
                     );
 
-                let allocationStatus;
-
-                if (allocated === 0) {
-                    allocationStatus =
-                        "Not Allocated";
-                }
-                else if (
-                    allocated <
-                    quantity
-                ) {
-                    allocationStatus =
-                        "Partially Allocated";
-                }
-                else {
-                    allocationStatus =
-                        "Fully Allocated";
-                }
-
-                /*
-                 * Get the ACTUAL product added
-                 * date/time.
-                 *
-                 * This is NOT the export date.
-                 */
-
-                const addedDate =
-                    getProductAddedDate(
+                const allocated =
+                    getAllocatedQuantity(
                         product
                     );
 
+                const pending =
+                    getPendingQuantity(
+                        product
+                    );
+
+                const weight =
+                    Math.max(
+                        toNumber(
+                            product.weight
+                        ),
+                        0
+                    );
+
+                const totalWeight =
+                    quantity *
+                    weight;
+
                 return [
-                    product.name || "",
-                    product.category || "Other",
+                    product.id ||
+                        product.productId ||
+                        "",
+
+                    product.name ||
+                        "",
+
+                    product.category ||
+                        "Other",
+
                     quantity,
-                    product.weight || 0,
-                    product.size || "",
+
                     allocated,
-                    remaining,
-                    allocationStatus,
+
+                    pending,
+
+                    getAllocationStatus(
+                        product
+                    ),
+
+                    product.fragile ||
+                        "No",
+
+                    weight,
+
+                    totalWeight.toFixed(
+                        2
+                    ),
+
                     formatCSVDate(
-                        addedDate
+                        getProductAddedDate(
+                            product
+                        )
                     )
                 ];
             }
@@ -2379,14 +2489,6 @@ function exportProductsCSV() {
             rows
         );
 
-    /*
-     * The filename date is only the
-     * date on which the CSV was exported.
-     *
-     * It does NOT appear as the
-     * Product Added Date & Time column.
-     */
-
     const dateStamp =
         new Date()
             .toISOString()
@@ -2395,14 +2497,14 @@ function exportProductsCSV() {
     downloadCSV(
         csv,
         "storvia-products-" +
-        dateStamp +
-        ".csv"
+            dateStamp +
+            ".csv"
     );
 }
 
-// *==========================================*
-// *EXPORT WAREHOUSE SLOTS CSV*
-// *==========================================*
+/* =========================================================
+   EXPORT WAREHOUSE SLOTS CSV
+   ========================================================= */
 
 function exportSlotsCSV() {
     const currentUser =
@@ -2419,17 +2521,23 @@ function exportSlotsCSV() {
     const allSlots =
         getSlots();
 
-    /*
-     * Only export slots belonging
-     * to the current user.
-     */
+    const userEmail =
+        String(
+            currentUser.email || ""
+        )
+            .trim()
+            .toLowerCase();
 
     const slots =
         allSlots.filter(
             function (slot) {
                 return (
-                    slot.userEmail ===
-                    currentUser.email
+                    String(
+                        slot.userEmail || ""
+                    )
+                        .trim()
+                        .toLowerCase() ===
+                    userEmail
                 );
             }
         );
@@ -2462,14 +2570,17 @@ function exportSlotsCSV() {
         slots.map(
             function (slot) {
                 const capacity =
-                    Number(
-                        slot.volume || 0
+                    Math.max(
+                        toNumber(
+                            slot.volume
+                        ),
+                        0
                     );
 
                 const used =
                     Math.max(
-                        Number(
-                            slot.usedVolume || 0
+                        toNumber(
+                            slot.usedVolume
                         ),
                         0
                     );
@@ -2477,64 +2588,71 @@ function exportSlotsCSV() {
                 const available =
                     Math.max(
                         capacity -
-                        used,
+                            used,
                         0
                     );
 
-                let utilization = 0;
-
-                if (capacity > 0) {
-                    utilization =
-                        (
-                            used /
-                            capacity
-                        ) * 100;
-                }
-
-                utilization =
-                    Math.min(
-                        Math.max(
-                            utilization,
-                            0
-                        ),
-                        100
+                const utilization =
+                    getSlotUtilization(
+                        slot
                     );
 
-                const hasProduct =
-                    (
-                        slot.productId !== null &&
-                        slot.productId !== undefined &&
-                        slot.productId !== ""
-                    ) ||
-                    (
-                        slot.productName !== null &&
-                        slot.productName !== undefined &&
-                        slot.productName !== ""
-                    ) ||
-                    Number(
-                        slot.productQuantity || 0
-                    ) > 0;
-
                 const slotState =
-                    hasProduct
+                    isSlotOccupied(
+                        slot
+                    )
                         ? "Occupied"
                         : "Empty";
 
                 return [
                     slot.id || "",
+
                     slot.size || "",
-                    slot.length || 0,
-                    slot.breadth || 0,
-                    slot.height || 0,
+
+                    Math.max(
+                        toNumber(
+                            slot.length
+                        ),
+                        0
+                    ),
+
+                    Math.max(
+                        toNumber(
+                            slot.breadth
+                        ),
+                        0
+                    ),
+
+                    Math.max(
+                        toNumber(
+                            slot.height
+                        ),
+                        0
+                    ),
+
                     capacity,
+
                     used,
+
                     available,
-                    utilization.toFixed(1),
+
+                    utilization.toFixed(
+                        1
+                    ),
+
                     slotState,
-                    slot.productId || "",
-                    slot.productName || "",
-                    Number(
-                        slot.productQuantity || 0
+
+                    slot.productId ||
+                        "",
+
+                    slot.productName ||
+                        "",
+
+                    Math.max(
+                        toNumber(
+                            slot.productQuantity
+                        ),
+                        0
                     )
                 ];
             }
@@ -2546,11 +2664,6 @@ function exportSlotsCSV() {
             rows
         );
 
-    /*
-     * Filename date only.
-     * This is NOT product added date.
-     */
-
     const dateStamp =
         new Date()
             .toISOString()
@@ -2559,46 +2672,111 @@ function exportSlotsCSV() {
     downloadCSV(
         csv,
         "storvia-warehouse-slots-" +
-        dateStamp +
-        ".csv"
+            dateStamp +
+            ".csv"
     );
 }
 
-// *==========================================*
-// *CSV BUTTON EVENTS*
-// *==========================================*
+/* =========================================================
+   EVENT LISTENERS
+   ========================================================= */
 
-const exportProductsButton =
-    document.getElementById(
-        "exportProductsCSV"
-    );
+function setupEventListeners() {
+    /* -----------------------------------------------------
+       LOGOUT
+       ----------------------------------------------------- */
 
-if (exportProductsButton) {
-    exportProductsButton.addEventListener(
-        "click",
-        exportProductsCSV
-    );
-}
+    const logoutBtn =
+        document.getElementById(
+            "logoutBtn"
+        );
 
-const exportSlotsButton =
-    document.getElementById(
-        "exportSlotsCSV"
-    );
+    if (logoutBtn) {
+        logoutBtn.addEventListener(
+            "click",
+            function () {
+                localStorage.removeItem(
+                    CURRENT_USER_KEY
+                );
 
-if (exportSlotsButton) {
-    exportSlotsButton.addEventListener(
-        "click",
-        exportSlotsCSV
-    );
-}
-
-// *==========================================*
-// *START*
-// *==========================================*
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-        loadAnalytics();
+                window.location.href =
+                    "login.html";
+            }
+        );
     }
-);
+
+    /* -----------------------------------------------------
+       REFRESH ANALYTICS
+       ----------------------------------------------------- */
+
+    const refreshAnalytics =
+        document.getElementById(
+            "refreshAnalytics"
+        );
+
+    if (refreshAnalytics) {
+        refreshAnalytics.addEventListener(
+            "click",
+            function () {
+                loadAnalytics();
+            }
+        );
+    }
+
+    /* -----------------------------------------------------
+       EXPORT PRODUCTS
+       ----------------------------------------------------- */
+
+    const exportProductsButton =
+        document.getElementById(
+            "exportProductsCSV"
+        );
+
+    if (exportProductsButton) {
+        exportProductsButton.addEventListener(
+            "click",
+            exportProductsCSV
+        );
+    }
+
+    /* -----------------------------------------------------
+       EXPORT SLOTS
+       ----------------------------------------------------- */
+
+    const exportSlotsButton =
+        document.getElementById(
+            "exportSlotsCSV"
+        );
+
+    if (exportSlotsButton) {
+        exportSlotsButton.addEventListener(
+            "click",
+            exportSlotsCSV
+        );
+    }
+}
+
+/* =========================================================
+   START APPLICATION
+   ========================================================= */
+
+function initializeAnalytics() {
+    setupEventListeners();
+    loadAnalytics();
+}
+
+/* =========================================================
+   DOM READY
+   ========================================================= */
+
+if (
+    document.readyState ===
+    "loading"
+) {
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeAnalytics
+    );
+} else {
+    initializeAnalytics();
+}

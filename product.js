@@ -747,7 +747,9 @@ productForm.addEventListener(
                     : "Waiting for warehouse allocation.",
 
             userEmail:
-                currentUser.email
+                currentUser.email,
+
+            date: new Date().toISOString().split("T")[0]
 
         };
 
