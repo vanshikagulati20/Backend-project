@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Add Slots - Storvia</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="inventory.css">
+
+</head>
+
+
+<body>
+
+
+<header class="dashboard-header">
+
+    <div class="brand">
+        <h1>Storvia</h1>
+    </div>
+
+
+    <nav class="dashboard-nav">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="product.html">
+            Products
+        </a>
+
+        <a
+            href="inventory.html"
+            class="active"
+        >
+            Add Slots
+        </a>
+
+        <a href="warehouse.html">
+            Warehouse
+        </a>
+        <a href="analytics.html">Analytics</a>
+
+    </nav>
+    <div class="user-section">
+        <span id="welcomeUser">Welcome</span>
+        <button id="logoutBtn">Logout</button>
+    </div>
+</header>
+
+
+
+<main class="dashboard-container">
+
+
+    <!-- ======================================
+         INTRO
+    ======================================= -->
+
+    <section class="dashboard-intro">
+        <span class="page-label">Slot Configuration</span>
+        <h2>Add Warehouse Slots</h2>
+        <p>Create storage slots based on the physical dimensions and racking layout of your warehouse.</p>
+     </section>
+
+
+
+    <!-- ======================================
+         CREATE SLOTS
+    ======================================= -->
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <h2>Create New Storage Slots</h2>
+
+           <p>Enter single slot dimensions and 
+            specify how many identical slots to generate.</p>
+
+        </div>
+
+
+
+        <form id="slotForm">
+
+
+            <!-- SLOT TYPE -->
+
+            <div class="form-group">
+
+                <label for="slotType">
+                    Slot Type *
+                </label>
+
+
+                <select
+                    id="slotType"
+                    required
+                >
+
+                    <option value="">
+                        Select Slot Type
+                    </option>
+
+                    <option value="Small">
+                        Small (Compact Racks)
+                    </option>
+
+                    <option value="Medium">
+                        Medium (Standard Racks)
+                    </option>
+
+                    <option value="Large">
+                        Large (Bulk / Pallet Racks)
+                    </option>
+
+                   
+
+                </select>
+
+            </div>
+
+
+
+            <!-- LENGTH -->
+
+            <div class="form-group">
+
+                <label for="slotLength">
+                    Length (cm) *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotLength"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="e.g. 100"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- BREADTH -->
+
+            <div class="form-group">
+
+                <label for="slotBreadth">
+                    Breadth (cm) *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotBreadth"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="e.g. 80"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- HEIGHT -->
+
+            <div class="form-group">
+
+                <label for="slotHeight">
+                    Height (cm) *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotHeight"
+                    min="0.1"
+                    step="0.01"
+                    placeholder="e.g. 60"
+                    required
+                >
+
+            </div>
+
+
+
+            <!-- NUMBER OF SLOTS -->
+
+            <div class="form-group">
+
+                <label for="slotCount">
+                    Number of Slots *
+                </label>
+
+
+                <input
+                    type="number"
+                    id="slotCount"
+                    min="1"
+                    placeholder="e.g. 10"
+                    required
+                >
+
+            </div>
+
+
+
+            <button type="submit">
+                Add Slots
+            </button>
+
+
+        </form>
+
+    </section>
+
+
+
+    
+
+</main>
+
+
+
+<script src="inventory.js"></script>
+<script>
+    // Header user greeting & logout synchronization
+    (function () {
+        const savedUser = localStorage.getItem("currentuser");
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                const welcomeEl = document.getElementById("welcomeUser");
+                if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+            } catch (e) {}
+        }
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("currentuser");
+                window.location.href = "login.html";
+            };
+        }
+    })();
+</script>
+
+</body>
+
+</html>

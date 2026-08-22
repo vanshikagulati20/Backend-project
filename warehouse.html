@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Warehouse Layout - Storvia</title>
+    <link 
+        rel="stylesheet" 
+        href="style.css"    
+    >
+    <link
+        rel="stylesheet"
+        href="warehouse.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     HEADER
+========================================== -->
+
+<header class="dashboard-header">
+
+    <div class="brand">
+
+        <h1>Storvia</h1>
+
+    </div>
+
+
+    <nav class="dashboard-nav">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="product.html">
+            Products
+        </a>
+
+        <a href="inventory.html">
+            Add Slots
+        </a>
+
+        <a
+            href="warehouse.html"
+            class="active"
+        >
+            Warehouse
+        </a>
+        <a 
+            href="analytics.html"
+        >
+            Analytics
+        </a>
+    </nav>
+     <div class="user-section">
+        <span id="welcomeUser">Welcome</span>
+        <button id="logoutBtn">Logout</button>
+    </div>
+
+</header>
+
+
+
+<!-- ==========================================
+     MAIN
+========================================== -->
+
+<main class="dashboard-container">
+
+
+    <!-- ======================================
+         INTRO
+    ======================================= -->
+
+    <section class="dashboard-intro">
+
+         <span class="page-label">
+            Storage Layout & Packing
+        </span>
+        <h2>
+            Warehouse Slot Layout
+        </h2>
+        <p>
+            Monitor physical storage capacity, 
+            view individual rack slots,
+             and trigger automated packing optimization.
+        </p>
+
+    </section>
+
+
+
+    <!-- ======================================
+         ALLOCATION ACTION
+    ======================================= -->
+
+    <section class="warehouse-actions">
+
+        <div class="allocation-info">
+
+            <div class="allocation-icon">
+                📦
+            </div>
+
+            <div>
+
+                <h2>
+                    Packing & Slot Allocation Engine
+                </h2>
+
+                <p id="allocationMessage">
+
+                    Allocate pending products into
+                    optimal warehouse slots using
+                    First Fit Decreasing(FFD) algorithm.
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="allocateBtn"
+            class="allocate-btn"
+        >
+
+            <span>
+                ⚡ Run Slot Allocation
+            </span>
+
+            <span class="arrow">
+                →
+            </span>
+
+        </button>
+
+    </section>
+
+
+
+    <!-- ======================================
+         ALLOCATION RESULT
+    ======================================= -->
+
+    <section
+        id="allocationResult"
+        class="allocation-result"
+    ></section>
+
+
+
+    <!-- ======================================
+         LARGE SLOTS
+    ======================================= -->
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    ZONE A — HIGH CAPACITY
+                </span>
+
+                <h2>
+                    Large Storage Slots
+                </h2>
+
+                <p>
+                    High-volume rack locations for bulk products
+                    and heavy cartons.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="largeSlots"
+            class="warehouse-grid"
+        ></div>
+
+    </section>
+
+
+
+    <!-- ======================================
+         MEDIUM SLOTS
+    ======================================= -->
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    ZONE B — STANDARD CAPACITY
+                </span>
+
+                <h2>
+                    Medium Storage Slots
+                </h2>
+
+                <p>
+                    Standard rack locations for 
+                    boxed hardware and mid-sized electronics.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="mediumSlots"
+            class="warehouse-grid"
+        ></div>
+
+    </section>
+
+
+
+    <!-- ======================================
+         SMALL SLOTS
+    ======================================= -->
+
+    <section class="inventory-card">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-label">
+                    ZONE C — COMPACT CAPACITY
+                </span>
+
+                <h2>
+                    Small Storage Slots
+                </h2>
+
+                <p>
+                    Compact shelf bins for 
+                    accessories, cables, and 
+                    lightweight units.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="smallSlots"
+            class="warehouse-grid"
+        ></div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ==========================================
+     SLOT DETAILS MODAL
+========================================== -->
+
+<div
+    id="slotModal"
+    class="modal"
+>
+
+    <div class="modal-content">
+
+
+        <button
+            type="button"
+            id="closeModal"
+            class="close-button"
+            aria-label="Close"
+        >
+            ×
+        </button>
+
+
+        <div class="modal-header">
+
+            <span class="section-label">
+                RACK LOCATION DETAILS
+            </span>
+
+            <h2>
+                Slot Details
+            </h2>
+
+        </div>
+
+
+        <div class="slot-detail">
+
+
+            <div class="detail-row">
+
+                <span>
+                    Slot ID
+                </span>
+
+                <strong id="modalSlotId">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Size
+                </span>
+
+                <strong id="modalSize">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Product
+                </span>
+
+                <strong id="modalProduct">
+                    Empty
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Quantity
+                </span>
+
+                <strong id="modalQuantity">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Physical Dimensions
+                </span>
+
+                <strong id="modalCapacity">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Used Volume
+                </span>
+
+                <strong id="modalUsed">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Available Volume
+                </span>
+
+                <strong id="modalAvailable">
+                    -
+                </strong>
+
+            </div>
+
+
+            <div class="detail-row">
+
+                <span>
+                    Occupancy Status
+                </span>
+
+                <strong
+                    id="modalStatus"
+                    class="modal-status"
+                >
+                    -
+                </strong>
+
+            </div>
+
+
+        </div>
+
+
+        <div class="modal-progress">
+
+            <div class="progress-header">
+
+                <span>
+                    Capacity Used
+                </span>
+
+            </div>
+
+
+            <div class="progress-container">
+
+                <div
+                    class="progress-bar"
+                    id="modalProgress"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="warehouse.js"></script>
+<script>
+    // Header user greeting & logout synchronization
+    (function () {
+        const savedUser = localStorage.getItem("currentuser");
+        if (savedUser) {
+            try {
+                const user = JSON.parse(savedUser);
+                const welcomeEl = document.getElementById("welcomeUser");
+                if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+            } catch (e) {}
+        }
+        const logoutBtn = document.getElementById("logoutBtn");
+        if (logoutBtn) {
+            logoutBtn.onclick = function () {
+                localStorage.removeItem("currentuser");
+                window.location.href = "login.html";
+            };
+        }
+    })();
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,415 @@
+/* ==========================================================================
+   ALLOCATION ACTION CARD
+   ========================================================================== */
+.warehouse-actions {
+    background: var(--primary);
+    color: var(--text-inverse);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.allocation-info {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.allocation-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+}
+
+.allocation-info h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 4px;
+}
+
+.allocation-info p {
+    color: #cbd5e1;
+    font-size: 13.5px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.allocate-btn {
+    border: none;
+    background: var(--accent);
+    color: #78350f;
+    padding: 13px 22px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.3);
+}
+
+.allocate-btn:hover {
+    background: var(--accent-hover);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.4);
+}
+
+.allocate-btn .arrow {
+    font-size: 16px;
+    transition: transform var(--transition-fast);
+}
+
+.allocate-btn:hover .arrow {
+    transform: translateX(3px);
+}
+
+/* ==========================================================================
+   ALLOCATION RESULT CARDS
+   ========================================================================== */
+.allocation-result {
+    margin-bottom: 28px;
+}
+
+.allocation-success {
+    background: var(--status-success-bg);
+    border: 1px solid #bbf7d0;
+    border-left: 5px solid var(--status-success);
+    color: #14532d;
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    font-size: 14px;
+}
+
+.allocation-success strong {
+    font-size: 18px;
+    color: #14532d;
+}
+
+.allocation-warning {
+    background: var(--status-warning-bg);
+    border: 1px solid #fde68a;
+    border-left: 5px solid var(--status-warning);
+    color: #78350f;
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    font-size: 14px;
+}
+
+.allocation-warning > strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: #78350f;
+    margin-bottom: 12px;
+}
+
+.allocation-warning ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.allocation-warning li {
+    background: #ffffff;
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    margin-top: 8px;
+    color: var(--text-primary);
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   SECTION LABELS & HEADINGS
+   ========================================================================== */
+.section-label {
+    display: inline-block;
+    color: var(--accent-text);
+    background: var(--accent-subtle);
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    padding: 2px 7px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+}
+
+/* ==========================================================================
+   WAREHOUSE SLOT GRID
+   ========================================================================== */
+.warehouse-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+}
+
+/* Base Slot Box */
+.warehouse-slot {
+    min-height: 145px;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    position: relative;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.warehouse-slot:hover {
+    border-color: var(--accent);
+    background: #fffdf5;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(245, 158, 11, 0.15);
+}
+
+/* Slot Elements */
+.slot-id {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    font-family: inherit;
+}
+
+.slot-size {
+    margin-top: 2px;
+    color: var(--text-muted);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.slot-status {
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #92400e;
+    background: var(--accent-subtle);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.slot-dimensions {
+    margin-top: 6px;
+    color: var(--text-secondary);
+    font-size: 10.5px;
+    font-weight: 500;
+}
+
+.slot-product {
+    margin-top: 8px;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.slot-product.empty {
+    color: var(--text-muted);
+    font-weight: 500;
+    font-style: italic;
+}
+
+.slot-quantity {
+    margin-top: 2px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.slot-capacity {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 9.5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.slot-progress {
+    width: 85%;
+    height: 5px;
+    background: var(--border-subtle);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.slot-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+    border-radius: var(--radius-full);
+    transition: width 0.4s ease;
+}
+
+/* ==========================================================================
+   SLOT DETAILS MODAL
+   ========================================================================== */
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+    animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--border-subtle);
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.close-button {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--bg-body);
+    border-radius: var(--radius-full);
+    color: var(--text-secondary);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.close-button:hover {
+    background: #fee2e2;
+    color: var(--status-danger);
+}
+
+.modal-header {
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-primary);
+}
+
+.slot-detail {
+    border-top: 1px solid var(--border-subtle);
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13.5px;
+}
+
+.detail-row span {
+    color: var(--text-secondary);
+}
+
+.detail-row strong {
+    color: var(--text-primary);
+    font-weight: 700;
+    text-align: right;
+    max-width: 250px;
+    word-break: break-word;
+}
+
+.modal-status {
+    color: #92400e !important;
+    background: var(--accent-subtle);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.modal-progress {
+    margin-top: 22px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 850px) {
+    .warehouse-actions {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+
+    .allocation-info {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .allocate-btn {
+        justify-content: center;
+    }
+
+    .warehouse-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+}
