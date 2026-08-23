@@ -108,43 +108,6 @@
     <!-- ==========================================
          PAGE INTRO
     ========================================== -->
-
-    <!-- ====================================== -->
-<!-- CSV EXPORT -->
-<!-- ====================================== -->
-
-<section class="inventory-card csv-export-card">
-
-    <div class="section-heading">
-        <h2>Export Warehouse Data</h2>
-        <p>
-            Download your products and warehouse slot
-            information as CSV files for Excel or Google Sheets.
-        </p>
-    </div>
-
-    <div class="csv-export-buttons">
-
-        <button
-            type="button"
-            id="exportProductsCSV"
-            class="csv-btn"
-        >
-            Export Products CSV
-        </button>
-
-        <button
-            type="button"
-            id="exportSlotsCSV"
-            class="csv-btn"
-        >
-            Export Slots CSV
-        </button>
-
-    </div>
-
-</section>
-
     <section class="dashboard-intro">
 
         <span class="page-label">
@@ -159,6 +122,42 @@
             Analyze product distribution, rack volumetric
             consumption, and allocation efficiency.
         </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         CSV EXPORT CARD
+    ========================================== -->
+    <section class="csv-export-card">
+
+        <div class="csv-export-content">
+            <div class="csv-export-icon">📥</div>
+            <div class="csv-export-text">
+                <h3>Export Warehouse Data</h3>
+                <p>Download your latest inventory and rack slot records for Excel or Google Sheets.</p>
+            </div>
+        </div>
+
+        <div class="csv-export-buttons">
+
+            <button
+                type="button"
+                id="exportProductsCSV"
+                class="csv-btn csv-btn-primary"
+            >
+                <span>📦</span> Export Products CSV
+            </button>
+
+            <button
+                type="button"
+                id="exportSlotsCSV"
+                class="csv-btn csv-btn-secondary"
+            >
+                <span>🗄️</span> Export Slots CSV
+            </button>
+
+        </div>
 
     </section>
 

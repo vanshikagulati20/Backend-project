@@ -287,7 +287,6 @@ button:active {
 }
 
 .brand h1 {
-    color: var(--accent-light);
     font-size: 22px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -323,7 +322,6 @@ button:active {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
-    /* never wrap — scroll instead */
     gap: 6px;
     flex: 1;
     /* fill available space between brand and user-section */
@@ -390,16 +388,22 @@ button:active {
 }
 
 .user-section #welcomeUser {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-primary);
-    background: #ffffff;
-    padding: 6px 14px;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(245, 158, 11, 0.15);
+    padding: 5px 13px;
     border-radius: var(--radius-full);
-    border: 1px solid #fcd34d;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(245, 158, 11, 0.35);
     display: inline-flex;
     align-items: center;
+    gap: 5px;
+    letter-spacing: 0.1px;
+}
+
+.user-section #welcomeUser::before {
+    content: "👤";
+    font-size: 11px;
 }
 
 .user-section button,
@@ -407,15 +411,16 @@ button:active {
     width: auto;
     height: auto;
     margin: 0;
-    padding: 7px 16px;
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 700;
+    padding: 5px 14px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
+    letter-spacing: 0.1px;
 }
 
 .user-section button:hover,
