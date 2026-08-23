@@ -185,22 +185,26 @@ button {
     width: 100%;
     height: 46px;
     margin-top: 6px;
-    border: none;
-    border-radius: 8px;
-    background: #172033;
-    color: #ffffff;
+    border: 1px solid var(--accent-hover);
+    border-radius: var(--radius-sm);
+    background: var(--accent);
+    color: #78350f;
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: 0.2s ease;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
 }
 
 button:hover {
-    background: #263248;
+    background: var(--accent-hover);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.35);
 }
 
 button:active {
-    transform: translateY(1px);
+    transform: translateY(0);
 }
 
 
@@ -257,15 +261,16 @@ button:active {
    LOGISTICS NAVBAR
    ========================================================================== */
 .dashboard-header {
-    background-color: var(--primary);                  /* Warm off-yellow / light amber */
+    background-color: var(--primary);
     color: var(--text-primary);
     padding: 14px 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    /* always one horizontal row — never stack */
     gap: 16px;
-    border-bottom: 2px solid var(--accent);     /* Solid logistics amber line */
+    border-bottom: 2px solid var(--accent);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -277,10 +282,11 @@ button:active {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0;
+    /* never squish the logo */
 }
 
 .brand h1 {
-    color: var(--accent-light);
     font-size: 22px;
     font-weight: 800;
     letter-spacing: -0.5px;
@@ -290,25 +296,53 @@ button:active {
     margin: 0;
 }
 
-.brand h1::after {
-    content: "OPT";
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 0.8px;
-    background: var(--accent);
-    color: #78350f;
-    padding: 2px 7px;
+
+/* Brand logo SVG icon (the 4-square grid mark) */
+.brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
     border-radius: var(--radius-sm);
-    vertical-align: middle;
+    background: var(--accent);
+    color: var(--primary-dark);
+    flex-shrink: 0;
+}
+
+.brand-mark svg {
+    width: 18px;
+    height: 18px;
+    display: block;
 }
 
 /* Nav Links */
 .dashboard-nav {
+    position: relative;
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 6px;
+    flex: 1;
+    /* fill available space between brand and user-section */
+    min-width: 0;
+    /* allow flex child to shrink below content size */
+    overflow-x: auto;
+    /* horizontal scroll when links don't fit */
+    -webkit-overflow-scrolling: touch;
+    /* smooth momentum scroll on iOS */
+    scroll-behavior: smooth;
+    /* hide scrollbar track on all browsers */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+    padding: 2px 10px 2px 2px;
+}
+
+/* hide WebKit scrollbar thumb */
+.dashboard-nav::-webkit-scrollbar {
+    display: none;
 }
 
 .dashboard-nav a {
@@ -321,6 +355,9 @@ button:active {
     transition: all var(--transition-fast);
     border: 1px solid transparent;
     display: inline-block;
+    flex-shrink: 0;
+    /* never compress — forces the nav to overflow and scroll */
+    white-space: nowrap;
 }
 
 .dashboard-nav a:hover {
@@ -332,7 +369,8 @@ button:active {
 
 .dashboard-nav a.active {
     color: #78350f;
-    background-color: #fde68a;                  /* Crisp amber active badge */
+    background-color: #fde68a;
+    /* Crisp amber active badge */
     border-color: var(--accent);
     font-weight: 700;
     box-shadow: 0 1px 3px rgba(245, 158, 11, 0.2);
@@ -342,21 +380,30 @@ button:active {
 .user-section {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    /* keep welcome + logout on one line */
     gap: 12px;
+    flex-shrink: 0;
+    /* never squish the logout area */
 }
 
 .user-section #welcomeUser {
-    font-size: 13px;
+    font-size: 12.5px;
     font-weight: 600;
-    color: var(--text-primary);
-    background: #ffffff;
-    padding: 6px 14px;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(245, 158, 11, 0.15);
+    padding: 5px 13px;
     border-radius: var(--radius-full);
-    border: 1px solid #fcd34d;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(245, 158, 11, 0.35);
     display: inline-flex;
     align-items: center;
+    gap: 5px;
+    letter-spacing: 0.1px;
+}
+
+.user-section #welcomeUser::before {
+    content: "👤";
+    font-size: 11px;
 }
 
 .user-section button,
@@ -364,15 +411,16 @@ button:active {
     width: auto;
     height: auto;
     margin: 0;
-    padding: 7px 16px;
-    background: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
-    border-radius: var(--radius-sm);
-    font-size: 13px;
-    font-weight: 700;
+    padding: 5px 14px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-full);
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
     transition: all var(--transition-fast);
+    letter-spacing: 0.1px;
 }
 
 .user-section button:hover,
@@ -387,38 +435,39 @@ button:active {
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
            Dashboard container & page Intro
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-.dashboard-container{
+.dashboard-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 36px 24px 60px;
 }
 
-.dashboard-intro{
+.dashboard-intro {
     margin-bottom: 28px;
 }
 
-.dashboard-intro .page-label{
-    display : inline-block;
+.dashboard-intro .page-label {
+    display: inline-block;
     font-size: 11px;
     font-weight: 800;
     letter-spacing: 1.2px;
     color: var(--accent-text);
     background: var(--accent-subtle);
     border: 1px solid rgba(245, 158, 11, 0.3);
-    padding : 3px 9px;
+    padding: 3px 9px;
     border-radius: var(--radius-sm);
     margin-bottom: 8px;
     text-transform: uppercase;
 }
 
-.dashboard-intro h2{
+.dashboard-intro h2 {
     font-size: 28px;
     font-weight: 800;
     color: var(--text-primary);
     letter-spacing: -0.5px;
     margin-bottom: 6px;
 }
-.dashboard-intro p{
+
+.dashboard-intro p {
     color: var(--text-secondary);
     font-size: 15px;
 }
@@ -427,20 +476,21 @@ button:active {
     Statistics KPI Grid
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 
-.stats-grid{
+.stats-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
     margin-bottom: 28px;
 }
-.stat-card{
+
+.stat-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     padding: 22px 24px;
     box-shadow: var(--shadow-sm);
     transition: all var(--transition-normal);
-    position: relative; 
+    position: relative;
     overflow: hidden;
 }
 
@@ -454,15 +504,17 @@ button:active {
     background: transparent;
     transition: all var(--transition-fast);
 }
+
 .stat-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-md);
     border-color: #fde68a;
 }
 
-.stat-card::before{
-    background : var(--accent);
+.stat-card::before {
+    background: var(--accent);
 }
+
 .stat-card h3 {
     font-size: 12px;
     font-weight: 700;
@@ -471,7 +523,8 @@ button:active {
     letter-spacing: 0.8px;
     margin-bottom: 10px;
 }
-.stat-card p{
+
+.stat-card p {
     font-size: 30px;
     font-weight: 800;
     color: var(--text-primary);
@@ -482,7 +535,8 @@ button:active {
 /* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
         ANALYSIS & INVENTORY CARDS
 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-.analysis-card,.inventory-card{
+.analysis-card,
+.inventory-card {
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
@@ -491,11 +545,11 @@ button:active {
     box-shadow: var(--shadow-sm);
 }
 
-.section-heading{
+.section-heading {
     margin-bottom: 22px;
 }
 
-.section-heading h2{
+.section-heading h2 {
     font-size: 19px;
     font-weight: 700;
     color: var(--text-primary);
@@ -509,15 +563,16 @@ button:active {
     color: var(--text-secondary);
     font-size: 14px;
 }
+
 /* Space Info Tiles */
-.space-info{
+.space-info {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
     margin-bottom: 16px;
 }
 
-.space-info > div{
+.space-info>div {
     background: var(--bg-body);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
@@ -526,7 +581,8 @@ button:active {
     justify-content: space-between;
     align-items: center;
 }
-.space-info span{
+
+.space-info span {
     color: var(--text-secondary);
     font-size: 14px;
     font-weight: 600;
@@ -540,23 +596,23 @@ button:active {
 }
 
 #usedSpace {
-    color: #b45309; 
+    color: #b45309;
 }
 
 #freeSpace {
     color: #047857;
 }
 
-.progress-container{
+.progress-container {
     width: 100%;
     height: 14px;
     background: var(--border-subtle);
     border-radius: var(--radius-full);
-    overflow: hidden; 
+    overflow: hidden;
     padding: 2px;
 }
 
-.progress-bar{
+.progress-bar {
     height: 100%;
     width: 0%;
     background: linear-gradient(90deg, #f59e0b, #d97706);
@@ -586,91 +642,27 @@ button:active {
     border-color: #cbd5e1;
     transform: translateX(2px);
 }
-.inventory-row strong{
+
+.inventory-row strong {
     color: var(--text-primary);
     font-weight: 700;
 }
 
 .empty-message {
-    text-align: center; 
+    text-align: center;
     color: var(--text-muted);
     padding: 30px;
     font-size: 14px;
 }
-/* 
-/* Responsive 
-@media (max-width: 800px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    .dashboard-header {
-        padding: 18px 20px;
-    }
-    .dashboard-container {
-        padding: 30px 18px;
-    }
-}
 
 
-@media (max-width: 550px) {
-
-    .stats-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dashboard-header {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .inventory-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-    }
-} */
-/* 
-.dashboard-nav {
-    display: flex;
-    gap: 28px;
-}
-
-.dashboard-nav a {
-    color: #d0d5dd;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    transition: 0.2s ease;
-}
-
-.dashboard-nav a:hover {
-    color: #f59e0b;
-}
-
-.dashboard-nav a.active {
-    color: #f59e0b;
-} */ 
- /*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+/*>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
    RESPONSIVE LAYOUT & MOBILE NAVBAR
   >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
 @media (max-width: 900px) {
     .dashboard-header {
-        padding: 14px 20px;
-        justify-content: center;
-        text-align: center;
-    }
-
-    .brand {
-        width: 100%;
-        justify-content: center;
-    }
-
-    .dashboard-nav {
-        justify-content: center;
-    }
-
-    .user-section {
-        width: 100%;
-        justify-content: center;
+        padding: 12px 18px;
+        gap: 12px;
     }
 
     .stats-grid {
@@ -678,19 +670,64 @@ button:active {
     }
 }
 
-@media (max-width: 580px) {
-    .stats-grid {
-        grid-template-columns: 1fr;
+@media (max-width: 680px) {
+    .dashboard-header {
+        flex-wrap: wrap;
+        padding: 10px 14px;
+        gap: 6px 10px;
     }
 
-    .dashboard-header {
-        padding: 12px 14px;
-        gap: 12px;
+    /* Top Row: Brand on left, Logout on right */
+    .brand {
+        order: 1;
+    }
+
+    .brand h1 {
+        font-size: 18px;
+    }
+
+    .user-section {
+        order: 2;
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+    }
+
+    .user-section button,
+    .user-section #logoutBtn {
+        padding: 4px 11px;
+        font-size: 11.5px;
+    }
+
+    /* Second Row: Welcome text comes down to its own subtle line */
+    .user-section #welcomeUser {
+        order: 3;
+        width: 100%;
+        flex-basis: 100%;
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.72);
+        padding: 2px 0 4px;
+        margin: 0;
+    }
+
+    /* Third Row: Full-width scrollable navigation tabs */
+    .dashboard-nav {
+        order: 4;
+        width: 100%;
+        flex: 0 0 100%;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 6px 0 2px;
+        margin-top: 2px;
     }
 
     .dashboard-nav a {
-        padding: 6px 10px;
-        font-size: 13px;
+        padding: 5px 10px;
+        font-size: 12.5px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
     }
 
     .inventory-row {

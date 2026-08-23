@@ -5,24 +5,15 @@
 
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Storvia - Smart Warehouse Management</title>
 
     <!-- EXISTING PROJECT CSS -->
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 
     <!-- HOME PAGE ONLY -->
-    <link
-        rel="stylesheet"
-        href="home.css"
-    >
+    <link rel="stylesheet" href="home.css">
 
 </head>
 
@@ -30,287 +21,344 @@
 <body>
 
 
-<!-- ==========================================
+    <!-- ==========================================
      HEADER
 ========================================== -->
 
-<header class="dashboard-header">
+    <header class="dashboard-header">
 
-    <div class="brand">
-
-        <h1>
-            Storvia
-        </h1>
-
-    </div>
-
-
-    <nav class="dashboard-nav">
-
-        <a
-            href="index.html"
-            class="active"
-        >
-            Home
-        </a>
-
-        <a href="dashboard.html">
-            Dashboard
-        </a>
-
-        <a href="product.html">
-            Products
-        </a>
-
-        <a href="inventory.html">
-            Add Slots
-        </a>
-
-        <a href="warehouse.html">
-            Warehouse
-        </a>
-
-        <a href="analytics.html">
-            Analytics
-        </a>
-
-    </nav>
+        <div class="brand">
+            <span class="brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="3" y="3" width="8" height="8" rx="1.5" fill="currentColor" />
+                    <rect x="13" y="3" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.55" />
+                    <rect x="3" y="13" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.55" />
+                    <rect x="13" y="13" width="8" height="8" rx="1.5" fill="currentColor" />
+                </svg>
+            </span>
+            <h1>Storvia</h1>
+        </div>
 
 
-    <div class="user-section">
+        <nav class="dashboard-nav">
 
-        <span id="welcomeUser">
-            Welcome
-        </span>
+            <a href="index.html" class="active">
+                Home
+            </a>
 
-        <button id="logoutBtn">
-            Logout
-        </button>
+            <a href="dashboard.html">
+                Dashboard
+            </a>
 
-    </div>
+            <a href="product.html">
+                Products
+            </a>
 
-</header>
+            <a href="inventory.html">
+                Add Slots
+            </a>
+
+            <a href="warehouse.html">
+                Warehouse
+            </a>
+
+            <a href="analytics.html">
+                Analytics
+            </a>
+
+        </nav>
+
+        <div class="user-section">
+
+            <span id="welcomeUser">
+                Welcome
+            </span>
+
+            <button id="logoutBtn">
+                Logout
+            </button>
+
+        </div>
+    </header>
 
 
 
-<!-- ==========================================
+    <!-- ==========================================
      MAIN HOME PAGE
-========================================== -->
+    ========================================== -->
 
-<main class="dashboard-container">
+    <main class="dashboard-container">
 
 
-    <!-- ======================================
+        <!-- ======================================
          HERO
-    ======================================= -->
+        ======================================= -->
 
-    <section class="home-hero">
-
-
-        <div class="home-hero-content">
-
-            <span class="page-label">
-                SMART WAREHOUSE MANAGEMENT
-            </span>
+        <section class="home-hero">
 
 
-            <h2>
-                Manage Your Warehouse
-                <span>Smarter.</span>
-            </h2>
+            <div class="home-hero-content">
+
+                <span class="page-label">
+                    SMART WAREHOUSE MANAGEMENT
+                </span>
 
 
-            <p>
-                Storvia helps you manage products, optimize
-                warehouse space, organize storage slots, and
-                monitor your inventory from one place.
-            </p>
+                <h2>
+                    Manage Your Warehouse
+                    <span>Smarter.</span>
+                </h2>
 
 
-            <div class="home-actions">
+                <p>
+                    Storvia helps you manage products,
+                     optimize warehouse space, 
+                     organize storage slots, 
+                     and monitor your inventory in one unified platform.
+                </p>
 
-                <button
-                    type="button"
-                    id="dashboardBtn"
-                    class="home-primary-btn"
-                >
-                    Go to Dashboard
-                    <span>→</span>
-                </button>
+                <div class="home-actions">
+                    <button type="button" id="dashboardBtn" class="home-primary-btn">
+                        Go to Dashboard
+                        <span>→</span>
+                    </button>
+
+                    <button type="button" id="productBtn" class="home-secondary-btn">
+                        Manage Products
+                    </button>
+                </div>
+            </div>
 
 
-                <button
-                    type="button"
-                    id="productBtn"
-                    class="home-secondary-btn"
-                >
-                    Manage Products
-                </button>
+
+            <!-- LARGE WAREHOUSE IMAGE -->
+
+            <div class="home-hero-image">
+
+                <img src="https://www.softwaresuggest.com/blog/wp-content/uploads/2024/03/features-of-warehouse-management-system.jpg"
+                    alt="Modern warehouse storage facility">
 
             </div>
 
-        </div>
+        </section>
 
 
 
-        <!-- LARGE WAREHOUSE IMAGE -->
-
-        <div class="home-hero-image">
-
-            <img
-                src="https://www.softwaresuggest.com/blog/wp-content/uploads/2024/03/features-of-warehouse-management-system.jpg"
-                alt="Modern warehouse storage facility"
-            >
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ======================================
+        <!-- ======================================
          INTRO
-    ======================================= -->
+        ======================================= -->
 
-    <section class="dashboard-intro home-intro">
-
-        <span class="page-label">
-            WHAT STORVIA OFFERS
-        </span>
-
-        <h2>
-            Everything you need to manage storage.
-        </h2>
-
-        <p>
-            Keep your warehouse organized, track inventory,
-            and make better use of available storage space.
-        </p>
-
-    </section>
-
-
-
-    <!-- ======================================
-         FEATURE CARDS
-    ======================================= -->
-
-    <section class="home-features">
-
-
-        <div class="inventory-card home-feature-card">
-
-            <div class="home-feature-icon">
-                📦
-            </div>
-
-            <div class="section-heading">
-
-                <h2>
-                    Product Management
-                </h2>
-
-                <p>
-                    Add, update, search and manage all
-                    products stored in your warehouse.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="inventory-card home-feature-card">
-
-            <div class="home-feature-icon">
-                🏭
-            </div>
-
-            <div class="section-heading">
-
-                <h2>
-                    Warehouse Storage
-                </h2>
-
-                <p>
-                    Monitor storage slots and organize
-                    products according to available capacity.
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <div class="inventory-card home-feature-card">
-
-            <div class="home-feature-icon">
-                📊
-            </div>
-
-            <div class="section-heading">
-
-                <h2>
-                    Inventory Analytics
-                </h2>
-
-                <p>
-                    Understand warehouse utilization and
-                    keep track of your inventory activity.
-                </p>
-
-            </div>
-
-        </div>
-
-
-    </section>
-
-
-
-    <!-- ======================================
-         CTA
-    ======================================= -->
-
-    <section class="home-cta">
-
-        <div>
+        <section class="dashboard-intro home-intro">
 
             <span class="page-label">
-                READY TO GET STARTED?
+                WHAT STORVIA OFFERS
             </span>
 
             <h2>
-                Take control of your warehouse.
+                Everything you need to manage storage.
             </h2>
 
             <p>
-                Access your Storvia dashboard and start
-                managing your warehouse.
+                Keep your warehouse organized, track inventory, and make better use of available storage space.
             </p>
+
+        </section>
+
+
+
+        <!-- ======================================
+             FEATURE CARDS
+        ======================================= -->
+
+        <section class="home-features">
+
+
+            <div class="inventory-card home-feature-card">
+
+                <div class="home-feature-icon">
+                    📦
+                </div>
+
+                <div class="section-heading">
+
+                    <h2>
+                        Product Management
+                    </h2>
+
+                    <p>
+                        Add, update, search and manage all SKU items stored in your warehouse with custom dimensions.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="inventory-card home-feature-card">
+
+                <div class="home-feature-icon">
+                    🏭
+                </div>
+
+                <div class="section-heading">
+
+                    <h2>
+                        Warehouse Storage
+                    </h2>
+
+                    <p>
+                        Monitor physical storage slots and organize products efficiently according to volumetric capacity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+
+            <div class="inventory-card home-feature-card">
+
+                <div class="home-feature-icon">
+                    📊
+                </div>
+
+                <div class="section-heading">
+
+                    <h2>
+                        Inventory Analytics
+                    </h2>
+
+                    <p>
+                        Understand warehouse utilization and
+                        keep track of your inventory activity.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ======================================
+             CTA BANNER
+        ======================================= -->
+
+        <section class="home-cta">
+            <div class="home-cta-content">
+                <span class="page-label">
+                    READY TO GET STARTED?
+                </span>
+
+                <h2>
+                    Take control of your warehouse.
+                </h2>
+
+                <p>
+                    Access your Storvia dashboard and start managing your warehouse storage today.
+                </p>
+            </div>
+
+            <button type="button" id="ctaDashboardBtn" class="home-primary-btn">
+                Open Dashboard
+                <span>→</span>
+            </button>
+        </section>
+
+
+    </main>
+
+    <!-- ==========================================
+         PROFESSIONAL FOOTER
+    ========================================== -->
+    <footer class="home-footer">
+        <div class="dashboard-container footer-inner">
+
+            <div class="footer-col footer-brand-col">
+                <div class="brand">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="8" height="8" rx="1.5" fill="currentColor" />
+                            <rect x="13" y="3" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.55" />
+                            <rect x="3" y="13" width="8" height="8" rx="1.5" fill="currentColor" opacity="0.55" />
+                            <rect x="13" y="13" width="8" height="8" rx="1.5" fill="currentColor" />
+                        </svg>
+                    </span>
+                    <h1>Storvia</h1>
+                </div>
+
+                <p class="footer-desc">
+                    Smart warehouse slot allocation and packing optimization. Designed for fast inventory telemetry and organized storage space.
+                </p>
+
+                <div class="footer-status-pill">
+                    <span class="status-dot"></span>
+                    <span>System Operational</span>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>Platform Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="dashBoard.html">Dashboard</a></li>
+                    <li><a href="product.html">Products Catalog</a></li>
+                    <li><a href="inventory.html">Add Storage Slots</a></li>
+                    <li><a href="warehouse.html">Warehouse Layout</a></li>
+                    <li><a href="analytics.html">Analytics & Reports</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Core Capabilities</h4>
+                <ul class="footer-links">
+                    <li><a href="warehouse.html">FFD Packing Engine</a></li>
+                    <li><a href="product.html">Custom Dimensions (cm³)</a></li>
+                    <li><a href="dashBoard.html">Space Utilization Gauges</a></li>
+                    <li><a href="analytics.html">RFC-4180 CSV Export</a></li>
+                    <li><a href="login.html">User Authentication</a></li>
+                </ul>
+            </div>
 
         </div>
 
+        <div class="footer-bottom">
+            <div class="dashboard-container footer-bottom-inner">
+                <p>&copy; 2026 Storvia Warehouse Management System. All rights reserved.</p>
+                <p class="footer-tech">Vanilla HTML5 · Modern CSS3 · JavaScript</p>
+            </div>
+        </div>
+    </footer>
 
-        <button
-            type="button"
-            id="ctaDashboardBtn"
-            class="home-primary-btn"
-        >
-            Open Dashboard
-            <span>→</span>
-        </button>
-
-    </section>
-
-
-</main>
-
-
-
-<script src="home.js"></script>
+    <script src="home.js"></script>
+    <script>
+        // Center the active nav link smoothly
+        (function () {
+            function centerActiveNavLink() {
+                var nav = document.querySelector('.dashboard-nav');
+                var active = nav && nav.querySelector('a.active');
+                if (nav && active) {
+                    var navRect = nav.getBoundingClientRect();
+                    var activeRect = active.getBoundingClientRect();
+                    var relativeLeft = activeRect.left - navRect.left + nav.scrollLeft;
+                    var targetScroll = relativeLeft - (nav.clientWidth - active.clientWidth) / 2;
+                    nav.style.scrollBehavior = 'auto';
+                    nav.scrollLeft = Math.max(0, targetScroll);
+                    requestAnimationFrame(function () {
+                        nav.style.scrollBehavior = '';
+                    });
+                }
+            }
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                centerActiveNavLink();
+            } else {
+                document.addEventListener('DOMContentLoaded', centerActiveNavLink);
+            }
+            window.addEventListener('load', centerActiveNavLink);
+        })();
+    </script>
 
 </body>
 
