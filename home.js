@@ -17,7 +17,7 @@ if (dashboardBtn) {
         function () {
 
             window.location.href =
-                "dashboard.html";
+                "dashBoard.html";
 
         }
     );
@@ -32,7 +32,7 @@ if (ctaDashboardBtn) {
         function () {
 
             window.location.href =
-                "dashboard.html";
+                "dashBoard.html";
 
         }
     );
@@ -69,40 +69,30 @@ if (productBtn) {
 
 (function () {
 
-    const savedUser =
-        localStorage.getItem("currentuser");
-
+    const savedUser = localStorage.getItem("currentuser");
+    const welcomeEl = document.getElementById("welcomeUser");
+    const logoutBtnEl = document.getElementById("logoutBtn");
 
     if (savedUser) {
 
+        // User is logged in — show name and logout button
         try {
-
-            const user =
-                JSON.parse(savedUser);
-
-
-            const welcomeEl =
-                document.getElementById(
-                    "welcomeUser"
-                );
-
-
-            if (welcomeEl) {
-
-                welcomeEl.innerText =
-                    "Welcome, " + user.name;
-
-            }
-
+            const user = JSON.parse(savedUser);
+            if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+        } catch (error) {
+            console.error("Invalid user data", error);
         }
 
-        catch (error) {
+    } else {
 
-            console.error(
-                "Invalid user data",
-                error
-            );
+        // User is NOT logged in — hide welcome text, change button to Login
+        if (welcomeEl) welcomeEl.style.display = "none";
 
+        if (logoutBtnEl) {
+            logoutBtnEl.innerText = "Login";
+            logoutBtnEl.onclick = function () {
+                window.location.href = "login.html";
+            };
         }
 
     }
