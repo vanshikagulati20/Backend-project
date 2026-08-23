@@ -1,4 +1,3 @@
-
 // ==========================================
 // DASHBOARD BUTTON
 // ==========================================
@@ -12,30 +11,22 @@ const ctaDashboardBtn =
 
 if (dashboardBtn) {
 
-    dashboardBtn.addEventListener(
-        "click",
-        function () {
+    dashboardBtn.addEventListener("click", function () {
 
-            window.location.href =
-                "dashBoard.html";
+        window.location.href = "dashBoard.html";
 
-        }
-    );
+    });
 
 }
 
 
 if (ctaDashboardBtn) {
 
-    ctaDashboardBtn.addEventListener(
-        "click",
-        function () {
+    ctaDashboardBtn.addEventListener("click", function () {
 
-            window.location.href =
-                "dashBoard.html";
+        window.location.href = "dashBoard.html";
 
-        }
-    );
+    });
 
 }
 
@@ -50,78 +41,107 @@ const productBtn =
 
 if (productBtn) {
 
-    productBtn.addEventListener(
-        "click",
-        function () {
+    productBtn.addEventListener("click", function () {
 
-            window.location.href =
-                "product.html";
+        window.location.href = "product.html";
 
-        }
-    );
+    });
 
 }
 
 
 // ==========================================
-// HEADER USER GREETING
+// HEADER USER / LOGIN / LOGOUT
 // ==========================================
 
 (function () {
 
-    const savedUser = localStorage.getItem("currentuser");
-    const welcomeEl = document.getElementById("welcomeUser");
-    const logoutBtnEl = document.getElementById("logoutBtn");
+    const savedUser =
+        localStorage.getItem("currentuser");
+
+    const welcomeEl =
+        document.getElementById("welcomeUser");
+
+    const logoutBtnEl =
+        document.getElementById("logoutBtn");
+
+
+    if (!logoutBtnEl) {
+        return;
+    }
+
+
+    // ==========================================
+    // USER IS LOGGED IN
+    // ==========================================
 
     if (savedUser) {
 
-        // User is logged in — show name and logout button
         try {
-            const user = JSON.parse(savedUser);
-            if (welcomeEl) welcomeEl.innerText = "Welcome, " + user.name;
+
+            const user =
+                JSON.parse(savedUser);
+
+            if (welcomeEl) {
+
+                welcomeEl.style.display = "inline";
+
+                welcomeEl.innerText =
+                    "Welcome, " + user.name;
+
+            }
+
         } catch (error) {
-            console.error("Invalid user data", error);
+
+            console.error(
+                "Invalid user data",
+                error
+            );
+
         }
 
-    } else {
 
-        // User is NOT logged in — hide welcome text, change button to Login
-        if (welcomeEl) welcomeEl.style.display = "none";
+        // Show Logout button
+        logoutBtnEl.innerText = "Logout";
 
-        if (logoutBtnEl) {
-            logoutBtnEl.innerText = "Login";
-            logoutBtnEl.onclick = function () {
-                window.location.href = "login.html";
-            };
+
+        // Logout action
+        logoutBtnEl.onclick = function () {
+
+            localStorage.removeItem("currentuser");
+
+            // Go to Home Page
+            window.location.href = "index.html";
+
+        };
+
+
+    }
+
+    // ==========================================
+    // USER IS NOT LOGGED IN
+    // ==========================================
+
+    else {
+
+        if (welcomeEl) {
+
+            welcomeEl.style.display = "none";
+
         }
+
+
+        // Change button to Login
+        logoutBtnEl.innerText = "Login";
+
+
+        // Login action
+        logoutBtnEl.onclick = function () {
+
+            window.location.href = "login.html";
+
+        };
 
     }
 
 })();
-
-
-// ==========================================
-// LOGOUT
-// ==========================================
-
-const logoutBtn =
-    document.getElementById("logoutBtn");
-
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        function () {
-
-            localStorage.removeItem(
-                "currentuser"
-            );
-
-            window.location.href =
-                "login.html";
-
-        }
-    );
-
-}
