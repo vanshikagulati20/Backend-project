@@ -1,7 +1,9 @@
 
-const bcrypt = require("bcryptjs");
 const User = require("./models/User");
+const Slot = require("./models/Slots");
 
+
+const bcrypt = require("bcryptjs");
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -106,6 +108,68 @@ app.post("/api/signup", async (req, res) => {
 
 
 
+// -- login api route
+
+
+/* Login API */
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required"
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const user = await User.findOne({
+      email: normalizedEmail
+    });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error("Login error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to login right now"
+    });
+  }
+});
+
+
+
+
 // Health route
 app.get("/api/health", (req, res) => {
   res.json({
@@ -125,23 +189,120 @@ app.post("/api/warehouses", (req, res) => {
   });
 });
 
-// Temporary slots testing route
-app.post("/api/slots", (req, res) => {
-  const { slots } = req.body;
+// // Temporary slots testing route
+// app.post("/api/slots", (req, res) => {
+//   const { slots } = req.body;
 
-  if (!Array.isArray(slots) || slots.length === 0) {
-    return res.status(400).json({
+//   if (!Array.isArray(slots) || slots.length === 0) {
+//     return res.status(400).json({
+//       success: false,
+//       message: "Please provide at least one slot"
+//     });
+//   }
+
+//   console.log("Slots received from Storvia:", slots.length);
+
+//   res.status(201).json({
+//     success: true,
+//     message: "Slots received successfully",
+//     count: slots.length,
+//     data: slots
+//   });
+// });
+
+
+
+
+
+
+// Create and save storage slots in MongoDB
+app.post("/api/slots", async (req, res) => {
+  try {
+    const { slotType, length, breadth, height, numberOfSlots, userEmail } =
+      req.body;
+
+    if (!slotType || !["Small", "Medium", "Large"].includes(slotType)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a valid slot type"
+      });
+    }
+
+    if (
+      typeof userEmail !== "string" ||
+      !userEmail.trim() ||
+      !Number.isFinite(length) ||
+      !Number.isFinite(breadth) ||
+      !Number.isFinite(height) ||
+      length <= 0 ||
+      breadth <= 0 ||
+      height <= 0 ||
+      !Number.isInteger(numberOfSlots) ||
+      numberOfSlots < 1
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide valid slot details"
+      });
+    }
+
+    const normalizedEmail = userEmail.trim().toLowerCase();
+
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    const prefix = {
+      Large: "A",
+      Medium: "B",
+      Small: "C"
+    }[slotType];
+
+    const existingCount = await Slot.countDocuments({
+      userEmail: normalizedEmail,
+      size: slotType
+    });
+
+    const volume = length * breadth * height;
+    const slotsToCreate = [];
+
+    for (let i = 1; i <= numberOfSlots; i++) {
+      const slotNumber = String(existingCount + i).padStart(2, "0");
+
+      slotsToCreate.push({
+        id: `${prefix}-${slotNumber}`,
+        size: slotType,
+        userEmail: normalizedEmail,
+        length,
+        breadth,
+        height,
+        volume,
+        usedVolume: 0,
+        productId: null,
+        productName: null,
+        productQuantity: 0
+      });
+    }
+
+    const savedSlots = await Slot.insertMany(slotsToCreate);
+
+    return res.status(201).json({
+      success: true,
+      message: `${savedSlots.length} ${slotType} slot(s) added successfully`,
+      count: savedSlots.length,
+      data: savedSlots
+    });
+  } catch (error) {
+    console.error("Save slots error:", error.message);
+
+    return res.status(500).json({
       success: false,
-      message: "Please provide at least one slot"
+      message: "Unable to save slots"
     });
   }
-
-  console.log("Slots received from Storvia:", slots.length);
-
-  res.status(201).json({
-    success: true,
-    message: "Slots received successfully",
-    count: slots.length,
-    data: slots
-  });
 });

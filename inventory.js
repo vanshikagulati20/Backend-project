@@ -1,460 +1,128 @@
-const slotForm =
-    document.getElementById("slotForm");
 
-const slotType =
-    document.getElementById("slotType");
+const slotForm = document.getElementById("slotForm");
 
-const slotLength =
-    document.getElementById("slotLength");
+const slotType = document.getElementById("slotType");
+const slotLength = document.getElementById("slotLength");
+const slotBreadth = document.getElementById("slotBreadth");
+const slotHeight = document.getElementById("slotHeight");
+const slotCount = document.getElementById("slotCount");
 
-const slotBreadth =
-    document.getElementById("slotBreadth");
-
-const slotHeight =
-    document.getElementById("slotHeight");
-
-const slotCount =
-    document.getElementById("slotCount");
-
-
-// ==========================================
-// STORAGE
-// ==========================================
-
-const SLOT_KEY =
-    "warehouseSlots";
-
-const CURRENT_USER_KEY =
-    "currentuser";
-
-
-// ==========================================
-// SLOT PREFIX
-// ==========================================
-
-const SLOT_PREFIX = {
-
-    Large: "A",
-
-    Medium: "B",
-
-    Small: "C",
-
-    Custom: "D"
-
-};
-
-
-// ==========================================
-// GET CURRENT USER
-// ==========================================
+const CURRENT_USER_KEY = "currentuser";
 
 function getCurrentUser() {
+  const savedUser = localStorage.getItem(CURRENT_USER_KEY);
 
-    const savedUser =
-        localStorage.getItem(
-            CURRENT_USER_KEY
-        );
+  if (!savedUser) {
+    window.location.href = "login.html";
+    return null;
+  }
 
+  try {
+    const user = JSON.parse(savedUser);
 
-    if (!savedUser) {
-
-        window.location.href =
-            "login.html";
-
-        return null;
-
+    if (!user || !user.email) {
+      window.location.href = "login.html";
+      return null;
     }
 
-
-    try {
-
-        return JSON.parse(
-            savedUser
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid current user data",
-            error
-        );
-
-        window.location.href =
-            "login.html";
-
-        return null;
-
-    }
-
+    return user;
+  } catch (error) {
+    console.error("Invalid current user data:", error);
+    window.location.href = "login.html";
+    return null;
+  }
 }
 
+slotForm.addEventListener("submit", async function (event) {
+  event.preventDefault();
 
-// ==========================================
-// GET SLOTS
-// ==========================================
+  const currentUser = getCurrentUser();
 
-function getSlots() {
+  if (!currentUser) {
+    return;
+  }
 
-    const savedSlots =
-        localStorage.getItem(
-            SLOT_KEY
-        );
+  const selectedType = slotType.value;
+  const length = Number(slotLength.value);
+  const breadth = Number(slotBreadth.value);
+  const height = Number(slotHeight.value);
+  const numberOfSlots = Number(slotCount.value);
 
+  if (!["Small", "Medium", "Large"].includes(selectedType)) {
+    alert("Please select a valid slot type.");
+    return;
+  }
 
-    if (!savedSlots) {
+  if (
+    !Number.isFinite(length) ||
+    !Number.isFinite(breadth) ||
+    !Number.isFinite(height) ||
+    length <= 0 ||
+    breadth <= 0 ||
+    height <= 0
+  ) {
+    alert("Length, breadth and height must be greater than 0.");
+    return;
+  }
 
-        return [];
+  if (!Number.isInteger(numberOfSlots) || numberOfSlots <= 0) {
+    alert("Number of slots must be a positive whole number.");
+    return;
+  }
 
+  const volume = length * breadth * height;
+
+  const submitButton = slotForm.querySelector(
+    'button[type="submit"]'
+  );
+
+  submitButton.disabled = true;
+
+  try {
+    const response = await fetch("http://localhost:5000/api/slots", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        slotType: selectedType,
+        length,
+        breadth,
+        height,
+        numberOfSlots,
+        userEmail: currentUser.email
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.message || "Unable to add slots.");
+      return;
     }
 
-
-    try {
-
-        return JSON.parse(
-            savedSlots
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid warehouse slot data",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-// ==========================================
-// SAVE SLOTS
-// ==========================================
-
-function saveSlots(slots) {
-
-    localStorage.setItem(
-
-        SLOT_KEY,
-
-        JSON.stringify(slots)
-
+    alert(
+      result.count +
+      " " +
+      selectedType +
+      " slot(s) added successfully.\n\n" +
+      "Slot dimensions: " +
+      length +
+      " × " +
+      breadth +
+      " × " +
+      height +
+      " cm\n\n" +
+      "Volume per slot: " +
+      volume +
+      " cm³"
     );
 
-}
-
-
-// ==========================================
-// SUBMIT SLOT FORM
-// ==========================================
-
-slotForm.addEventListener(
-
-    "submit",
-
-    function (event) {
-
-        event.preventDefault();
-
-
-        // ==================================
-        // CURRENT USER
-        // ==================================
-
-        const currentUser =
-            getCurrentUser();
-
-
-        if (!currentUser) {
-
-            return;
-
-        }
-
-
-        // ==================================
-        // GET FORM VALUES
-        // ==================================
-
-        const selectedType =
-            slotType.value;
-
-
-        const length =
-            Number(
-                slotLength.value
-            );
-
-
-        const breadth =
-            Number(
-                slotBreadth.value
-            );
-
-
-        const height =
-            Number(
-                slotHeight.value
-            );
-
-
-        const numberOfSlots =
-            Number(
-                slotCount.value
-            );
-
-
-        // ==================================
-        // VALIDATION
-        // ==================================
-
-        if (
-            selectedType === ""
-        ) {
-
-            alert(
-                "Please select a slot type."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            length <= 0 ||
-            breadth <= 0 ||
-            height <= 0
-        ) {
-
-            alert(
-                "Length, breadth and height must be greater than 0."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            numberOfSlots <= 0
-        ) {
-
-            alert(
-                "Number of slots must be greater than 0."
-            );
-
-            return;
-
-        }
-
-
-        // ==================================
-        // CALCULATE VOLUME
-        // ==================================
-
-        const volume =
-            length *
-            breadth *
-            height;
-
-
-        // ==================================
-        // GET EXISTING SLOTS
-        // ==================================
-
-        const slots =
-            getSlots();
-
-
-        // ==================================
-        // SLOT PREFIX
-        // ==================================
-
-        const prefix =
-            SLOT_PREFIX[selectedType];
-
-
-        // ==================================
-        // FIND EXISTING COUNT
-        //
-        // IMPORTANT:
-        // Count only this user's slots.
-        // ==================================
-
-        let existingCount = 0;
-
-
-        slots.forEach(
-            function (slot) {
-
-                if (
-
-                    slot.size ===
-                    selectedType
-
-                    &&
-
-                    slot.userEmail ===
-                    currentUser.email
-
-                ) {
-
-                    existingCount++;
-
-                }
-
-            }
-        );
-
-
-        // ==================================
-        // CREATE SLOTS
-        // ==================================
-
-        for (
-            let i = 1;
-            i <= numberOfSlots;
-            i++
-        ) {
-
-
-            const slotNumber =
-                existingCount + i;
-
-
-            const formattedNumber =
-                String(
-                    slotNumber
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            const newSlot = {
-
-                // --------------------------
-                // BASIC INFORMATION
-                // --------------------------
-
-                id:
-                    prefix +
-                    "-" +
-                    formattedNumber,
-
-                size:
-                    selectedType,
-
-
-                // --------------------------
-                // OWNER
-                // --------------------------
-
-                userEmail:
-                    currentUser.email,
-
-
-                // --------------------------
-                // PHYSICAL DIMENSIONS
-                // --------------------------
-
-                length:
-                    length,
-
-                breadth:
-                    breadth,
-
-                height:
-                    height,
-
-
-                // --------------------------
-                // TOTAL VOLUME
-                // --------------------------
-
-                volume:
-                    volume,
-
-
-                // --------------------------
-                // OCCUPANCY
-                // --------------------------
-
-                usedVolume:
-                    0,
-
-
-                // --------------------------
-                // PRODUCT INFORMATION
-                // --------------------------
-
-                productId:
-                    null,
-
-                productName:
-                    null,
-
-                productQuantity:
-                    0
-
-            };
-
-
-            slots.push(
-                newSlot
-            );
-
-        }
-
-
-        // ==================================
-        // SAVE
-        // ==================================
-
-        saveSlots(
-            slots
-        );
-
-
-        // ==================================
-        // SUCCESS MESSAGE
-        // ==================================
-
-        alert(
-
-            numberOfSlots +
-            " " +
-            selectedType +
-            " slot(s) added successfully.\n\n" +
-
-            "Slot dimensions: " +
-            length +
-            " × " +
-            breadth +
-            " × " +
-            height +
-            " cm\n\n" +
-
-            "Volume per slot: " +
-            volume +
-            " cm³"
-
-        );
-
-
-        // ==================================
-        // RESET FORM
-        // ==================================
-
-        slotForm.reset();
-
-    }
-
-);
+    slotForm.reset();
+  } catch (error) {
+    console.error("Save slots request failed:", error);
+    alert("Cannot connect to server. Please try again.");
+  } finally {
+    submitButton.disabled = false;
+  }
+});

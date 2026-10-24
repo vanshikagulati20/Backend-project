@@ -62,85 +62,61 @@
 </body>
 
 
+
 <script>
-    let form=document.getElementById("logInForm");
+  const warning = document.getElementById("warning");
 
-    let warning=document.getElementById("warning")
+  function validateLogin(email, password) {
+    if (email.trim() === "") return "Email is required";
+    if (password.trim() === "") return "Password is required";
+    return null;
+  }
 
-   
-    function validateSignup(email, password) {
+  async function submitLogin(event) {
+    event.preventDefault();
+    warning.innerText = "";
 
-           
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
 
-            if (email.trim() === "") {
+    const validationMessage = validateLogin(email, password);
 
-                return "Email is required";
-            }
-            if(password.trim()===""){
-                return "password is required";
-            }
-
-
-            return null;
+    if (validationMessage) {
+      warning.style.color = "red";
+      warning.innerText = validationMessage;
+      return;
     }
 
-    function submitLogin(e){
+    try {
+      const response = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password: password
+        })
+      });
 
-        e.preventDefault();
+      const result = await response.json();
 
-        warning.innerText="";
+      if (!response.ok) {
+        warning.style.color = "red";
+        warning.innerText = result.message;
+        return;
+      }
 
-    
+      localStorage.setItem("currentuser", JSON.stringify(result.user));
+      window.location.href = "dashBoard.html";
 
-        let email=document.getElementById("email")
-
-        let password=document.getElementById("password")
-
-       
-
-        let warning_text=validateSignup(email.value,password.value);
-
-        if(warning_text!=null){
-
-            warning.innerText=warning_text;
-
-            warning.style.color="red";
-
-            return;
-        }
-
-        let users=JSON.parse(localStorage.getItem("users")) || [];
-
-        let user=users.find((cur)=>email.value.trim().toLowerCase()==cur.email);
-
-        if(!user){
-
-                warning.style.color="red";
-                warning.innerText="* No User Exists with this email";
-                return;
-        }
-
-        if(user.password!==password.value){
-            warning.style.color="red";
-            warning.innerText="* Your password is incorrect";
-            return;
-        }
-
-   
-        let currentUser=user;
-
-        localStorage.setItem("currentuser",JSON.stringify(currentUser));
-
-        window.location.href="dashBoard.html"
-
-        }
-        
-
-       
-
-
-
-        
-    
+    } catch (error) {
+      warning.style.color = "red";
+      warning.innerText = "Cannot connect to server. Please try again.";
+      console.error("Login request failed:", error);
+    }
+  }
 </script>
+
+
 </html>
