@@ -1,0 +1,152 @@
+
+/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+   WAREHOUSE ALERTS CARD
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
+.alerts-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* ==========================================================================
+   ALERT CONTAINER & LIST
+   ========================================================================== */
+#alertsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+/* ==========================================================================
+   BASE ALERT ITEM
+   ========================================================================== */
+.warehouse-alert {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    transition: all var(--transition-fast);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.warehouse-alert:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+/* ==========================================================================
+   ALERT SEVERITY VARIANTS
+   ========================================================================== */
+
+/* Warning (Low Stock / Partial Capacity) */
+.alert-warning {
+    background: var(--status-warning-bg);
+    border-color: #fde68a;
+    border-left: 5px solid var(--accent);
+}
+
+.alert-warning .alert-content strong {
+    color: #92400e;
+}
+
+.alert-warning .alert-icon {
+    background: #fde68a;
+    color: #92400e;
+}
+
+/* Danger (Full Slots / Out of Stock) */
+.alert-danger {
+    background: var(--status-danger-bg);
+    border-color: #fecaca;
+    border-left: 5px solid var(--status-danger);
+}
+
+.alert-danger .alert-content strong {
+    color: #991b1b;
+}
+
+.alert-danger .alert-icon {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Info (General Warehouse Updates) */
+.alert-info {
+    background: var(--status-info-bg);
+    border-color: #bae6fd;
+    border-left: 5px solid var(--status-info);
+}
+
+.alert-info .alert-content strong {
+    color: #075985;
+}
+
+.alert-info .alert-icon {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+/* ==========================================================================
+   ALERT ICON & CONTENT
+   ========================================================================== */
+.alert-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.alert-content {
+    flex: 1;
+}
+
+.alert-content strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.alert-content p {
+    color: var(--text-secondary);
+    font-size: 13.5px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ==========================================================================
+   EMPTY / NO ALERTS STATE
+   ========================================================================== */
+.no-alerts {
+    background: var(--bg-surface-subtle);
+    border: 1px dashed var(--border-medium);
+    padding: 24px;
+    border-radius: var(--radius-md);
+    text-align: center;
+}
+
+.no-alerts strong {
+    display: block;
+    color: var(--text-primary);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.no-alerts p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0;
+}
+

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - Storvia</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="auth-page">
+
+        <div class="auth-container">
+
+            <h1>Storvia</h1>
+
+            <h2>Create Account</h2>
+
+            <form id="signupForm" onsubmit="submitSignup(event)">
+
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        placeholder="Enter your name"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter your email"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Enter your password again"
+                        required
+                    >
+                </div>
+                <p class="auth-link" id="warning"></p>
+                <button type="submit" >Create Account</button>
+
+            </form>
+
+            <p class="auth-link">
+                Already have an account?
+                <a href="login.html">Login</a>
+            </p>
+
+        </div>
+
+    </main>
+
+</body>
+
+
+
+<script>
+    const form = document.getElementById("signupForm");
+    const warning = document.getElementById("warning");
+
+    function validateSignup(name, email, password, cpassword) {
+        if (name.trim() === "") {
+            return "Name is required";
+        }
+
+        if (name.trim().length < 2) {
+            return "Name must be at least 2 characters";
+        }
+
+        if (email.trim() === "") {
+            return "Email is required";
+        }
+
+        if (password.length < 8) {
+            return "Password must be at least 8 characters";
+        }
+
+        if (cpassword !== password) {
+            return "Passwords do not match";
+        }
+
+        return null;
+    }
+
+    async function submitSignup(e) {
+        e.preventDefault();
+
+        warning.innerText = "";
+
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const cpassword = document.getElementById("confirmPassword").value;
+
+        const validationError = validateSignup(
+            name, email, password, cpassword
+        );
+
+        if (validationError) {
+            warning.style.color = "red";
+            warning.innerText = validationError;
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                "http://localhost:5000/api/signup",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        name: name.trim(),
+                        email: email.trim().toLowerCase(),
+                        password: password
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || "Signup failed");
+            }
+
+            warning.style.color = "green";
+            warning.innerText = "Account created successfully!";
+
+            window.location.href = "login.html";
+
+        } catch (error) {
+            warning.style.color = "red";
+            warning.innerText = error.message ||
+                "Could not connect to the server";
+            console.error("Signup error:", error);
+        }
+    }
+</script>
+
+</html>
