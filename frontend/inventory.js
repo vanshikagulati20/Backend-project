@@ -1,470 +1,198 @@
-const slotForm =
-    document.getElementById("slotForm");
+const slotForm = document.getElementById("slotForm");
 
-const slotType =
-    document.getElementById("slotType");
+const slotType = document.getElementById("slotType");
+const slotLength = document.getElementById("slotLength");
+const slotBreadth = document.getElementById("slotBreadth");
+const slotHeight = document.getElementById("slotHeight");
+const slotCount = document.getElementById("slotCount");
 
-const slotLength =
-    document.getElementById("slotLength");
+const CURRENT_USER_KEY = "currentuser";
+const API_URL = "http://localhost:5000/api";
 
-const slotBreadth =
-    document.getElementById("slotBreadth");
-
-const slotHeight =
-    document.getElementById("slotHeight");
-
-const slotCount =
-    document.getElementById("slotCount");
-
-
-// ==========================================
-// STORAGE
-// ==========================================
-
-const SLOT_KEY =
-    "warehouseSlots";
-
-const CURRENT_USER_KEY =
-    "currentuser";
-
-
-// ==========================================
-// SLOT PREFIX
-// ==========================================
-
-const SLOT_PREFIX = {
-
-    Large: "A",
-
-    Medium: "B",
-
-    Small: "C",
-
-    Custom: "D"
-
-};
-
-
-// ==========================================
-// GET CURRENT USER
-// ==========================================
-
+// Get the logged-in user
 function getCurrentUser() {
-
-    const savedUser =
-        localStorage.getItem(
-            CURRENT_USER_KEY
-        );
-
+    const savedUser = localStorage.getItem(CURRENT_USER_KEY);
 
     if (!savedUser) {
-
-        window.location.href =
-            "login.html";
-
+        window.location.href = "login.html";
         return null;
-
     }
-
 
     try {
+        const user = JSON.parse(savedUser);
 
-        return JSON.parse(
-            savedUser
-        );
+        if (!user || !user.email) {
+            localStorage.removeItem(CURRENT_USER_KEY);
+            window.location.href = "login.html";
+            return null;
+        }
 
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid current user data",
-            error
-        );
-
-        window.location.href =
-            "login.html";
-
+        return user;
+    } catch (error) {
+        console.error("Invalid current user data:", error);
+        localStorage.removeItem(CURRENT_USER_KEY);
+        window.location.href = "login.html";
         return null;
-
     }
-
 }
 
+// Handle slot form submission
+slotForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
 
-// ==========================================
-// GET SLOTS
-// ==========================================
+    const currentUser = getCurrentUser();
 
-function getSlots() {
-
-    const savedSlots =
-        localStorage.getItem(
-            SLOT_KEY
-        );
-
-
-    if (!savedSlots) {
-
-        return [];
-
+    if (!currentUser) {
+        return;
     }
 
+    const selectedType = slotType.value;
+    const length = Number(slotLength.value);
+    const breadth = Number(slotBreadth.value);
+    const height = Number(slotHeight.value);
+    const numberOfSlots = Number(slotCount.value);
 
-    try {
-
-        return JSON.parse(
-            savedSlots
-        );
-
+    // Validate form values
+    if (!["Small", "Medium", "Large"].includes(selectedType)) {
+        alert("Please select a valid slot type.");
+        return;
     }
 
-    catch (error) {
-
-        console.error(
-            "Invalid warehouse slot data",
-            error
-        );
-
-        return [];
-
+    if (
+        !Number.isFinite(length) ||
+        !Number.isFinite(breadth) ||
+        !Number.isFinite(height) ||
+        length <= 0 ||
+        breadth <= 0 ||
+        height <= 0
+    ) {
+        alert("Length, breadth and height must be greater than 0.");
+        return;
     }
 
-}
+    if (!Number.isInteger(numberOfSlots) || numberOfSlots < 1) {
+        alert("Number of slots must be a positive whole number.");
+        return;
+    }
 
+    const volume = length * breadth * height;
 
-// ==========================================
-// SAVE SLOTS
-// ==========================================
-
-function saveSlots(slots) {
-
-    localStorage.setItem(
-
-        SLOT_KEY,
-
-        JSON.stringify(slots)
-
+    const submitButton = slotForm.querySelector(
+        'button[type="submit"]'
     );
 
-}
-
-
-// ==========================================
-// SUBMIT SLOT FORM
-// ==========================================
-
-slotForm.addEventListener(
-
-    "submit",
-
-    function (event) {
-
-        event.preventDefault();
-
-
-        // ==================================
-        // CURRENT USER
-        // ==================================
-
-        const currentUser =
-            getCurrentUser();
-
-
-        if (!currentUser) {
-
-            return;
-
-        }
-
-
-        // ==================================
-        // GET FORM VALUES
-        // ==================================
-
-        const selectedType =
-            slotType.value;
-
-
-        const length =
-            Number(
-                slotLength.value
-            );
-
-
-        const breadth =
-            Number(
-                slotBreadth.value
-            );
-
-
-        const height =
-            Number(
-                slotHeight.value
-            );
-
-
-        const numberOfSlots =
-            Number(
-                slotCount.value
-            );
-
-
-        // ==================================
-        // VALIDATION
-        // ==================================
-
-        if (
-            selectedType === ""
-        ) {
-
-            alert(
-                "Please select a slot type."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            length <= 0 ||
-            breadth <= 0 ||
-            height <= 0
-        ) {
-
-            alert(
-                "Length, breadth and height must be greater than 0."
-            );
-
-            return;
-
-        }
-
-
-        if (
-            numberOfSlots <= 0
-        ) {
-
-            alert(
-                "Number of slots must be greater than 0."
-            );
-
-            return;
-
-        }
-
-
-        // ==================================
-        // CALCULATE VOLUME
-        // ==================================
-
-        const volume =
-            length *
-            breadth *
-            height;
-
-
-        // ==================================
-        // GET EXISTING SLOTS
-        // ==================================
-
-        const slots =
-            getSlots();
-
-        const newSlots = []; // temp work
-
-        // ==================================
-        // SLOT PREFIX
-        // ==================================
-
-        const prefix =
-            SLOT_PREFIX[selectedType];
-
-
-        // ==================================
-        // FIND EXISTING COUNT
-        //
-        // IMPORTANT:
-        // Count only this user's slots.
-        // ==================================
-
-        let existingCount = 0;
-
-
-        slots.forEach(
-            function (slot) {
-
-                if (
-
-                    slot.size ===
-                    selectedType
-
-                    &&
-
-                    slot.userEmail ===
-                    currentUser.email
-
-                ) {
-
-                    existingCount++;
-
-                }
-
-            }
-        );
-
-
-        // ==================================
-        // CREATE SLOTS
-        // ==================================
-
-        for (
-            let i = 1;
-            i <= numberOfSlots;
-            i++
-        ) {
-
-
-            const slotNumber =
-                existingCount + i;
-
-
-            const formattedNumber =
-                String(
-                    slotNumber
-                ).padStart(
-                    2,
-                    "0"
-                );
-
-
-            const newSlot = {
-
-                // --------------------------
-                // BASIC INFORMATION
-                // --------------------------
-
-                id:
-                    prefix +
-                    "-" +
-                    formattedNumber,
-
-                size:
-                    selectedType,
-
-
-                // --------------------------
-                // OWNER
-                // --------------------------
-
-                userEmail:
-                    currentUser.email,
-
-
-                // --------------------------
-                // PHYSICAL DIMENSIONS
-                // --------------------------
-
-                length:
-                    length,
-
-                breadth:
-                    breadth,
-
-                height:
-                    height,
-
-
-                // --------------------------
-                // TOTAL VOLUME
-                // --------------------------
-
-                volume:
-                    volume,
-
-
-                // --------------------------
-                // OCCUPANCY
-                // --------------------------
-
-                usedVolume:
-                    0,
-
-
-                // --------------------------
-                // PRODUCT INFORMATION
-                // --------------------------
-
-                productId:
-                    null,
-
-                productName:
-                    null,
-
-                productQuantity:
-                    0
-
-            };
-
-
-            slots.push(
-                newSlot
-            );
-
-            newSlots.push(newSlot); //express tetsing version
-
-        }
-
-
-        // ==================================
-        // SAVE
-        // ==================================
-
-       saveSlots(slots);
-
-        sendSlotsToBackend(newSlots)
-        .then((result) => {
-            console.log("Backend response:", result);
-        })
-        .catch((error) => {
-            console.error("Backend connection failed:", error);
-            alert("Slots saved locally, but sending them to the backend failed.");
+    const originalButtonText = submitButton.textContent;
+
+    submitButton.disabled = true;
+    submitButton.textContent = "Saving Slots...";
+
+    try {
+        const response = await fetch(`${API_URL}/slots`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                slotType: selectedType,
+                length,
+                breadth,
+                height,
+                numberOfSlots,
+                userEmail: currentUser.email
+            })
         });
 
+        const result = await response.json();
 
-        // ==================================
-        // SUCCESS MESSAGE
-        // ==================================
+        if (!response.ok || !result.success) {
+            throw new Error(
+                result.message || "Unable to save slots."
+            );
+        }
 
         alert(
-
-            numberOfSlots +
-            " " +
-            selectedType +
-            " slot(s) added successfully.\n\n" +
-
-            "Slot dimensions: " +
-            length +
-            " × " +
-            breadth +
-            " × " +
-            height +
-            " cm\n\n" +
-
-            "Volume per slot: " +
-            volume +
-            " cm³"
-
+            `${result.count} ${selectedType} slot(s) added successfully.\n\n` +
+            `Slot dimensions: ${length} × ${breadth} × ${height} cm\n\n` +
+            `Volume per slot: ${volume} cm³\n\n` +
+            "Slots have been saved to MongoDB."
         );
-
-
-        // ==================================
-        // RESET FORM
-        // ==================================
 
         slotForm.reset();
 
+    } catch (error) {
+        console.error("Save slots error:", error);
+
+        alert(
+            error.message ||
+            "Could not connect to the backend. Please make sure the server is running."
+        );
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
+    }
+});
+
+// Display the logged-in user's name
+(function () {
+    const currentUser = getCurrentUser();
+
+    if (!currentUser) {
+        return;
     }
 
-);
+    const welcomeEl = document.getElementById("welcomeUser");
+
+    if (welcomeEl) {
+        welcomeEl.textContent = `Welcome, ${currentUser.name}`;
+    }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+            localStorage.removeItem(CURRENT_USER_KEY);
+            window.location.href = "login.html";
+        });
+    }
+})();
+
+// Center the active navigation link
+(function () {
+    function centerActiveNavLink() {
+        const nav = document.querySelector(".dashboard-nav");
+        const active = nav && nav.querySelector("a.active");
+
+        if (nav && active) {
+            const navRect = nav.getBoundingClientRect();
+            const activeRect = active.getBoundingClientRect();
+
+            const relativeLeft =
+                activeRect.left - navRect.left + nav.scrollLeft;
+
+            const targetScroll =
+                relativeLeft -
+                (nav.clientWidth - active.clientWidth) / 2;
+
+            nav.style.scrollBehavior = "auto";
+            nav.scrollLeft = Math.max(0, targetScroll);
+
+            requestAnimationFrame(function () {
+                nav.style.scrollBehavior = "";
+            });
+        }
+    }
+
+    if (
+        document.readyState === "complete" ||
+        document.readyState === "interactive"
+    ) {
+        centerActiveNavLink();
+    } else {
+        document.addEventListener(
+            "DOMContentLoaded",
+            centerActiveNavLink
+        );
+    }
+
+    window.addEventListener("load", centerActiveNavLink);
+})();

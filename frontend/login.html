@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,23 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>LogIn - Storvia</title>
-
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
     <main class="auth-page">
-
         <div class="auth-container">
-
             <h1>Storvia</h1>
-
             <h2>LogIn to Your Account</h2>
 
-            <form id="LogInForm" onsubmit="submitLogin(event)">
-
-
+            <form id="LogInForm">
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input
@@ -29,6 +23,7 @@
                         id="email"
                         name="email"
                         placeholder="Enter your email"
+                        autocomplete="email"
                         required
                     >
                 </div>
@@ -40,107 +35,108 @@
                         id="password"
                         name="password"
                         placeholder="Enter your password"
+                        autocomplete="current-password"
                         required
                     >
                 </div>
 
-               
-                <p class="auth-link" id="warning"></p>
-                <button type="submit" >LogIn</button>
+                <p class="auth-link" id="warning" role="alert"></p>
 
+                <button type="submit" id="loginButton">LogIn</button>
             </form>
 
             <p class="auth-link">
                 Don't have an account?
                 <a href="signup.html">SignUp</a>
             </p>
-
         </div>
-
     </main>
 
-</body>
+    <script>
+        const loginForm = document.getElementById("LogInForm");
+        const warning = document.getElementById("warning");
+        const loginButton = document.getElementById("loginButton");
 
+        function showMessage(message, color = "red") {
+            warning.textContent = message;
+            warning.style.color = color;
+        }
 
-<script>
-    let form=document.getElementById("logInForm");
-
-    let warning=document.getElementById("warning")
-
-   
-    function validateSignup(email, password) {
-
-           
-
-            if (email.trim() === "") {
-
+        function validateLogin(email, password) {
+            if (!email.trim()) {
                 return "Email is required";
             }
-            if(password.trim()===""){
-                return "password is required";
+
+            if (!password) {
+                return "Password is required";
             }
 
-
             return null;
-    }
-
-    function submitLogin(e){
-
-        e.preventDefault();
-
-        warning.innerText="";
-
-    
-
-        let email=document.getElementById("email")
-
-        let password=document.getElementById("password")
-
-       
-
-        let warning_text=validateSignup(email.value,password.value);
-
-        if(warning_text!=null){
-
-            warning.innerText=warning_text;
-
-            warning.style.color="red";
-
-            return;
         }
 
-        let users=JSON.parse(localStorage.getItem("users")) || [];
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            showMessage("");
 
-        let user=users.find((cur)=>email.value.trim().toLowerCase()==cur.email);
+            const email = document.getElementById("email").value
+                .trim()
+                .toLowerCase();
 
-        if(!user){
+            const password = document.getElementById("password").value;
 
-                warning.style.color="red";
-                warning.innerText="* No User Exists with this email";
+            const validationError = validateLogin(email, password);
+
+            if (validationError) {
+                showMessage(validationError);
                 return;
-        }
+            }
 
-        if(user.password!==password.value){
-            warning.style.color="red";
-            warning.innerText="* Your password is incorrect";
-            return;
-        }
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
 
-   
-        let currentUser=user;
+            try {
+                const response = await fetch(
+                    "http://localhost:5000/api/login",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            email: email,
+                            password: password
+                        })
+                    }
+                );
 
-        localStorage.setItem("currentuser",JSON.stringify(currentUser));
+                const result = await response.json();
 
-        window.location.href="dashBoard.html"
+                if (!response.ok || !result.success || !result.user) {
+                    showMessage(result.message || "Unable to login");
+                    return;
+                }
 
-        }
-        
+                // Store only the logged-in user's details for frontend use.
+                // Password is not stored in localStorage.
+                localStorage.setItem(
+                    "currentuser",
+                    JSON.stringify(result.user)
+                );
 
-       
+                window.location.href = "dashBoard.html";
 
+            } catch (error) {
+                console.error("Login error:", error);
 
-
-        
-    
-</script>
+                showMessage(
+                    "Cannot connect to the server. Please make sure the backend is running."
+                );
+            } finally {
+                loginButton.disabled = false;
+                loginButton.textContent = "LogIn";
+            }
+        });
+    </script>
+</body>
 </html>
+```
