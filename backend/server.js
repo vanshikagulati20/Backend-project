@@ -1,7 +1,7 @@
 
 const User = require("./models/User");
 const Slot = require("./models/Slots");
-
+const Product = require("./models/Products");
 
 const bcrypt = require("bcryptjs");
 const express = require("express");
@@ -15,12 +15,10 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
     console.log("MongoDB connected successfully");
-
     app.listen(PORT, () => {
       console.log(`Storvia server running at http://localhost:${PORT}`);
     });
@@ -29,17 +27,12 @@ mongoose
     console.error("MongoDB connection failed:", error.message);
   });
 
-// Home route
 app.get("/", (req, res) => {
   res.json({
     message: "Welcome to the Storvia API!",
     status: "running"
   });
 });
-
-
-
-// -- signup api
 
 app.post("/api/signup", async (req, res) => {
   try {
@@ -60,10 +53,7 @@ app.post("/api/signup", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-
-    const existingUser = await User.findOne({
-      email: normalizedEmail
-    });
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return res.status(409).json({
@@ -73,7 +63,6 @@ app.post("/api/signup", async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = await User.create({
       name: name.trim(),
       email: normalizedEmail,
@@ -98,7 +87,6 @@ app.post("/api/signup", async (req, res) => {
     }
 
     console.error("Signup error:", error.message);
-
     return res.status(500).json({
       success: false,
       message: "Unable to create account"
@@ -106,12 +94,6 @@ app.post("/api/signup", async (req, res) => {
   }
 });
 
-
-
-// -- login api route
-
-
-/* Login API */
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -124,24 +106,9 @@ app.post("/api/login", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
 
-    const user = await User.findOne({
-      email: normalizedEmail
-    });
-
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid email or password"
-      });
-    }
-
-    const passwordMatches = await bcrypt.compare(
-      password,
-      user.password
-    );
-
-    if (!passwordMatches) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password"
@@ -159,7 +126,6 @@ app.post("/api/login", async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error.message);
-
     return res.status(500).json({
       success: false,
       message: "Unable to login right now"
@@ -167,10 +133,6 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-
-
-
-// Health route
 app.get("/api/health", (req, res) => {
   res.json({
     success: true,
@@ -178,50 +140,28 @@ app.get("/api/health", (req, res) => {
   });
 });
 
-// Temporary warehouse testing route
+// Existing warehouse testing route
 app.post("/api/warehouses", (req, res) => {
-  const warehouse = req.body;
-
   res.status(201).json({
     success: true,
     message: "Warehouse data received successfully",
-    data: warehouse
+    data: req.body
   });
 });
 
-// // Temporary slots testing route
-// app.post("/api/slots", (req, res) => {
-//   const { slots } = req.body;
-
-//   if (!Array.isArray(slots) || slots.length === 0) {
-//     return res.status(400).json({
-//       success: false,
-//       message: "Please provide at least one slot"
-//     });
-//   }
-
-//   console.log("Slots received from Storvia:", slots.length);
-
-//   res.status(201).json({
-//     success: true,
-//     message: "Slots received successfully",
-//     count: slots.length,
-//     data: slots
-//   });
-// });
-
-
-
-
-
-
-// Create and save storage slots in MongoDB
+// Create and save storage slots
 app.post("/api/slots", async (req, res) => {
   try {
-    const { slotType, length, breadth, height, numberOfSlots, userEmail } =
-      req.body;
+    const {
+      slotType,
+      length,
+      breadth,
+      height,
+      numberOfSlots,
+      userEmail
+    } = req.body;
 
-    if (!slotType || !["Small", "Medium", "Large"].includes(slotType)) {
+    if (!["Small", "Medium", "Large"].includes(slotType)) {
       return res.status(400).json({
         success: false,
         message: "Please select a valid slot type"
@@ -247,7 +187,6 @@ app.post("/api/slots", async (req, res) => {
     }
 
     const normalizedEmail = userEmail.trim().toLowerCase();
-
     const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
@@ -263,19 +202,23 @@ app.post("/api/slots", async (req, res) => {
       Small: "C"
     }[slotType];
 
-    const existingCount = await Slot.countDocuments({
+    const existingSlots = await Slot.find({
       userEmail: normalizedEmail,
       size: slotType
-    });
+    }).select("id");
+
+    // Use the highest existing slot number to avoid reusing IDs after deletions.
+    const highestNumber = existingSlots.reduce((highest, slot) => {
+      const match = slot.id.match(/-(\d+)$/);
+      return match ? Math.max(highest, Number(match[1])) : highest;
+    }, 0);
 
     const volume = length * breadth * height;
     const slotsToCreate = [];
 
     for (let i = 1; i <= numberOfSlots; i++) {
-      const slotNumber = String(existingCount + i).padStart(2, "0");
-
       slotsToCreate.push({
-        id: `${prefix}-${slotNumber}`,
+        id: `${prefix}-${String(highestNumber + i).padStart(2, "0")}`,
         size: slotType,
         userEmail: normalizedEmail,
         length,
@@ -299,10 +242,230 @@ app.post("/api/slots", async (req, res) => {
     });
   } catch (error) {
     console.error("Save slots error:", error.message);
-
     return res.status(500).json({
       success: false,
       message: "Unable to save slots"
+    });
+  }
+});
+
+// Get all products for the current user's email
+app.get("/api/products", async (req, res) => {
+  try {
+    const { userEmail } = req.query;
+
+    if (typeof userEmail !== "string" || !userEmail.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required"
+      });
+    }
+
+    const normalizedEmail = userEmail.trim().toLowerCase();
+    const products = await Product.find({
+      userEmail: normalizedEmail
+    }).sort({ createdAt: 1 });
+
+    return res.json({
+      success: true,
+      data: products
+    });
+  } catch (error) {
+    console.error("Get products error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load products"
+    });
+  }
+});
+
+// Create a product
+app.post("/api/products", async (req, res) => {
+  try {
+    const data = req.body;
+
+    if (
+      typeof data.userEmail !== "string" ||
+      !data.userEmail.trim() ||
+      !data.name?.trim() ||
+      !data.category ||
+      !Number.isInteger(data.quantity) ||
+      data.quantity < 1 ||
+      !["Pieces", "Boxes", "Sets", "Packs", "Cartons"].includes(data.unit) ||
+      !Number.isInteger(data.itemsPerUnit) ||
+      data.itemsPerUnit < 1 ||
+      !["Small", "Medium", "Large", "Custom"].includes(data.size) ||
+      !["Yes", "No"].includes(data.fragile) ||
+      !Number.isFinite(data.length) ||
+      !Number.isFinite(data.breadth) ||
+      !Number.isFinite(data.height) ||
+      !Number.isFinite(data.volume) ||
+      !Number.isFinite(data.totalVolume) ||
+      !Number.isFinite(data.weight) ||
+      data.length < 0 ||
+      data.breadth < 0 ||
+      data.height < 0 ||
+      data.volume < 0 ||
+      data.totalVolume < 0 ||
+      data.weight < 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide valid product details"
+      });
+    }
+
+    const normalizedEmail = data.userEmail.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    const product = await Product.create({
+      ...data,
+      id: new mongoose.Types.ObjectId().toString(),
+      name: data.name.trim(),
+      userEmail: normalizedEmail,
+      allocationStatus: data.allocationStatus || "Pending",
+      allocatedQuantity: 0,
+      allocatedVolume: 0,
+      allocationMessage: "Waiting for warehouse allocation.",
+      date: data.date || new Date().toISOString().slice(0, 10)
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Product added successfully",
+      data: product
+    });
+  } catch (error) {
+    console.error("Create product error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to save product"
+    });
+  }
+});
+
+// Edit a product and preserve its allocation fields
+app.put("/api/products/:id", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+
+    if (typeof userEmail !== "string" || !userEmail.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required"
+      });
+    }
+
+    const normalizedEmail = userEmail.trim().toLowerCase();
+    const product = await Product.findOne({
+      id: req.params.id,
+      userEmail: normalizedEmail
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
+      });
+    }
+
+    const editableFields = [
+      "name",
+      "category",
+      "quantity",
+      "unit",
+      "itemsPerUnit",
+      "size",
+      "length",
+      "breadth",
+      "height",
+      "volume",
+      "totalVolume",
+      "weight",
+      "fragile",
+      "date"
+    ];
+
+    for (const field of editableFields) {
+      if (req.body[field] !== undefined) {
+        product[field] =
+          field === "name" ? String(req.body[field]).trim() : req.body[field];
+      }
+    }
+
+    await product.save();
+
+    return res.json({
+      success: true,
+      message: "Product updated successfully",
+      data: product
+    });
+  } catch (error) {
+    console.error("Update product error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to update product"
+    });
+  }
+});
+
+// Delete a product and release any slots assigned to it
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const { userEmail } = req.query;
+
+    if (typeof userEmail !== "string" || !userEmail.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required"
+      });
+    }
+
+    const normalizedEmail = userEmail.trim().toLowerCase();
+
+    const product = await Product.findOneAndDelete({
+      id: req.params.id,
+      userEmail: normalizedEmail
+    });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found"
+      });
+    }
+
+    await Slot.updateMany(
+      {
+        userEmail: normalizedEmail,
+        productId: product.id
+      },
+      {
+        $set: {
+          usedVolume: 0,
+          productId: null,
+          productName: null,
+          productQuantity: 0
+        }
+      }
+    );
+
+    return res.json({
+      success: true,
+      message: "Product deleted successfully"
+    });
+  } catch (error) {
+    console.error("Delete product error:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete product"
     });
   }
 });
