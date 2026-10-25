@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Storvia Login Handoff</title>
+</head>
+<body>
+  <h2 id="message">Completing your Storvia login...</h2>
+
+  <script>
+    async function completeLogin() {
+      const message = document.getElementById("message");
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+
+      // Remove the token from the visible URL.
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      if (!token) {
+        message.textContent = "No login handoff token was provided.";
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "http://localhost:5000/api/login-handoff/consume",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ token })
+          }
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success || !result.user) {
+          message.textContent =
+            result.message || "Unable to complete login.";
+          return;
+        }
+
+        localStorage.setItem(
+          "currentuser",
+          JSON.stringify(result.user)
+        );
+
+        message.textContent = "Login successful. Opening Storvia...";
+
+        window.location.replace("dashBoard.html");
+      } catch (error) {
+        console.error("Login handoff error:", error);
+        message.textContent =
+          "Cannot connect to the Storvia backend. Check that it is running.";
+      }
+    }
+
+    completeLogin();
+  </script>
+</body>
+</html>
