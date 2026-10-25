@@ -7,9 +7,14 @@ require("dotenv").config();
 const User = require("./models/User");
 const Slot = require("./models/Slots");
 const Product = require("./models/Products");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Temporary, one-time login handoffs.
+// These are kept in memory and expire after two minutes.
+const pendingLoginHandoffs = new Map();
 
 app.use(cors());
 app.use(express.json());
@@ -147,15 +152,36 @@ app.post("/api/login", async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email
-      }
-    });
+  const safeUser = {
+  id: user._id,
+  name: user.name,
+  email: user.email
+};
+
+if (req.body.createHandoff === true) {
+  const token = crypto.randomBytes(32).toString("hex");
+
+  pendingLoginHandoffs.set(token, {
+    user: safeUser,
+    expiresAt: Date.now() + 2 * 60 * 1000
+  });
+
+  const frontendUrl = "http://127.0.0.1:5500/smart-warehouse/frontend";
+
+  return res.status(200).json({
+    success: true,
+    message: "Login successful. Open the handoff URL in your browser.",
+    user: safeUser,
+    handoffUrl:
+      `${frontendUrl}/auth-handoff.html?token=${token}`
+  });
+}
+
+return res.status(200).json({
+  success: true,
+  message: "Login successful",
+  user: safeUser
+});
   } catch (error) {
     console.error("Login error:", error.message);
 
@@ -164,6 +190,35 @@ app.post("/api/login", async (req, res) => {
       message: "Unable to login right now"
     });
   }
+});
+
+// EXCHANGE A ONE-TIME LOGIN HANDOFF
+app.post("/api/login-handoff/consume", (req, res) => {
+  const token = req.body.token;
+
+  if (typeof token !== "string" || !/^[a-f0-9]{64}$/.test(token)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid handoff token"
+    });
+  }
+
+  const handoff = pendingLoginHandoffs.get(token);
+
+  // Delete it immediately so it cannot be reused.
+  pendingLoginHandoffs.delete(token);
+
+  if (!handoff || handoff.expiresAt < Date.now()) {
+    return res.status(401).json({
+      success: false,
+      message: "Handoff expired or already used. Please log in again."
+    });
+  }
+
+  return res.json({
+    success: true,
+    user: handoff.user
+  });
 });
 // GET ALL REGISTERED USERS
 app.get("/api/users", async (req, res) => {
@@ -425,6 +480,47 @@ app.put("/api/slots/:id", async (req, res) => {
 });
 
 
+
+ // DELETE A SLOT
+app.delete("/api/slots/:id", async (req, res) => {
+  try {
+    const { userEmail } = req.query;
+
+    if (typeof userEmail !== "string" || !userEmail.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "User email is required"
+      });
+    }
+
+    const normalizedEmail = userEmail.trim().toLowerCase();
+
+    const slot = await Slot.findOneAndDelete({
+      id: req.params.id,
+      userEmail: normalizedEmail
+    });
+
+    if (!slot) {
+      return res.status(404).json({
+        success: false,
+        message: "Slot not found"
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Slot deleted successfully",
+      data: slot
+    });
+  } catch (error) {
+    console.error("Delete slot error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to delete slot"
+    });
+  }
+});
 
 
 // GET ALL PRODUCTS FOR A USER
