@@ -1,4 +1,3 @@
-
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -519,74 +518,7 @@ app.post("/api/products", async (req, res) => {
   }
 });
 
-// UPDATE A PRODUCT
-app.put("/api/products/:id", async (req, res) => {
-  try {
-    const { userEmail } = req.body;
 
-    if (typeof userEmail !== "string" || !userEmail.trim()) {
-      return res.status(400).json({
-        success: false,
-        message: "User email is required"
-      });
-    }
-
-    const normalizedEmail = userEmail.trim().toLowerCase();
-
-    const product = await Product.findOne({
-      id: req.params.id,
-      userEmail: normalizedEmail
-    });
-
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: "Product not found"
-      });
-    }
-
-    const editableFields = [
-      "name",
-      "category",
-      "quantity",
-      "unit",
-      "itemsPerUnit",
-      "size",
-      "length",
-      "breadth",
-      "height",
-      "volume",
-      "totalVolume",
-      "weight",
-      "fragile",
-      "date"
-    ];
-
-    for (const field of editableFields) {
-      if (req.body[field] !== undefined) {
-        product[field] =
-          field === "name" || field === "category"
-            ? String(req.body[field]).trim()
-            : req.body[field];
-      }
-    }
-
-    await product.save();
-
-    return res.json({
-      success: true,
-      message: "Product updated successfully",
-      data: product
-    });
-  } catch (error) {
-    console.error("Update product error:", error.message);
-
-    return res.status(500).json({
-      success: false,
-      message: "Unable to update product"
-    });
-  }
-});
 
 // DELETE A PRODUCT AND RELEASE ITS SLOTS
 app.delete("/api/products/:id", async (req, res) => {
@@ -642,10 +574,6 @@ app.delete("/api/products/:id", async (req, res) => {
     });
   }
 });
-
-
-
-
 
 // Update a product, including its saved allocation summary
 app.put("/api/products/:id", async (req, res) => {
