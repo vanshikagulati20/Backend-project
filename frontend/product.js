@@ -401,6 +401,20 @@ async function loadProducts() {
 function setupSearch() {
     searchInput.addEventListener("input", renderProducts);
 }
+function getAllocationStatus(product) {
+    const totalQuantity = Number(product.quantity) || 0;
+    const allocatedQuantity = Number(product.allocatedQuantity) || 0;
+
+    if (allocatedQuantity <= 0) {
+        return "Pending";
+    }
+
+    if (allocatedQuantity < totalQuantity) {
+        return "Partially Allocated";
+    }
+
+    return "Allocated";
+}
 
 function renderProducts() {
     const searchTerm = searchInput.value.trim().toLowerCase();
@@ -439,8 +453,8 @@ function renderProducts() {
             `${formatNumber(product.breadth)} × ` +
             `${formatNumber(product.height)} cm`;
 
-        const status = product.allocationStatus || "Pending";
-        const allocated = status.toLowerCase() === "allocated";
+        const status = getAllocationStatus(product);
+        const allocated = status === "Allocated";           
 
         const values = [
             product.name,
