@@ -1,15 +1,15 @@
 
+const API_BASE_URL = "https://storvia-api.onrender.com/api";
+
+// Add a warehouse
 async function addWarehouse(warehouseData) {
-  const response = await fetch(
-    "http://localhost:5000/api/warehouses",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(warehouseData)
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/warehouses`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(warehouseData)
+  });
 
   const result = await response.json();
 
@@ -20,29 +20,21 @@ async function addWarehouse(warehouseData) {
   return result;
 }
 
-
-
-
-// sending slots from inventory.html form to express
-
-async function sendSlotsToBackend(slots) {
-  const response = await fetch(
-    "http://localhost:5000/api/slots",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ slots })
-    }
-  );
+// Save slot configuration from inventory.html
+async function sendSlotsToBackend(slotData) {
+  const response = await fetch(`${API_BASE_URL}/slots`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(slotData)
+  });
 
   const result = await response.json();
 
   if (!response.ok) {
-    throw new Error(result.message || "Failed to send slots");
+    throw new Error(result.message || "Failed to save slots");
   }
 
   return result;
 }
-

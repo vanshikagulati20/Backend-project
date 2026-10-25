@@ -1,9 +1,10 @@
 // ============================================================
 // STORVIA - DASHBOARD
-// MongoDB backend integration
 // ============================================================
 
-const API_URL = "http://localhost:5000/api";
+// const API_URL = "http://localhost:5000/api";
+
+const API_URL = "https://storvia-api.onrender.com/api";
 const CURRENT_USER_KEY = "currentuser";
 
 function getCurrentUser() {
