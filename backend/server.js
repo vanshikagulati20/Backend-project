@@ -165,6 +165,27 @@ app.post("/api/login", async (req, res) => {
     });
   }
 });
+// GET ALL REGISTERED USERS
+app.get("/api/users", async (req, res) => {
+  try {
+    const users = await User.find({})
+      .select("-password")
+      .sort({ createdAt: 1 });
+
+    return res.json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+  } catch (error) {
+    console.error("Get users error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load users"
+    });
+  }
+});
 
 // WAREHOUSE TESTING ROUTE
 // This currently receives data but does not save it to MongoDB.
