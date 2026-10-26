@@ -16,7 +16,7 @@ Storvia is a Smart Warehouse Management System that helps manage warehouse produ
 - Node.js and Express.js
 - MongoDB
 - REST API
-- Python and Machine Learning
+- Python 
 
 ## Screenshots
 

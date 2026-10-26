@@ -334,9 +334,10 @@
 
     <script src="home.js"></script>
     <script>
-        // Center the active nav link smoothly
+       
         (function () {
             function centerActiveNavLink() {
+
                 var nav = document.querySelector('.dashboard-nav');
                 var active = nav && nav.querySelector('a.active');
                 if (nav && active) {
@@ -351,11 +352,14 @@
                     });
                 }
             }
+
             if (document.readyState === 'complete' || document.readyState === 'interactive') {
                 centerActiveNavLink();
-            } else {
+            } 
+            else {
                 document.addEventListener('DOMContentLoaded', centerActiveNavLink);
             }
+
             window.addEventListener('load', centerActiveNavLink);
         })();
     </script>
