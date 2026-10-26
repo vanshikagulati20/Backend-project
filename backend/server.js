@@ -166,7 +166,7 @@ if (req.body.createHandoff === true) {
     expiresAt: Date.now() + 2 * 60 * 1000
   });
 
-  const frontendUrl = "http://127.0.0.1:5500/smart-warehouse/frontend";
+  const frontendUrl = "http://127.0.0.1:5503/frontend";
 
   return res.status(200).json({
     success: true,
