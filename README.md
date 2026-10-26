@@ -62,10 +62,4 @@ Storvia is a Smart Warehouse Management System that helps manage warehouse produ
 
 *Note: Product and slot endpoints may require a `userEmail` query parameter.*
 
-## Future Improvements
-- Integrate the ML demand forecasting model with the backend.
-- Improve warehouse slot allocation.
-- Add more inventory analytics.
 
-## Author
-Developed as a college project.
