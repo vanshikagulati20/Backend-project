@@ -7,9 +7,9 @@ const slotHeight = document.getElementById("slotHeight");
 const slotCount = document.getElementById("slotCount");
 
 const CURRENT_USER_KEY = "currentuser";
-// const API_URL = "http://localhost:5000/api";
+const API_URL = "http://localhost:5000/api";
 
-const API_URL = "https://storvia-api.onrender.com/api";
+// const API_URL = "https://storvia-api.onrender.com/api";
 
 
 // Get the logged-in user
