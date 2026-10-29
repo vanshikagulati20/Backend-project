@@ -7,9 +7,10 @@ const slotHeight = document.getElementById("slotHeight");
 const slotCount = document.getElementById("slotCount");
 
 const CURRENT_USER_KEY = "currentuser";
-const API_URL = "http://localhost:5000/api";
-
-// const API_URL = "https://storvia-api.onrender.com/api";
+const API_URL = window.STORVIA_API_URL ||
+    ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://localhost:5000/api"
+        : "https://storvia-api.onrender.com/api");
 
 
 // Get the logged-in user
@@ -57,7 +58,11 @@ slotForm.addEventListener("submit", async function (event) {
 
     // Validate form values
     if (!["Small", "Medium", "Large"].includes(selectedType)) {
-        alert("Please select a valid slot type.");
+        if (typeof showAlert === "function") {
+            showAlert("Please select a valid slot type.", "warning");
+        } else {
+            alert("Please select a valid slot type.");
+        }
         return;
     }
 
@@ -69,12 +74,20 @@ slotForm.addEventListener("submit", async function (event) {
         breadth <= 0 ||
         height <= 0
     ) {
-        alert("Length, breadth and height must be greater than 0.");
+        if (typeof showAlert === "function") {
+            showAlert("Length, breadth, and height must be greater than 0.", "warning");
+        } else {
+            alert("Length, breadth and height must be greater than 0.");
+        }
         return;
     }
 
     if (!Number.isInteger(numberOfSlots) || numberOfSlots < 1) {
-        alert("Number of slots must be a positive whole number.");
+        if (typeof showAlert === "function") {
+            showAlert("Number of slots must be a positive whole number.", "warning");
+        } else {
+            alert("Number of slots must be a positive whole number.");
+        }
         return;
     }
 
@@ -113,22 +126,24 @@ slotForm.addEventListener("submit", async function (event) {
             );
         }
 
-        alert(
-            `${result.count} ${selectedType} slot(s) added successfully.\n\n` +
-            `Slot dimensions: ${length} × ${breadth} × ${height} cm\n\n` +
-            `Volume per slot: ${volume} cm³\n\n` +
-            "Slots have been saved to MongoDB."
-        );
+        const successMsg = `${result.count || numberOfSlots} ${selectedType} slot(s) added successfully (${length} × ${breadth} × ${height} cm).`;
+        if (typeof showAlert === "function") {
+            showAlert(successMsg, "success");
+        } else {
+            alert(successMsg);
+        }
 
         slotForm.reset();
 
     } catch (error) {
         console.error("Save slots error:", error);
 
-        alert(
-            error.message ||
-            "Could not connect to the backend. Please make sure the server is running."
-        );
+        const errorMsg = error.message || "Could not connect to the backend. Please make sure the server is running.";
+        if (typeof showAlert === "function") {
+            showAlert(errorMsg, "error");
+        } else {
+            alert(errorMsg);
+        }
     } finally {
         submitButton.disabled = false;
         submitButton.textContent = originalButtonText;
