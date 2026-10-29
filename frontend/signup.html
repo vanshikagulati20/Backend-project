@@ -7,6 +7,7 @@
     <title>Sign Up - Storvia</title>
 
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="alert.css">
 </head>
 
 <body>
@@ -82,6 +83,7 @@
 
 
 
+<script src="alert.js"></script>
 <script>
     const form = document.getElementById("signupForm");
     const warning = document.getElementById("warning");
@@ -127,6 +129,9 @@
         if (validationError) {
             warning.style.color = "red";
             warning.innerText = validationError;
+            if (typeof showAlert === "function") {
+                showAlert(validationError, "warning");
+            }
             return;
         }
 
@@ -154,13 +159,21 @@
 
             warning.style.color = "green";
             warning.innerText = "Account created successfully!";
+            if (typeof showAlert === "function") {
+                showAlert("Account created successfully! Redirecting to login...", "success");
+            }
 
-            window.location.href = "login.html";
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 800);
 
         } catch (error) {
             warning.style.color = "red";
             warning.innerText = error.message ||
                 "Could not connect to the server";
+            if (typeof showAlert === "function") {
+                showAlert(warning.innerText, "error");
+            }
             console.error("Signup error:", error);
         }
     }

@@ -1,7 +1,8 @@
 
-// const API_URL = "http://localhost:5000/api";
-
-const API_URL = "https://storvia-api.onrender.com/api";
+const API_URL = window.STORVIA_API_URL ||
+    ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://localhost:5000/api"
+        : "https://storvia-api.onrender.com/api");
 const CURRENT_USER_KEY = "currentuser";
 const EPSILON = 1e-8;
 
@@ -98,6 +99,13 @@ function showMessage(message, isError = false) {
     if (allocationMessage) {
         allocationMessage.textContent = message;
         allocationMessage.style.color = isError ? "#c0392b" : "#218838";
+    }
+    if (typeof showAlert === "function" && message) {
+        if (isError) {
+            showAlert(message, "error");
+        } else if (message.includes("completed") || message.includes("saved to MongoDB")) {
+            showAlert(message, "success");
+        }
     }
 }
 
