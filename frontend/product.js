@@ -2,9 +2,10 @@
 // STORVIA - PRODUCT MANAGEMENT
 // ============================================================
 
-const API_URL = "http://localhost:5000/api";
-
-// const API_URL = "https://storvia-api.onrender.com/api";
+const API_URL = window.STORVIA_API_URL ||
+    ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://localhost:5000/api"
+        : "https://storvia-api.onrender.com/api");
 
 const CURRENT_USER_KEY = "currentuser";
 
@@ -164,14 +165,22 @@ function setupForm() {
         const validationError = validateProductForm();
 
         if (validationError) {
-            alert(validationError);
+            if (typeof showAlert === "function") {
+                showAlert(validationError, "warning");
+            } else {
+                alert(validationError);
+            }
             return;
         }
 
         const dimensions = getDimensions();
 
         if (!dimensions) {
-            alert("Please select a valid product size.");
+            if (typeof showAlert === "function") {
+                showAlert("Please select a valid product size.", "warning");
+            } else {
+                alert("Please select a valid product size.");
+            }
             return;
         }
 
@@ -250,21 +259,29 @@ function setupForm() {
                 );
             }
 
-            alert(
-                editingProductId
-                    ? "Product updated successfully."
-                    : "Product added successfully."
-            );
+            const successMsg = editingProductId
+                ? "Product updated successfully."
+                : "Product added successfully.";
+
+            if (typeof showAlert === "function") {
+                showAlert(successMsg, "success");
+            } else {
+                alert(successMsg);
+            }
 
             resetProductForm();
             await loadProducts();
         } catch (error) {
             console.error("Product save error:", error);
 
-            alert(
-                error.message ||
-                "Could not connect to the backend. Make sure the server is running."
-            );
+            const errorMsg = error.message ||
+                "Could not connect to the backend. Make sure the server is running.";
+
+            if (typeof showAlert === "function") {
+                showAlert(errorMsg, "error");
+            } else {
+                alert(errorMsg);
+            }
         } finally {
             isSaving = false;
             submitBtn.disabled = false;
@@ -393,6 +410,9 @@ async function loadProducts() {
                 </td>
             </tr>
         `;
+        if (typeof showAlert === "function") {
+            showAlert("Unable to load products from backend. Please ensure the server is running.", "error");
+        }
     }
 }
 
@@ -524,7 +544,11 @@ function editProduct(productId) {
     const product = products.find(item => item.id === productId);
 
     if (!product) {
-        alert("Product not found.");
+        if (typeof showAlert === "function") {
+            showAlert("Product not found.", "warning");
+        } else {
+            alert("Product not found.");
+        }
         return;
     }
 
@@ -576,7 +600,11 @@ async function deleteProduct(productId) {
     const product = products.find(item => item.id === productId);
 
     if (!product) {
-        alert("Product not found.");
+        if (typeof showAlert === "function") {
+            showAlert("Product not found.", "warning");
+        } else {
+            alert("Product not found.");
+        }
         return;
     }
 
@@ -604,11 +632,20 @@ async function deleteProduct(productId) {
             resetProductForm();
         }
 
-        alert("Product deleted successfully.");
+        if (typeof showAlert === "function") {
+            showAlert("Product deleted successfully.", "success");
+        } else {
+            alert("Product deleted successfully.");
+        }
         await loadProducts();
     } catch (error) {
         console.error("Delete product error:", error);
-        alert(error.message || "Unable to delete product.");
+        const errorMsg = error.message || "Unable to delete product.";
+        if (typeof showAlert === "function") {
+            showAlert(errorMsg, "error");
+        } else {
+            alert(errorMsg);
+        }
     }
 }
 
