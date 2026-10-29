@@ -1,853 +1,227 @@
-const PRODUCT_KEY = "products";
-const SLOT_KEY = "warehouseSlots";
-const CURRENT_USER_KEY = "currentuser";
-
-
-// ==========================================
-// LOW STOCK THRESHOLD
-// ==========================================
-
-const LOW_STOCK_THRESHOLD = 10;
-
-
-// ==========================================
-// GET CURRENT USER
-// ==========================================
-
-function getCurrentUser() {
-
-    const savedUser =
-        localStorage.getItem(
-            CURRENT_USER_KEY
-        );
-
-    if (!savedUser) {
-
-        window.location.href =
-            "login.html";
-
-        return null;
-    }
-
-    try {
-
-        return JSON.parse(savedUser);
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid current user data:",
-            error
-        );
-
-        localStorage.removeItem(
-            CURRENT_USER_KEY
-        );
-
-        window.location.href =
-            "login.html";
-
-        return null;
-    }
-}
-
-
-// ==========================================
-// GET PRODUCTS
-// ==========================================
-
-function getProducts() {
-
-    const savedProducts =
-        localStorage.getItem(
-            PRODUCT_KEY
-        );
-
-    if (!savedProducts) {
-
-        return [];
-    }
-
-    try {
-
-        return JSON.parse(
-            savedProducts
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid products data:",
-            error
-        );
-
-        return [];
-    }
-}
-
-
-// ==========================================
-// GET SLOTS
-// ==========================================
-
-function getSlots() {
-
-    const savedSlots =
-        localStorage.getItem(
-            SLOT_KEY
-        );
-
-    if (!savedSlots) {
-
-        return [];
-    }
-
-    try {
-
-        return JSON.parse(
-            savedSlots
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Invalid warehouse slots data:",
-            error
-        );
-
-        return [];
-    }
-}
-
-
-// ==========================================
-// GET CURRENT USER PRODUCTS
-// ==========================================
-
-function getCurrentUserProducts() {
-
-    const currentUser =
-        getCurrentUser();
-
-    if (!currentUser) {
-
-        return [];
-    }
-
-    const allProducts =
-        getProducts();
-
-    return allProducts.filter(
-        function (product) {
-
-            return (
-                product.userEmail ===
-                currentUser.email
-            );
-
-        }
-    );
-}
-
-
-// ==========================================
-// GET CURRENT USER SLOTS
-// ==========================================
-
-function getCurrentUserSlots() {
-
-    const currentUser =
-        getCurrentUser();
-
-    if (!currentUser) {
-
-        return [];
-    }
-
-    const allSlots =
-        getSlots();
-
-    return allSlots.filter(
-        function (slot) {
-
-            return (
-                slot.userEmail ===
-                currentUser.email
-            );
-
-        }
-    );
-}
-
-
-// ==========================================
-// CREATE ALERT
-// ==========================================
-function createAlert(
-    type,
-    title,
-    message
-) {
-
-    const alert =
-        document.createElement("div");
-
-
-    alert.className =
-        "warehouse-alert alert-" +
-        type;
-
-
-    let icon = "⚠️";
-
-
-    if (type === "danger") {
-
-        icon = "🔴";
-
-    }
-
-    else if (type === "warning") {
-
-        icon = "🟠";
-
-    }
-
-    else if (type === "info") {
-
-        icon = "🟡";
-
-    }
-
-
-    alert.innerHTML = `
-
-        <div class="alert-icon">
-            ${icon}
-        </div>
-
-        <div class="alert-content">
-
-            <strong>
-                ${title}
-            </strong>
-
-            <p>
-                ${message}
-            </p>
-
-        </div>
-
-    `;
-
-
-    return alert;
-}
-
-// ==========================================
-// LOW STOCK ALERTS
-// ==========================================
-
-function checkLowStock(
-    products,
-    container
-) {
-
-    products.forEach(
-        function (product) {
-
-            const quantity =
-                Number(
-                    product.quantity || 0
-                );
-
-
-            if (
-                quantity > 0 &&
-                quantity <=
-                LOW_STOCK_THRESHOLD
-            ) {
-
-                const alert =
-                    createAlert(
-
-                        "danger",
-
-                        product.name,
-
-                        "Low stock: only " +
-                        quantity +
-                        " " +
-                        product.unit +
-                        " remaining."
-
-                    );
-
-
-                container.appendChild(
-                    alert
-                );
-
+(() => {
+    "use strict";
+
+    const CURRENT_USER_KEY = "currentuser";
+    const LOW_STOCK_THRESHOLD = 10;
+    const AUTO_DISMISS_MS = 7500;
+    const MAX_VISIBLE_NOTIFICATIONS = 5;
+
+    // Use the local API during development and the deployed API on the live site.
+    const API_BASE_URL = window.STORVIA_API_URL ||
+        ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+            ? "http://localhost:5000/api"
+            : "https://storvia-api.onrender.com/api");
+
+    let notificationContainer;
+    const activeTimers = new Set();
+
+    function getCurrentUser() {
+        try {
+            const user = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || "null");
+            if (!user || !user.email) {
+                window.location.href = "login.html";
+                return null;
             }
-
+            return user;
+        } catch (error) {
+            console.error("Could not read the current user:", error);
+            localStorage.removeItem(CURRENT_USER_KEY);
+            window.location.href = "login.html";
+            return null;
         }
-    );
-}
-
-
-// ==========================================
-// PENDING ALLOCATION ALERTS
-// ==========================================
-
-function checkPendingAllocation(
-    products,
-    container
-) {
-
-    products.forEach(
-        function (product) {
-
-            const quantity =
-                Number(
-                    product.quantity || 0
-                );
-
-
-            const allocatedQuantity =
-                Number(
-                    product.allocatedQuantity ||
-                    0
-                );
-
-
-            if (
-                allocatedQuantity <
-                quantity
-            ) {
-
-                const remaining =
-                    quantity -
-                    allocatedQuantity;
-
-
-                const alert =
-                    createAlert(
-
-                        "warning",
-
-                        product.name,
-
-                        allocatedQuantity +
-                        " / " +
-                        quantity +
-                        " allocated. " +
-                        remaining +
-                        " " +
-                        product.unit +
-                        " still need warehouse space."
-
-                    );
-
-
-                container.appendChild(
-                    alert
-                );
-
-            }
-
-        }
-    );
-}
-
-
-// ==========================================
-// FULL SLOT ALERTS
-// ==========================================
-
-function checkFullSlots(
-    slots,
-    container
-) {
-
-    slots.forEach(
-        function (slot) {
-
-            const volume =
-                Number(
-                    slot.volume || 0
-                );
-
-
-            const usedVolume =
-                Number(
-                    slot.usedVolume || 0
-                );
-
-
-            if (
-                volume > 0 &&
-                usedVolume >= volume
-            ) {
-
-                const alert =
-                    createAlert(
-
-                        "danger",
-
-                        "Slot " +
-                        slot.id,
-
-                        "This warehouse slot is completely occupied."
-
-                    );
-
-
-                container.appendChild(
-                    alert
-                );
-
-            }
-
-        }
-    );
-}
-
-
-// ==========================================
-// EMPTY SLOT ALERTS
-// ==========================================
-
-function checkEmptySlots(
-    slots,
-    container
-) {
-
-    let emptySlots = 0;
-
-
-    slots.forEach(
-        function (slot) {
-
-            const usedVolume =
-                Number(
-                    slot.usedVolume || 0
-                );
-
-
-            if (
-                usedVolume === 0
-            ) {
-
-                emptySlots++;
-
-            }
-
-        }
-    );
-
-
-    if (
-        emptySlots > 0
-    ) {
-
-        const alert =
-            createAlert(
-
-                "info",
-
-                "Available Warehouse Space",
-
-                emptySlots +
-                " warehouse slot(s) are currently empty."
-
-            );
-
-
-        container.appendChild(
-            alert
-        );
-
-    }
-}
-
-
-// ==========================================
-// LOAD ALERTS
-// ==========================================
-function loadAlerts() {
-
-    console.log("========== ALERT SYSTEM ==========");
-
-    const currentUser = getCurrentUser();
-
-    if (!currentUser) {
-        return;
     }
 
-    console.log("Current user:", currentUser.email);
-
-
-    const alertContainer =
-        document.getElementById("alertsList");
-
-
-    if (!alertContainer) {
-
-        console.error(
-            "ERROR: alertsList element not found in HTML."
-        );
-
-        return;
+    async function fetchRecords(resource, email) {
+        const url = `${API_BASE_URL}/${resource}?userEmail=${encodeURIComponent(email)}`;
+        const response = await fetch(url, { headers: { Accept: "application/json" } });
+        let payload;
+        try {
+            payload = await response.json();
+        } catch {
+            throw new Error(`The ${resource} API returned an invalid response.`);
+        }
+        if (!response.ok || payload?.success === false) {
+            throw new Error(payload?.message || `Could not load ${resource} (${response.status}).`);
+        }
+        if (Array.isArray(payload)) return payload;
+        if (Array.isArray(payload.data)) return payload.data;
+        if (Array.isArray(payload[resource])) return payload[resource];
+        throw new Error(`Unexpected ${resource} response format.`);
     }
 
+    function ensureNotificationContainer() {
+        if (notificationContainer && document.body.contains(notificationContainer)) return notificationContainer;
+        notificationContainer = document.getElementById("warehouseNotificationStack");
+        if (!notificationContainer) {
+            notificationContainer = document.createElement("div");
+            notificationContainer.id = "warehouseNotificationStack";
+            notificationContainer.className = "warehouse-notification-stack";
+            notificationContainer.setAttribute("aria-label", "Warehouse notifications");
+            notificationContainer.setAttribute("aria-live", "polite");
+            notificationContainer.setAttribute("aria-relevant", "additions");
+            document.body.appendChild(notificationContainer);
+        }
+        updateNotificationPosition();
+        return notificationContainer;
+    }
 
-    alertContainer.innerHTML = "";
+    // Keep the toast stack just below the page navigation/header.
+    function updateNotificationPosition() {
+        const header = document.querySelector(".dashboard-header, header");
+        const headerBottom = header ? header.getBoundingClientRect().bottom : 80;
+        const top = Math.max(80, Math.round(headerBottom + 12));
+        document.documentElement.style.setProperty("--storvia-notification-top", `${top}px`);
+    }
 
+    function dismissNotification(item) {
+        if (!item || item.dataset.dismissing === "true") return;
+        item.dataset.dismissing = "true";
+        item.classList.remove("notification-visible");
+        item.classList.add("notification-hiding");
+        window.setTimeout(() => item.remove(), 240);
+    }
 
-    // ======================================
-    // GET USER DATA
-    // ======================================
+    function createNotification({ type, title, message }) {
+        const item = document.createElement("article");
+        item.className = `warehouse-notification notification-${type}`;
+        item.setAttribute("role", type === "danger" ? "alert" : "status");
 
-    const allProducts =
-        getProducts();
+        const icon = document.createElement("span");
+        icon.className = "notification-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = type === "danger" ? "!" : type === "warning" ? "⚠" : "i";
 
-    const allSlots =
-        getSlots();
+        const content = document.createElement("div");
+        content.className = "notification-content";
+        const heading = document.createElement("strong");
+        heading.className = "notification-title";
+        heading.textContent = title;
+        const body = document.createElement("p");
+        body.className = "notification-message";
+        body.textContent = message;
 
+        const close = document.createElement("button");
+        close.className = "notification-close";
+        close.type = "button";
+        close.setAttribute("aria-label", "Dismiss notification");
+        close.textContent = "×";
+        close.addEventListener("click", () => dismissNotification(item));
 
-    const products =
-        allProducts.filter(function (product) {
+        const progress = document.createElement("span");
+        progress.className = "notification-progress";
+        progress.style.animationDuration = `${AUTO_DISMISS_MS}ms`;
 
-            return (
-                product.userEmail ===
-                currentUser.email
-            );
+        content.append(heading, body);
+        item.append(icon, content, close, progress);
 
+        // Append new items at the bottom; older notifications remain above them.
+        ensureNotificationContainer().appendChild(item);
+        requestAnimationFrame(() => item.classList.add("notification-visible"));
+
+        while (notificationContainer.children.length > MAX_VISIBLE_NOTIFICATIONS) {
+            dismissNotification(notificationContainer.firstElementChild);
+        }
+
+        const timer = window.setTimeout(() => {
+            activeTimers.delete(timer);
+            dismissNotification(item);
+        }, AUTO_DISMISS_MS);
+        activeTimers.add(timer);
+
+        item.addEventListener("mouseenter", () => {
+            progress.style.animationPlayState = "paused";
+        });
+        item.addEventListener("mouseleave", () => {
+            progress.style.animationPlayState = "running";
+        });
+        return item;
+    }
+
+    function buildNotifications(products, slots) {
+        const notifications = [];
+        products.forEach(product => {
+            const quantity = Number(product.quantity || 0);
+            const allocated = Number(product.allocatedQuantity || 0);
+            const productName = product.name || product.productName || "Unnamed product";
+            const unit = product.unit || "units";
+
+            if (quantity > 0 && quantity <= LOW_STOCK_THRESHOLD) {
+                notifications.push({ type: "danger", title: "Low stock", message: `${productName} has only ${quantity} ${unit} remaining.` });
+            } else if (quantity <= 0) {
+                notifications.push({ type: "danger", title: "Out of stock", message: `${productName} has no stock remaining.` });
+            }
+            if (allocated < quantity) {
+                notifications.push({ type: "warning", title: "Pending allocation", message: `${productName}: ${quantity - allocated} ${unit} still need warehouse space.` });
+            }
         });
 
-
-    const slots =
-        allSlots.filter(function (slot) {
-
-            return (
-                slot.userEmail ===
-                currentUser.email
-            );
-
+        slots.forEach(slot => {
+            const capacity = Number(slot.volume || slot.capacity || 0);
+            const used = Number(slot.usedVolume || 0);
+            const slotName = slot.id || slot.slotId || "Unnamed slot";
+            if (capacity > 0 && used >= capacity) {
+                notifications.push({ type: "danger", title: `Slot ${slotName} is full`, message: "This warehouse slot has reached its available capacity." });
+            }
         });
-
-
-    console.log(
-        "User products:",
-        products
-    );
-
-    console.log(
-        "User slots:",
-        slots
-    );
-
-
-    let alertCount = 0;
-
-
-    // ======================================
-    // CHECK PENDING ALLOCATION
-    // ======================================
-
-    products.forEach(function (product) {
-
-        const quantity =
-            Number(product.quantity || 0);
-
-
-        const allocatedQuantity =
-            Number(
-                product.allocatedQuantity || 0
-            );
-
-
-        console.log(
-            product.name,
-            "quantity =",
-            quantity,
-            "allocated =",
-            allocatedQuantity
-        );
-
-
-        if (
-            allocatedQuantity <
-            quantity
-        ) {
-
-            const remaining =
-                quantity -
-                allocatedQuantity;
-
-
-            const alert =
-                createAlert(
-
-                    "warning",
-
-                    "Pending Allocation",
-
-                    product.name +
-                    " has " +
-                    remaining +
-                    " " +
-                    product.unit +
-                    " still waiting for warehouse space."
-
-                );
-
-
-            alertContainer.appendChild(
-                alert
-            );
-
-
-            alertCount++;
-
-        }
-
-    });
-
-
-    // ======================================
-    // LOW STOCK
-    // ======================================
-
-    products.forEach(function (product) {
-
-        const quantity =
-            Number(product.quantity || 0);
-
-
-        if (
-            quantity > 0 &&
-            quantity <= LOW_STOCK_THRESHOLD
-        ) {
-
-            const alert =
-                createAlert(
-
-                    "danger",
-
-                    "Low Stock",
-
-                    product.name +
-                    " has only " +
-                    quantity +
-                    " " +
-                    product.unit +
-                    " remaining."
-
-                );
-
-
-            alertContainer.appendChild(
-                alert
-            );
-
-
-            alertCount++;
-
-        }
-
-    });
-
-
-    // ======================================
-    // FULL SLOTS
-    // ======================================
-
-    slots.forEach(function (slot) {
-
-        const volume =
-            Number(slot.volume || 0);
-
-
-        const usedVolume =
-            Number(slot.usedVolume || 0);
-
-
-        if (
-            volume > 0 &&
-            usedVolume >= volume
-        ) {
-
-            const alert =
-                createAlert(
-
-                    "danger",
-
-                    "Slot " + slot.id + " Full",
-
-                    "This warehouse slot is completely occupied."
-
-                );
-
-
-            alertContainer.appendChild(
-                alert
-            );
-
-
-            alertCount++;
-
-        }
-
-    });
-
-
-    // ======================================
-    // NO ALERTS
-    // ======================================
-
-    if (
-        alertCount === 0
-    ) {
-
-        alertContainer.innerHTML = `
-
-            <div class="no-alerts">
-
-                <strong>
-                    ✅ Everything looks good!
-                </strong>
-
-                <p>
-                    No warehouse alerts at the moment.
-                </p>
-
-            </div>
-
-        `;
-
+        return notifications;
     }
 
+    async function loadAlerts() {
+        const currentUser = getCurrentUser();
+        if (!currentUser) return;
+        ensureNotificationContainer();
 
-    console.log(
-        "Total alerts:",
-        alertCount
-    );
+        try {
+            const email = String(currentUser.email).trim().toLowerCase();
+            const [products, slots] = await Promise.all([
+                fetchRecords("products", email),
+                fetchRecords("slots", email)
+            ]);
+            const userProducts = products.filter(product =>
+                !product.userEmail || String(product.userEmail).trim().toLowerCase() === email
+            );
+            const userSlots = slots.filter(slot =>
+                !slot.userEmail || String(slot.userEmail).trim().toLowerCase() === email
+            );
+            const notifications = buildNotifications(userProducts, userSlots);
 
-}
-
-    // ======================================
-    // GET USER DATA
-    // ======================================
-
-    const products =
-        getCurrentUserProducts();
-
-
-    const slots =
-        getCurrentUserSlots();
-
-
-    // ======================================
-    // CHECK ALERTS
-    // ======================================
-
-    checkLowStock(
-        products,
-        alertContainer
-    );
-
-
-    checkPendingAllocation(
-        products,
-        alertContainer
-    );
-
-
-    checkFullSlots(
-        slots,
-        alertContainer
-    );
-
-
-    checkEmptySlots(
-        slots,
-        alertContainer
-    );
-
-
-    // ======================================
-    // NO ALERTS
-    // ======================================
-
-    if (
-        alertContainer.children.length === 0
-    ) {
-
-        alertContainer.innerHTML = `
-
-            <div class="no-alerts">
-
-                <strong>
-                    ✅ Everything looks good!
-                </strong>
-
-                <p>
-                    No warehouse alerts at the moment.
-                </p>
-
-            </div>
-
-        `;
-
+            if (notifications.length === 0) {
+                notificationContainer.dataset.state = "clear";
+                return;
+            }
+            notificationContainer.dataset.state = "alerts";
+            notifications.forEach(createNotification);
+        } catch (error) {
+            notificationContainer.dataset.state = "error";
+            console.error("Warehouse notifications could not be loaded:", error);
+            createNotification({
+                type: "warning",
+                title: "Notifications unavailable",
+                message: "Could not load current warehouse data. Check the backend connection and refresh this page."
+            });
+        }
     }
 
-
-
-// ==========================================
-// LOGOUT
-// ==========================================
-
-const logoutBtn =
-    document.getElementById(
-        "logoutBtn"
-    );
-
-
-if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-        "click",
-        function () {
-
-            localStorage.removeItem(
-                CURRENT_USER_KEY
-            );
-
-            window.location.href =
-                "login.html";
-
+    function initAlertSystem() {
+        ensureNotificationContainer();
+        window.addEventListener("resize", updateNotificationPosition);
+        window.addEventListener("scroll", updateNotificationPosition, { passive: true });
+        const logoutButton = document.getElementById("logoutBtn");
+        if (logoutButton && !logoutButton.dataset.alertLogoutBound) {
+            logoutButton.dataset.alertLogoutBound = "true";
+            logoutButton.addEventListener("click", () => {
+                activeTimers.forEach(timer => window.clearTimeout(timer));
+                activeTimers.clear();
+                localStorage.removeItem(CURRENT_USER_KEY);
+            });
         }
-    );
-
-}
-
-
-// ==========================================
-// INITIAL LOADy
-// ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
         loadAlerts();
-
     }
-);
+
+    // Works whether this script loads before or after DOMContentLoaded.
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initAlertSystem, { once: true });
+    } else {
+        initAlertSystem();
+    }
+})();

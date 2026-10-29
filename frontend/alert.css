@@ -1,152 +1,84 @@
-
-/* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-   WAREHOUSE ALERTS CARD
->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>*/
-.alerts-card {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    margin-bottom: 28px;
-    box-shadow: var(--shadow-sm);
-}
-
-/* ==========================================================================
-   ALERT CONTAINER & LIST
-   ========================================================================== */
-#alertsList {
+/* Storvia top-right warehouse notification stack */
+.warehouse-notification-stack {
+    position: fixed;
+    top: var(--storvia-notification-top, 104px);
+    right: 24px;
+    z-index: 1500;
     display: flex;
     flex-direction: column;
+    gap: 10px;
+    width: min(380px, calc(100vw - 32px));
+    max-height: calc(100vh - var(--storvia-notification-top, 104px) - 20px);
+    overflow: visible;
+    pointer-events: none;
+}
+
+.warehouse-notification {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
     gap: 12px;
-    margin-top: 18px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 15px 14px 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    border-left: 4px solid var(--accent, #64748b);
+    border-radius: 10px;
+    background: var(--bg-surface, #fff);
+    color: var(--text-primary, #0f172a);
+    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
+    opacity: 0;
+    transform: translateX(24px) translateY(-5px);
+    transition: opacity 220ms ease, transform 220ms ease, box-shadow 180ms ease;
+    pointer-events: auto;
+    animation: storvia-notification-arrive 280ms cubic-bezier(.2,.8,.2,1) both;
 }
 
-/* ==========================================================================
-   BASE ALERT ITEM
-   ========================================================================== */
-.warehouse-alert {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding: 16px 20px;
-    border-radius: var(--radius-md);
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    transition: all var(--transition-fast);
-    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-}
+.warehouse-notification:hover { box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18); }
+.warehouse-notification.notification-visible { opacity: 1; transform: translateX(0) translateY(0); }
+.warehouse-notification.notification-hiding { opacity: 0; transform: translateX(22px) scale(.98); pointer-events: none; }
+.notification-warning { border-left-color: var(--accent, #d97706); }
+.notification-danger { border-left-color: var(--status-danger, #dc2626); }
+.notification-info { border-left-color: var(--status-info, #0284c7); }
 
-.warehouse-alert:hover {
-    transform: translateX(4px);
-    box-shadow: var(--shadow-md);
-}
-
-/* ==========================================================================
-   ALERT SEVERITY VARIANTS
-   ========================================================================== */
-
-/* Warning (Low Stock / Partial Capacity) */
-.alert-warning {
-    background: var(--status-warning-bg);
-    border-color: #fde68a;
-    border-left: 5px solid var(--accent);
-}
-
-.alert-warning .alert-content strong {
-    color: #92400e;
-}
-
-.alert-warning .alert-icon {
-    background: #fde68a;
-    color: #92400e;
-}
-
-/* Danger (Full Slots / Out of Stock) */
-.alert-danger {
-    background: var(--status-danger-bg);
-    border-color: #fecaca;
-    border-left: 5px solid var(--status-danger);
-}
-
-.alert-danger .alert-content strong {
-    color: #991b1b;
-}
-
-.alert-danger .alert-icon {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-/* Info (General Warehouse Updates) */
-.alert-info {
-    background: var(--status-info-bg);
-    border-color: #bae6fd;
-    border-left: 5px solid var(--status-info);
-}
-
-.alert-info .alert-content strong {
-    color: #075985;
-}
-
-.alert-info .alert-icon {
-    background: #e0f2fe;
-    color: #075985;
-}
-
-/* ==========================================================================
-   ALERT ICON & CONTENT
-   ========================================================================== */
-.alert-icon {
-    width: 40px;
-    height: 40px;
-    display: flex;
+.notification-icon {
+    display: inline-flex;
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
     align-items: center;
     justify-content: center;
-    border-radius: var(--radius-full);
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.alert-content {
-    flex: 1;
-}
-
-.alert-content strong {
-    display: block;
+    border-radius: 7px;
+    background: var(--bg-surface-subtle, #f1f5f9);
+    color: var(--text-primary, #0f172a);
     font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 3px;
+    font-weight: 800;
 }
+.notification-danger .notification-icon { background: #fee2e2; color: #991b1b; }
+.notification-warning .notification-icon { background: #fef3c7; color: #92400e; }
+.notification-info .notification-icon { background: #e0f2fe; color: #075985; }
+.notification-content { min-width: 0; flex: 1; padding-right: 2px; }
+.notification-title { display: block; margin: 1px 0 4px; color: var(--text-primary, #0f172a); font-size: 13.5px; font-weight: 750; line-height: 1.35; }
+.notification-message { margin: 0; color: var(--text-secondary, #475569); font-size: 12.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.notification-close { display: inline-flex; flex: 0 0 24px; width: 24px; height: 24px; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted, #64748b); font-size: 21px; line-height: 1; cursor: pointer; }
+.notification-close:hover { background: var(--bg-surface-subtle, #f1f5f9); color: var(--text-primary, #0f172a); }
+.notification-progress { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: var(--accent, #64748b); transform-origin: left center; animation: storvia-notification-progress linear forwards; opacity: .65; }
+.notification-danger .notification-progress { background: var(--status-danger, #dc2626); }
+.notification-warning .notification-progress { background: #d97706; }
+.notification-info .notification-progress { background: var(--status-info, #0284c7); }
 
-.alert-content p {
-    color: var(--text-secondary);
-    font-size: 13.5px;
-    margin: 0;
-    line-height: 1.5;
+@keyframes storvia-notification-arrive {
+    from { opacity: 0; transform: translateX(24px) translateY(-5px); }
+    to { opacity: 1; transform: translateX(0) translateY(0); }
 }
+@keyframes storvia-notification-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
-/* ==========================================================================
-   EMPTY / NO ALERTS STATE
-   ========================================================================== */
-.no-alerts {
-    background: var(--bg-surface-subtle);
-    border: 1px dashed var(--border-medium);
-    padding: 24px;
-    border-radius: var(--radius-md);
-    text-align: center;
+@media (max-width: 600px) {
+    .warehouse-notification-stack { top: var(--storvia-notification-top, 86px); right: 12px; width: calc(100vw - 24px); max-height: calc(100vh - var(--storvia-notification-top, 86px) - 12px); }
+    .warehouse-notification { gap: 10px; padding: 13px 11px 16px; }
 }
-
-.no-alerts strong {
-    display: block;
-    color: var(--text-primary);
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 4px;
+@media (prefers-reduced-motion: reduce) {
+    .warehouse-notification, .warehouse-notification.notification-visible, .warehouse-notification.notification-hiding { animation: none; transition: opacity 120ms linear; transform: none; }
+    .notification-progress { animation: none; }
 }
-
-.no-alerts p {
-    color: var(--text-muted);
-    font-size: 13px;
-    margin: 0;
-}
-
