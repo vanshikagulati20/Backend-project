@@ -16,10 +16,7 @@
     const CURRENT_USER_KEY = "currentuser";
     const LOW_STOCK_THRESHOLD = 10;
 
-    const API_BASE_URL = window.STORVIA_API_URL ||
-        ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-            ? "http://localhost:5000/api"
-            : "https://storvia-api.onrender.com/api");
+    const API_BASE_URL = "https://storvia-api.onrender.com/api";
 
     // SVG Icons for clean, crisp rendering on all displays
     const ICONS = {

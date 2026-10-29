@@ -1,8 +1,5 @@
 
-const API_URL = window.STORVIA_API_URL ||
-    ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
-        ? "http://localhost:5000/api"
-        : "https://storvia-api.onrender.com/api");
+const API_URL = "https://storvia-api.onrender.com/api";
 const CURRENT_USER_KEY = "currentuser";
 const EPSILON = 1e-8;
 
