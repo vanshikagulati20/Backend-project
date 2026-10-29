@@ -1,6 +1,8 @@
 
-const API_URL = "http://localhost:5000/api";
-// const API_URL = "https://storvia-api.onrender.com/api";
+const API_URL = window.STORVIA_API_URL ||
+    ((window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+        ? "http://localhost:5000/api"
+        : "https://storvia-api.onrender.com/api");
 
 const CURRENT_USER_KEY = "currentuser";
 
@@ -995,7 +997,11 @@ async function exportProductsCSV() {
         productsData = data.products;
 
         if (productsData.length === 0) {
-            alert("No products available to export.");
+            if (typeof showAlert === "function") {
+                showAlert("No products available to export.", "warning");
+            } else {
+                alert("No products available to export.");
+            }
             return;
         }
 
@@ -1041,9 +1047,17 @@ async function exportProductsCSV() {
             createCSV(headers, rows),
             `storvia-products-${getExportDateStamp()}.csv`
         );
+        if (typeof showAlert === "function") {
+            showAlert("Products CSV exported successfully.", "success");
+        }
     } catch (error) {
         console.error("Product CSV export failed:", error);
-        alert(`Could not export products: ${error.message}`);
+        const errorMsg = `Could not export products: ${error.message}`;
+        if (typeof showAlert === "function") {
+            showAlert(errorMsg, "error");
+        } else {
+            alert(errorMsg);
+        }
     } finally {
         if (button) {
             button.disabled = false;
@@ -1074,7 +1088,11 @@ async function exportSlotsCSV() {
         slotsData = data.slots;
 
         if (slotsData.length === 0) {
-            alert("No warehouse slots available to export.");
+            if (typeof showAlert === "function") {
+                showAlert("No warehouse slots available to export.", "warning");
+            } else {
+                alert("No warehouse slots available to export.");
+            }
             return;
         }
 
@@ -1120,9 +1138,17 @@ async function exportSlotsCSV() {
             createCSV(headers, rows),
             `storvia-warehouse-slots-${getExportDateStamp()}.csv`
         );
+        if (typeof showAlert === "function") {
+            showAlert("Warehouse slots CSV exported successfully.", "success");
+        }
     } catch (error) {
         console.error("Slot CSV export failed:", error);
-        alert(`Could not export warehouse slots: ${error.message}`);
+        const errorMsg = `Could not export warehouse slots: ${error.message}`;
+        if (typeof showAlert === "function") {
+            showAlert(errorMsg, "error");
+        } else {
+            alert(errorMsg);
+        }
     } finally {
         if (button) {
             button.disabled = false;
@@ -1146,7 +1172,15 @@ if (logoutBtn) {
 const refreshAnalytics = document.getElementById("refreshAnalytics");
 
 if (refreshAnalytics) {
-    refreshAnalytics.addEventListener("click", loadAnalytics);
+    refreshAnalytics.addEventListener("click", async () => {
+        if (typeof showAlert === "function") {
+            showAlert("Refreshing warehouse analytics data...", "info");
+        }
+        await loadAnalytics();
+        if (typeof showAlert === "function" && !analyticsLoading) {
+            showAlert("Analytics data refreshed successfully.", "success");
+        }
+    });
 }
 
 const exportProductsButton = document.getElementById("exportProductsCSV");
