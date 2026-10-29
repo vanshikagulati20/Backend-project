@@ -1,18 +1,37 @@
-/* Storvia top-right warehouse notification stack */
+/* ==========================================================================
+   STORVIA DESIGN SYSTEM - ALERTS & NOTIFICATION COMPONENT
+   Includes top-right toast notification stack and dashboard warehouse alerts card.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   TOP-RIGHT TOAST NOTIFICATION STACK
+   Positioned directly below the navigation bar at the top-right corner.
+   Stacking order: Oldest at the top, newest at the bottom.
+   -------------------------------------------------------------------------- */
 .warehouse-notification-stack {
     position: fixed;
-    top: var(--storvia-notification-top, 104px);
+    top: var(--storvia-notification-top, 96px);
     right: 24px;
-    z-index: 1500;
+    z-index: 10000;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: min(380px, calc(100vw - 32px));
-    max-height: calc(100vh - var(--storvia-notification-top, 104px) - 20px);
-    overflow: visible;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - var(--storvia-notification-top, 96px) - 20px);
+    overflow-y: auto;
+    overflow-x: hidden;
     pointer-events: none;
+    box-sizing: border-box;
+    padding: 2px 2px 8px 2px;
+    scrollbar-width: none;
 }
 
+.warehouse-notification-stack::-webkit-scrollbar {
+    display: none;
+}
+
+/* Base Toast Item - Modern rectangular card with slightly rounded corners */
 .warehouse-notification {
     position: relative;
     display: flex;
@@ -20,65 +39,365 @@
     gap: 12px;
     width: 100%;
     box-sizing: border-box;
-    padding: 15px 14px 18px;
-    overflow: hidden;
-    border: 1px solid var(--border-subtle, #e2e8f0);
-    border-left: 4px solid var(--accent, #64748b);
-    border-radius: 10px;
-    background: var(--bg-surface, #fff);
+    padding: 13px 14px 16px 14px;
+    background: var(--bg-surface, #ffffff);
     color: var(--text-primary, #0f172a);
-    box-shadow: 0 12px 32px rgba(15, 23, 42, 0.14);
-    opacity: 0;
-    transform: translateX(24px) translateY(-5px);
-    transition: opacity 220ms ease, transform 220ms ease, box-shadow 180ms ease;
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    border-left: 4px solid var(--accent, #f59e0b);
+    border-radius: var(--radius-sm, 6px);
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.08);
     pointer-events: auto;
-    animation: storvia-notification-arrive 280ms cubic-bezier(.2,.8,.2,1) both;
+    overflow: hidden;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 220ms ease,
+                box-shadow 180ms ease,
+                max-height 240ms ease,
+                margin 240ms ease,
+                padding 240ms ease;
+    animation: storvia-toast-enter 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.warehouse-notification:hover { box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18); }
-.warehouse-notification.notification-visible { opacity: 1; transform: translateX(0) translateY(0); }
-.warehouse-notification.notification-hiding { opacity: 0; transform: translateX(22px) scale(.98); pointer-events: none; }
-.notification-warning { border-left-color: var(--accent, #d97706); }
-.notification-danger { border-left-color: var(--status-danger, #dc2626); }
-.notification-info { border-left-color: var(--status-info, #0284c7); }
+.warehouse-notification:hover {
+    box-shadow: 0 14px 28px -4px rgba(15, 23, 42, 0.16), 0 10px 14px -6px rgba(15, 23, 42, 0.10);
+    transform: translateY(-1px);
+}
 
+.warehouse-notification.notification-hiding {
+    opacity: 0 !important;
+    transform: translateX(32px) !important;
+    max-height: 0 !important;
+    margin-bottom: -10px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border-top-width: 0 !important;
+    border-bottom-width: 0 !important;
+    pointer-events: none !important;
+    overflow: hidden !important;
+}
+
+/* Toast Variants: Success, Error / Danger, Warning, Info */
+.warehouse-notification.notification-success {
+    border-left-color: var(--status-success, #10b981);
+}
+.notification-success .notification-icon {
+    background: var(--status-success-bg, #ecfdf5);
+    color: #059669;
+}
+.notification-success .notification-progress {
+    background: var(--status-success, #10b981);
+}
+
+.warehouse-notification.notification-error,
+.warehouse-notification.notification-danger {
+    border-left-color: var(--status-danger, #ef4444);
+}
+.notification-error .notification-icon,
+.notification-danger .notification-icon {
+    background: var(--status-danger-bg, #fef2f2);
+    color: #dc2626;
+}
+.notification-error .notification-progress,
+.notification-danger .notification-progress {
+    background: var(--status-danger, #ef4444);
+}
+
+.warehouse-notification.notification-warning {
+    border-left-color: var(--status-warning, #f59e0b);
+}
+.notification-warning .notification-icon {
+    background: var(--status-warning-bg, #fffbeb);
+    color: #d97706;
+}
+.notification-warning .notification-progress {
+    background: var(--status-warning, #f59e0b);
+}
+
+.warehouse-notification.notification-info {
+    border-left-color: var(--status-info, #0ea5e9);
+}
+.notification-info .notification-icon {
+    background: var(--status-info-bg, #f0f9ff);
+    color: #0284c7;
+}
+.notification-info .notification-progress {
+    background: var(--status-info, #0ea5e9);
+}
+
+/* Toast Elements */
 .notification-icon {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
     display: inline-flex;
-    flex: 0 0 30px;
-    width: 30px;
-    height: 30px;
     align-items: center;
     justify-content: center;
-    border-radius: 7px;
+    border-radius: var(--radius-sm, 6px);
+    font-size: 15px;
+    line-height: 1;
+}
+
+.notification-icon svg {
+    width: 18px;
+    height: 18px;
+    display: block;
+}
+
+.notification-content {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-right: 4px;
+}
+
+.notification-title {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary, #0f172a);
+    margin: 0 0 3px 0;
+    line-height: 1.35;
+}
+
+.notification-message {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--text-secondary, #475569);
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.notification-close {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-muted, #94a3b8);
+    font-size: 18px;
+    line-height: 1;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition-fast, 0.15s ease);
+}
+
+.notification-close:hover {
     background: var(--bg-surface-subtle, #f1f5f9);
     color: var(--text-primary, #0f172a);
-    font-size: 15px;
-    font-weight: 800;
 }
-.notification-danger .notification-icon { background: #fee2e2; color: #991b1b; }
-.notification-warning .notification-icon { background: #fef3c7; color: #92400e; }
-.notification-info .notification-icon { background: #e0f2fe; color: #075985; }
-.notification-content { min-width: 0; flex: 1; padding-right: 2px; }
-.notification-title { display: block; margin: 1px 0 4px; color: var(--text-primary, #0f172a); font-size: 13.5px; font-weight: 750; line-height: 1.35; }
-.notification-message { margin: 0; color: var(--text-secondary, #475569); font-size: 12.5px; line-height: 1.5; overflow-wrap: anywhere; }
-.notification-close { display: inline-flex; flex: 0 0 24px; width: 24px; height: 24px; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted, #64748b); font-size: 21px; line-height: 1; cursor: pointer; }
-.notification-close:hover { background: var(--bg-surface-subtle, #f1f5f9); color: var(--text-primary, #0f172a); }
-.notification-progress { position: absolute; right: 0; bottom: 0; left: 0; height: 3px; background: var(--accent, #64748b); transform-origin: left center; animation: storvia-notification-progress linear forwards; opacity: .65; }
-.notification-danger .notification-progress { background: var(--status-danger, #dc2626); }
-.notification-warning .notification-progress { background: #d97706; }
-.notification-info .notification-progress { background: var(--status-info, #0284c7); }
 
-@keyframes storvia-notification-arrive {
-    from { opacity: 0; transform: translateX(24px) translateY(-5px); }
-    to { opacity: 1; transform: translateX(0) translateY(0); }
+/* Toast Countdown Progress Indicator */
+.notification-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(15, 23, 42, 0.05);
+    overflow: hidden;
 }
-@keyframes storvia-notification-progress { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 
+.notification-progress {
+    width: 100%;
+    height: 100%;
+    transform-origin: left center;
+    animation: storvia-notification-progress linear forwards;
+    opacity: 0.85;
+}
+
+@keyframes storvia-toast-enter {
+    from {
+        opacity: 0;
+        transform: translateX(32px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes storvia-notification-progress {
+    from {
+        transform: scaleX(1);
+    }
+    to {
+        transform: scaleX(0);
+    }
+}
+
+/* Responsive adjustments */
 @media (max-width: 600px) {
-    .warehouse-notification-stack { top: var(--storvia-notification-top, 86px); right: 12px; width: calc(100vw - 24px); max-height: calc(100vh - var(--storvia-notification-top, 86px) - 12px); }
-    .warehouse-notification { gap: 10px; padding: 13px 11px 16px; }
+    .warehouse-notification-stack {
+        top: var(--storvia-notification-top, 84px);
+        right: 12px;
+        left: 12px;
+        width: auto;
+        max-width: none;
+    }
+
+    .warehouse-notification {
+        gap: 10px;
+        padding: 12px 12px 14px 12px;
+    }
 }
+
 @media (prefers-reduced-motion: reduce) {
-    .warehouse-notification, .warehouse-notification.notification-visible, .warehouse-notification.notification-hiding { animation: none; transition: opacity 120ms linear; transform: none; }
-    .notification-progress { animation: none; }
+    .warehouse-notification {
+        animation: none !important;
+        transition: opacity 120ms linear !important;
+        transform: none !important;
+    }
+    .notification-progress {
+        animation: none !important;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   WAREHOUSE ALERTS IN-PAGE CARD (Dashboard #alertsList)
+   -------------------------------------------------------------------------- */
+.alerts-card {
+    background: var(--bg-surface, #ffffff);
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    border-radius: var(--radius-lg, 14px);
+    padding: 28px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+}
+
+#alertsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.warehouse-alert {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: var(--radius-md, 10px);
+    background: var(--bg-surface, #ffffff);
+    border: 1px solid var(--border-subtle, #e2e8f0);
+    transition: all var(--transition-fast, 0.15s ease);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.warehouse-alert:hover {
+    transform: translateX(4px);
+    box-shadow: var(--shadow-md);
+}
+
+.warehouse-alert.alert-warning {
+    background: var(--status-warning-bg, #fffbeb);
+    border-color: #fde68a;
+    border-left: 5px solid var(--accent, #f59e0b);
+}
+
+.warehouse-alert.alert-warning .alert-content strong {
+    color: #92400e;
+}
+
+.warehouse-alert.alert-warning .alert-icon {
+    background: #fde68a;
+    color: #92400e;
+}
+
+.warehouse-alert.alert-danger {
+    background: var(--status-danger-bg, #fef2f2);
+    border-color: #fecaca;
+    border-left: 5px solid var(--status-danger, #ef4444);
+}
+
+.warehouse-alert.alert-danger .alert-content strong {
+    color: #991b1b;
+}
+
+.warehouse-alert.alert-danger .alert-icon {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.warehouse-alert.alert-info {
+    background: var(--status-info-bg, #f0f9ff);
+    border-color: #bae6fd;
+    border-left: 5px solid var(--status-info, #0ea5e9);
+}
+
+.warehouse-alert.alert-info .alert-content strong {
+    color: #075985;
+}
+
+.warehouse-alert.alert-info .alert-icon {
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.warehouse-alert.alert-success {
+    background: var(--status-success-bg, #ecfdf5);
+    border-color: #a7f3d0;
+    border-left: 5px solid var(--status-success, #10b981);
+}
+
+.warehouse-alert.alert-success .alert-content strong {
+    color: #065f46;
+}
+
+.warehouse-alert.alert-success .alert-icon {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.warehouse-alert .alert-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full, 9999px);
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.warehouse-alert .alert-content {
+    flex: 1;
+}
+
+.warehouse-alert .alert-content strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 3px;
+}
+
+.warehouse-alert .alert-content p {
+    color: var(--text-secondary, #475569);
+    font-size: 13.5px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.no-alerts {
+    background: var(--bg-surface-subtle, #f1f5f9);
+    border: 1px dashed var(--border-medium, #cbd5e1);
+    padding: 24px;
+    border-radius: var(--radius-md, 10px);
+    text-align: center;
+}
+
+.no-alerts strong {
+    display: block;
+    color: var(--text-primary, #0f172a);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.no-alerts p {
+    color: var(--text-muted, #94a3b8);
+    font-size: 13px;
+    margin: 0;
 }
